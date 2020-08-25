@@ -15,5 +15,5 @@ object Versions {
     const val shadow = "6.0.0"
     const val junit = "5.6.2"
 
-    const val klock = "2.0.0-alpha-2"
+    const val klock = "1.12.0"
 }
