@@ -22,5 +22,5 @@ jobs:
           java-version: 11
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build Jvm with Gradle
+        run: ./gradlew jvmJar
