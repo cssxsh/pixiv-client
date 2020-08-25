@@ -11,29 +11,29 @@ internal class PublicApiKtTest {
     private val pixivClient = SimplePixivClient("http://127.0.0.1:7890")
 
     @BeforeAll
-    fun setUp() = runBlocking<Unit> {
+    fun setUp() = runBlocking {
         // pixivClient.refresh("dmQyznswcjxsZp4oTTMTluQZNtLtX4HPaWSFGiQrAOY")
         pixivClient.login("2575831437", "13087978089")
         pixivClient.checkLogin()
     }
 
     @Test
-    fun getRanking() = runBlocking<Unit> {
+    fun getRanking() = runBlocking {
         assertEquals(pixivClient.getRanking("daily").infos.first().works.size, 30)
     }
 
     @Test
-    fun getFollowing() = runBlocking<Unit> {
+    fun getFollowing() = runBlocking {
         assertEquals(pixivClient.getFollowing().works.size, 30)
     }
 
     @Test
-    fun getFriendsWorks() = runBlocking<Unit> {
+    fun getFriendsWorks() = runBlocking {
         assertEquals(pixivClient.getFriendsWorks().pagination.perPageNum, 30)
     }
 
     @Test
-    fun getWorks() = runBlocking<Unit> {
+    fun getWorks() = runBlocking {
         assertEquals(pixivClient.getWorks().works.size, 30)
     }
 

@@ -20,7 +20,7 @@ import xyz.cssxsh.pixiv.client.exception.ProxyException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import xyz.cssxsh.pixiv.client.exception.ApiException
 
-actual class SimplePixivClient(
+actual open class SimplePixivClient(
     proxy: Proxy = Proxy.NO_PROXY,
     defaultHeadersMap: HeadersMap,
     clientId: String,
@@ -170,8 +170,8 @@ actual class SimplePixivClient(
             build()
         }
         val httpUrl: HttpUrl = apiUrl.toHttpUrl().newBuilder().run {
-            paramsMap.forEach {
-                addQueryParameter(it.key, it.value.toString())
+            if (method == Method.GET) paramsMap.forEach {
+                if (it.value != null) addQueryParameter(it.key, it.value.toString())
             }
             build()
         }

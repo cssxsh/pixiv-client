@@ -6,7 +6,7 @@ package xyz.cssxsh.pixiv.client
  * @param acceptLanguage HTTP Header Accept-Language
  * @see <a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Accept-Language">Accept-Language<a>
  */
-expect class SimplePixivClient(
+expect open class SimplePixivClient(
     proxyUrl: String? = null,
     acceptLanguage: String = "ja"
 ): PixivClient

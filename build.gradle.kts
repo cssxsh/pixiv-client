@@ -1,9 +1,10 @@
 plugins {
     kotlin("multiplatform") version Versions.kotlin
     kotlin("plugin.serialization") version Versions.kotlin
+    `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
-version = "0.1.0-dev"
+version = "0.1.0-dev-1"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/releases")
