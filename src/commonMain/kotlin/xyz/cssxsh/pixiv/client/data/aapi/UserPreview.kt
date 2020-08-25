@@ -3,7 +3,6 @@ package xyz.cssxsh.pixiv.client.data.aapi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class UserPreview(
     @SerialName("user")

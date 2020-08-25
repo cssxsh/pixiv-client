@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.client
 
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.KSerializer
 import xyz.cssxsh.pixiv.client.exception.NotLoginException
 
 /**

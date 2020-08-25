@@ -1,6 +1,6 @@
 package xyz.cssxsh.pixiv.client.exception
 
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
 import xyz.cssxsh.pixiv.client.data.AuthError
 
 class AuthException(

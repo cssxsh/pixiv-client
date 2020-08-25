@@ -1,8 +1,9 @@
 package xyz.cssxsh.pixiv.client.data.papi
 
 import com.soywiz.klock.wrapped.WDate
-import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.client.data.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+import xyz.cssxsh.pixiv.client.data.DateSerializer
 
 @Serializable
 data class RankingData(

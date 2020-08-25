@@ -5,3 +5,6 @@
 /build/classes/kotlin/jvm/test/
 /buildSrc/.gradle/
 /buildSrc/build/
+
+# IDEA
+/.idea/

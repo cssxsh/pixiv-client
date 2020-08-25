@@ -1,23 +1,15 @@
 package xyz.cssxsh.pixiv.client.api.aapi
 
 import xyz.cssxsh.pixiv.client.PixivClient
+import xyz.cssxsh.pixiv.client.WorkType
 import xyz.cssxsh.pixiv.client.data.aapi.TrendTagsData
 
-suspend fun PixivClient.getTrendingTagsIllust(
+suspend fun PixivClient.getTrendingTags(
+    type: WorkType,
     filter: String = "for_ios"
 ): TrendTagsData = httpGet(
     deserialize = TrendTagsData.serializer(),
-    apiUrl = AppApiUrls.trendingTagsIllust,
-    paramsMap = mapOf(
-        "filter" to filter
-    )
-)
-
-suspend fun PixivClient.getTrendingTagsNovel(
-    filter: String = "for_ios"
-): TrendTagsData = httpGet(
-    deserialize = TrendTagsData.serializer(),
-    apiUrl = AppApiUrls.trendingTagsNovel,
+    apiUrl = AppApiUrls.trendingTags(type),
     paramsMap = mapOf(
         "filter" to filter
     )

@@ -5,14 +5,20 @@ import java.net.Proxy
 import java.net.URI
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
-import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.Headers
+import okhttp3.FormBody
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okio.IOException
 import xyz.cssxsh.pixiv.client.data.AuthResult
-import xyz.cssxsh.pixiv.client.exception.*
+import xyz.cssxsh.pixiv.client.exception.ProxyException
+import xyz.cssxsh.pixiv.client.exception.AuthException
+import xyz.cssxsh.pixiv.client.exception.ApiException
 
 actual class SimplePixivClient(
     proxy: Proxy = Proxy.NO_PROXY,
@@ -77,7 +83,7 @@ actual class SimplePixivClient(
         auth(grantType = GrantType.PASSWORD, username = mailOrPixivID, password = password)
 
     override suspend fun refresh(refreshToken: String) =
-        auth(grantType = GrantType.REFRESH, refreshToken = refreshToken)
+        auth(grantType = GrantType.REFRESH_TOKEN, refreshToken = refreshToken)
 
     override fun setProxy(proxyUrl: String) {
         okHttpClient = okHttpClient.newBuilder()
@@ -128,7 +134,7 @@ actual class SimplePixivClient(
             .add("get_secure_url" , "1")
             .add("client_id" , clientId)
             .add("client_secret" , clientSecret)
-            .add("grant_type" , grantType.text)
+            .add("grant_type" , grantType.value())
             .add("username", username)
             .add("password", password)
             .add("refresh_token", refreshToken)
@@ -163,7 +169,7 @@ actual class SimplePixivClient(
             add("Authorization", getAuthorization())
             build()
         }
-        val httpUrl: HttpUrl = apiUrl.toHttpUrlOrNull()!!.newBuilder().run {
+        val httpUrl: HttpUrl = apiUrl.toHttpUrl().newBuilder().run {
             paramsMap.forEach {
                 addQueryParameter(it.key, it.value.toString())
             }
@@ -171,14 +177,14 @@ actual class SimplePixivClient(
         }
         val requestBody: FormBody? = if (method == Method.POST) FormBody.Builder().run {
             paramsMap.forEach {
-                add(it.key, it.value.toString())
+                if (it.value != null) add(it.key, it.value.toString())
             }
             build()
         } else null
         val request: Request = Request.Builder()
             .headers(headers)
             .url(httpUrl)
-            .method(method.text, requestBody)
+            .method(method.toString(), requestBody)
             .build()
         val response: Response = okHttpClient.newCall(request).execute()
         if (response.isSuccessful) {

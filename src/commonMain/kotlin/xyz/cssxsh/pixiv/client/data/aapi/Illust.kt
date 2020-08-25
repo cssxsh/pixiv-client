@@ -2,6 +2,7 @@ package xyz.cssxsh.pixiv.client.data.aapi
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import xyz.cssxsh.pixiv.client.ContentType
 import xyz.cssxsh.pixiv.client.data.FileUrls
 
 @Serializable
@@ -45,7 +46,7 @@ data class Illust(
     @SerialName("total_view")
     val totalView: Int? = null,
     @SerialName("type")
-    val type: String,
+    val type: ContentType,
     @SerialName("user")
     val userInfo: UserInfo,
     @SerialName("visible")

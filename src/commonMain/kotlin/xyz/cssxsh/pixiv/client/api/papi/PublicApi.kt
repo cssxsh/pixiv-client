@@ -36,7 +36,7 @@ suspend fun PixivClient.postFavoriteWorks(
     apiUrl = PublicApiUrls.meFavoriteWorks,
     paramsMap = mapOf(
         "work_id" to pid,
-        "publicity" to publicity
+        "publicity" to publicity.value()
     )
 )
 
@@ -58,7 +58,7 @@ suspend fun PixivClient.postFavoriteUsers(
     apiUrl = PublicApiUrls.meFavoriteUsers,
     paramsMap = mapOf(
         "target_user_id" to uid,
-        "publicity" to publicity
+        "publicity" to publicity.value()
     )
 )
 
@@ -173,10 +173,10 @@ suspend fun PixivClient.getSearchWorks(
     apiUrl = PublicApiUrls.searchWorks,
     paramsMap = mapOf(
         "q" to word,
-        "mode" to mode,
-        "sort" to sort,
-        "order" to order,
-        "period" to period,
+        "mode" to mode.value(),
+        "sort" to sort.value(),
+        "order" to order.value(),
+        "period" to period.value(),
         "page" to page,
         "per_page" to perPageNum,
         "include_stats" to includeStats,
@@ -204,7 +204,7 @@ suspend fun PixivClient.getUsersFavoriteWorks(
     deserialize = ListArtData.serializer(),
     apiUrl = PublicApiUrls.usersFavoriteWorks(uid),
     paramsMap = mapOf(
-        "publicity" to publicity,
+        "publicity" to publicity.value(),
         "include_work" to includeWork,
         "page" to page,
         "per_page" to perPageNum,
@@ -232,7 +232,7 @@ suspend fun PixivClient.getUserWork(
     deserialize = ListArtData.serializer(),
     apiUrl = PublicApiUrls.usersWorks(uid),
     paramsMap = mapOf(
-        "publicity" to publicity,
+        "publicity" to publicity.value(),
         "page" to page,
         "per_page" to perPageNum,
         "include_stats" to includeStats,
