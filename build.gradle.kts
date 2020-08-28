@@ -4,12 +4,13 @@ plugins {
     `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
-version = "0.1.0-dev-1"
+version = "0.2.1-dev-4"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/releases")
     maven(url = "https://mirrors.huaweicloud.com/repository/maven")
     // bintray dl.bintray.com -> bintray.proxy.ustclug.org
+    maven(url = "https://bintray.proxy.ustclug.org/him188moe/mirai/")
     maven(url = "https://bintray.proxy.ustclug.org/kotlin/kotlin-dev")
     maven(url = "https://bintray.proxy.ustclug.org/kotlin/kotlinx/")
     maven(url = "https://bintray.proxy.ustclug.org/korlibs/korlibs/")
@@ -57,16 +58,17 @@ kotlin {
         all {
             languageSettings.useExperimentalAnnotation("com.soywiz.klock.annotations.KlockExperimental")
         }
-        commonMain {
+        getByName("commonMain") {
             dependencies {
-                implementation(kotlin("stdlib-common", Versions.kotlin))
+                implementation(kotlin("stdlib", Versions.kotlin))
                 implementation(kotlin("serialization", Versions.kotlin))
                 implementation(kotlinx("coroutines-core", Versions.coroutines))
                 implementation(kotlinx("serialization-runtime", Versions.serialization))
+                implementation(ktor("client-core", Versions.ktor))
                 implementation("com.soywiz.korlibs.klock:klock:${Versions.klock}")
             }
         }
-        commonTest {
+        getByName("commonTest") {
             dependencies {
                 implementation(kotlin("test-common", Versions.kotlin))
                 implementation(kotlin("test-annotations-common", Versions.kotlin))
@@ -74,8 +76,6 @@ kotlin {
         }
         getByName("jvmMain") {
             dependencies {
-                implementation(kotlinx("coroutines-core", Versions.coroutines))
-                implementation(kotlinx("serialization-runtime", Versions.serialization))
                 implementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
             }
             languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")

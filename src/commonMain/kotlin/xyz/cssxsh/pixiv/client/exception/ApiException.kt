@@ -1,7 +1,7 @@
 package xyz.cssxsh.pixiv.client.exception
 
 import kotlinx.serialization.json.Json
-import xyz.cssxsh.pixiv.client.data.ApiError
+import xyz.cssxsh.pixiv.data.ApiError
 
 class ApiException(
     json: String

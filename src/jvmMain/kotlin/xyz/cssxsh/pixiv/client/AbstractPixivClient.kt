@@ -1,24 +1,24 @@
 package xyz.cssxsh.pixiv.client
 
 import okhttp3.OkHttpClient
-import xyz.cssxsh.pixiv.client.data.AuthResult.AuthInfo
+import org.intellij.lang.annotations.Language
+import xyz.cssxsh.pixiv.HeadersMap
+import xyz.cssxsh.pixiv.data.AuthResult.AuthInfo
 import java.net.Proxy
 
-abstract class AbstractPixivClient(
-    proxy: Proxy,
-    override val defaultHeadersMap: HeadersMap,
-    protected val clientId: String,
-    protected val clientSecret: String,
-    protected val hashSecret: String,
-    protected var acceptLanguage: String
-) : PixivClient {
+abstract class AbstractPixivClient: PixivClient {
 
-    var authInfo: AuthInfo? = null
+    override var defaultHeadersMap: HeadersMap = Util.DEFAULT_HEADERS_MAP
 
-    protected var okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .proxy(proxy)
-        .build()
+    open var clientId: String = Util.CLIENT_ID
 
+    open var clientSecret: String = Util.CLIENT_SECRET
 
-    // abstract fun setSSLContext(sslContext: SSLContext): Unit
+    open var hashSecret: String = Util.HASH_SECRET
+
+    override var language: String = "jp"
+
+    open var authInfo: AuthInfo? = null
+
+    lateinit var httpClient: OkHttpClient
 }
