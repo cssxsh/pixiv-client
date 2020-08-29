@@ -16,4 +16,5 @@ object Versions {
     const val junit = "5.6.2"
 
     const val klock = "1.12.0"
+    const val krypto = "1.11.2"
 }

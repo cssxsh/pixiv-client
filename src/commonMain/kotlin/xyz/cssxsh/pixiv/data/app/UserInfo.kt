@@ -10,6 +10,8 @@ data class UserInfo(
     val account: String,
     @SerialName("id")
     val id: Long,
+    @SerialName("comment")
+    val comment: String? = null,
     @SerialName("is_followed")
     val isFollowed: Boolean? = null,
     @SerialName("name")

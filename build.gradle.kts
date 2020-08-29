@@ -57,6 +57,8 @@ kotlin {
     sourceSets {
         all {
             languageSettings.useExperimentalAnnotation("com.soywiz.klock.annotations.KlockExperimental")
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
         }
         getByName("commonMain") {
             dependencies {
@@ -65,7 +67,9 @@ kotlin {
                 implementation(kotlinx("coroutines-core", Versions.coroutines))
                 implementation(kotlinx("serialization-runtime", Versions.serialization))
                 implementation(ktor("client-core", Versions.ktor))
-                implementation("com.soywiz.korlibs.klock:klock:${Versions.klock}")
+                implementation(ktor("client-serialization", Versions.ktor))
+                implementation(korlibs("klock", Versions.klock))
+                implementation(korlibs("krypto", Versions.krypto))
             }
         }
         getByName("commonTest") {
@@ -74,28 +78,30 @@ kotlin {
                 implementation(kotlin("test-annotations-common", Versions.kotlin))
             }
         }
-        getByName("jvmMain") {
-            dependencies {
-                implementation("com.squareup.okhttp3:okhttp:${Versions.okhttp}")
-            }
-            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
-        }
-        getByName("jvmTest") {
-            dependencies {
-                implementation("org.junit.jupiter:junit-jupiter:${Versions.junit}")
-            }
-        }
         getByName("jsMain") {
-
+            dependencies {
+                implementation(ktor("client-js", Versions.ktor))
+            }
         }
         getByName("jsTest") {
             dependencies {
                 implementation(kotlin("test-js"))
             }
         }
+        getByName("jvmMain") {
+            dependencies {
+                implementation(ktor("client-okhttp", Versions.ktor))
+            }
+        }
+        getByName("jvmTest") {
+            dependencies {
+                implementation("org.junit.jupiter:junit-jupiter:${Versions.junit}")
+            }
+        }
         getByName("nativeMain") {
-
+            dependencies {
+                implementation(ktor("client-curl", Versions.ktor))
+            }
         }
         getByName("nativeTest") {
 

@@ -1,51 +1,17 @@
 package xyz.cssxsh.pixiv.client
 
-import xyz.cssxsh.pixiv.HeadersMap
-import xyz.cssxsh.pixiv.Method
-import xyz.cssxsh.pixiv.ParamsMap
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.js.Js
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
 
-/**
- * Simple pixiv client implementation
- * @param proxy For example http://127.0.0.1:1080
- * @author cssxsh
- */
-actual open class SimplePixivClient actual constructor(proxy: String?) : PixivClient {
-    override var defaultHeadersMap: HeadersMap
-        get() = TODO("Not yet implemented")
-        set(value) {}
+actual open class SimplePixivClient
+actual constructor(override val config: PixivConfig) : PixivClient, AbstractPixivClient() {
+    actual constructor(block: PixivConfig.() -> Unit) : this(PixivConfig().apply(block))
 
-    override var language: String
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
-    override val refreshToken: String
-        get() = TODO("Not yet implemented")
-
-    override var proxy: String?
-        get() = TODO("Not yet implemented")
-        set(value) {}
-
-    override val islogined: Boolean
-        get() = TODO("Not yet implemented")
-
-    override suspend fun login(mailOrPixivID: String, password: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun refresh(refreshToken: String) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun callMethod(
-        apiUrl: String,
-        method: Method,
-        paramsMap: ParamsMap,
-        headersMap: HeadersMap
-    ): String {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun download(fileUrl: String, headersMap: HeadersMap): ByteArray {
-        TODO("Not yet implemented")
+    override var httpClient: HttpClient = HttpClient(Js) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
     }
 }

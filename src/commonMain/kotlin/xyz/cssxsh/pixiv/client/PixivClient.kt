@@ -1,66 +1,29 @@
 package xyz.cssxsh.pixiv.client
 
-import io.ktor.client.*
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.json.Json
-import xyz.cssxsh.pixiv.HeadersMap
-import xyz.cssxsh.pixiv.Method
-import xyz.cssxsh.pixiv.ParamsMap
-import xyz.cssxsh.pixiv.client.exception.NotLoginException
+import io.ktor.client.HttpClient
+import xyz.cssxsh.pixiv.GrantType
+import xyz.cssxsh.pixiv.data.AuthResult
 
 /**
  * PixivClient，Multiplatform interface
  */
 interface PixivClient {
 
-    val ktorClient : HttpClient
+    val httpClient: HttpClient
 
-    var defaultHeadersMap: HeadersMap
+    val config: PixivConfig
 
-    /**
-     * @see <a href="https://developer.mozilla.org/docs/Web/HTTP/Headers/Accept-Language">Accept-Language<a>
-     */
-    var language: String
+    val authInfo: AuthResult.AuthInfo
 
-    val refreshToken: String
+    val isLoggedIn: Boolean
 
-    /**
-     * For a example http://127.0.0.1:1080
-     */
-    var proxy: String?
+    fun config(block: PixivConfig.() -> Unit) = config.apply(block)
 
-    val islogined: Boolean
+    suspend fun login(): AuthResult.AuthInfo = auth(GrantType.PASSWORD)
 
-    fun checkLogin() {
-        if (islogined.not()) throw NotLoginException()
-    }
+    suspend fun refresh(): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN)
 
-    suspend fun login(mailOrPixivID: String, password: String)
+    suspend fun auth(grantType: GrantType): AuthResult.AuthInfo
 
-    suspend fun refresh(refreshToken: String)
-
-    suspend fun callMethod(
-        apiUrl: String,
-        method: Method,
-        paramsMap: ParamsMap = mapOf(),
-        headersMap: HeadersMap = defaultHeadersMap
-    ): String
-
-    suspend fun <T> useRESTful(
-        apiUrl: String,
-        method: Method,
-        deserializer:  DeserializationStrategy<T>,
-        paramsMap: ParamsMap = mapOf(),
-        headersMap: HeadersMap = defaultHeadersMap
-    ): T = Json.decodeFromString(deserializer, callMethod(
-        apiUrl = apiUrl,
-        method = method,
-        paramsMap = paramsMap,
-        headersMap = headersMap
-    ))
-
-    suspend fun download(
-        fileUrl: String,
-        headersMap: HeadersMap = defaultHeadersMap
-    ): ByteArray
+    fun close() = httpClient.close()
 }

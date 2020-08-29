@@ -8,7 +8,7 @@ data class BookmarkTagData(
     @SerialName("bookmark_tags")
     val bookmarkTags: List<BookmarkTag>,
     @SerialName("next_url")
-    val nextUrl: String
+    val nextUrl: String?
 ) {
     @Serializable
     data class BookmarkTag(

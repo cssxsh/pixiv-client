@@ -7,13 +7,14 @@ import xyz.cssxsh.pixiv.client.SimplePixivClient
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class ApiTest {
-    val pixivClient = SimplePixivClient()
+    val pixivClient = SimplePixivClient {
+        proxy = "http://127.0.0.1:7890"
+        refreshToken = "dmQyznswcjxsZp4oTTMTluQZNtLtX4HPaWSFGiQrAOY"
+    }
 
     @BeforeAll
     fun setUp() = runBlocking {
-        pixivClient.proxy = "http://127.0.0.1:7890"
-        pixivClient.refresh("dmQyznswcjxsZp4oTTMTluQZNtLtX4HPaWSFGiQrAOY")
-        pixivClient.checkLogin()
+        pixivClient.refresh()
         println(pixivClient.authInfo)
     }
 }

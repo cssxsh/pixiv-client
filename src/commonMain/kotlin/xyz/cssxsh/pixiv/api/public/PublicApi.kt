@@ -5,6 +5,7 @@ import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.client.*
 import xyz.cssxsh.pixiv.data.public.*
 
+/*
 suspend fun PixivClient.getRanking(
     mode: String,
     page: Int = 1,
@@ -198,10 +199,6 @@ suspend fun PixivClient.getSearchWorks(
     )
 )
 
-/**
- * @param uid 用户ID
- * @param publicity 关注类型 [PublicityType]
- */
 suspend fun PixivClient.getUsersFavoriteWorks(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
@@ -228,10 +225,6 @@ suspend fun PixivClient.getUsersFavoriteWorks(
     )
 )
 
-/**
- * @param uid 用户ID
- * @param publicity 关注类型 [PublicityType]
- */
 suspend fun PixivClient.getUserWork(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
@@ -290,4 +283,4 @@ suspend fun PixivClient.userIllusts(
         "image_sizes" to imageSizes,
         "profile_image_sizes" to profileImageSizes
     )
-)
+)*/

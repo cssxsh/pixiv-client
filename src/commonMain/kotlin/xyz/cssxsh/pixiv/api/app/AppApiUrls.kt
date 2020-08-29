@@ -41,7 +41,7 @@ object AppApiUrls {
     const val userFollower = "${rootPath}/v1/user/follower"
     const val userFollowing = "${rootPath}/v1/user/following"
     const val userIllusts = "${rootPath}/v1/user/illusts"
-    const val userMyPixiv = "${rootPath}/v1/user/myPixiv"
+    const val userMyPixiv = "${rootPath}/v1/user/mypixiv"
     const val userRecommended = "${rootPath}/v1/user/recommended"
 
     // novel

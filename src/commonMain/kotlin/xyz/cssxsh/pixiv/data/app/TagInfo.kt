@@ -12,7 +12,5 @@ data class TagInfo(
     @SerialName("added_by_uploaded_user")
     val addedByUploadedUser: Boolean? = null,
     @SerialName("is_registered")
-    val isRegistered: Boolean? = null,
-    @SerialName("illust")
-    val illust: IllustInfo? = null
+    val isRegistered: Boolean? = null
 )

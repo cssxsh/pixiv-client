@@ -1,145 +1,100 @@
 package xyz.cssxsh.pixiv.api.app
 
 import com.soywiz.klock.wrapped.WDate
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonElementSerializer
 import xyz.cssxsh.pixiv.client.PixivClient
-import xyz.cssxsh.pixiv.Method
-import xyz.cssxsh.pixiv.PublicityType
+import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.ContentType
-import xyz.cssxsh.pixiv.RankMode
-import xyz.cssxsh.pixiv.data.app.BookmarkDetailSingle
-import xyz.cssxsh.pixiv.data.app.CommentData
-import xyz.cssxsh.pixiv.data.app.IllustData
-import xyz.cssxsh.pixiv.data.app.IllustSingle
-import xyz.cssxsh.pixiv.data.app.RecommendedData
+import xyz.cssxsh.pixiv.data.app.*
 
 suspend fun PixivClient.illustBookmarkAdd(
     pid: Long,
-    tags: Iterable<String>,
+    tags: List<String>,
     restrict: PublicityType = PublicityType.PUBLIC
-): JsonElement = useRESTful(
-    method = Method.POST,
-    apiUrl = AppApiUrls.illustBookmarkAdd,
-    deserializer = JsonElementSerializer,
-    paramsMap = mapOf(
-        "illust_id" to pid,
-        "restrict" to restrict,
-        "tags" to tags.joinToString(separator = " ", postfix = " ")
-    )
-)
+): JsonElement = httpClient.post(AppApiUrls.illustBookmarkAdd) {
+    body = FormDataContent(Parameters.build {
+        append("illust_id", pid.toString())
+        append("tags", tags.joinToString(separator = " ", postfix = " "))
+        append("restrict", restrict.value())
+    })
+}
 
 suspend fun PixivClient.illustBookmarkDelete(
     pid: Long
-): JsonElement = useRESTful(
-    method = Method.POST,
-    apiUrl = AppApiUrls.illustBookmarkDelete,
-    deserializer = JsonElementSerializer,
-    paramsMap = mapOf(
-        "illust_id" to pid
-    )
-)
+): JsonElement = httpClient.post(AppApiUrls.illustBookmarkDelete) {
+    body = FormDataContent(Parameters.build {
+        parameter("illust_id", pid)
+    })
+}
 
 suspend fun PixivClient.illustBookmarkDetail(
     pid: Long
-): BookmarkDetailSingle = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustBookmarkDetail,
-    deserializer = BookmarkDetailSingle.serializer(),
-    paramsMap = mapOf(
-        "illust_id" to pid
-    )
-)
+): BookmarkDetailSingle = httpClient.get(AppApiUrls.illustBookmarkDetail) {
+    parameter("illust_id", pid)
+}
 
 suspend fun PixivClient.illustComments(
     pid: Long,
     offset: Long = 0,
     includeTotalComments: Boolean? = null
-): CommentData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustComments,
-    deserializer = CommentData.serializer(),
-    paramsMap = mapOf(
-        "illust_id" to pid,
-        "offset" to offset,
-        "include_total_comments" to includeTotalComments
-    )
-)
+): CommentData = httpClient.get(AppApiUrls.illustComments) {
+    parameter("illust_id", pid.toString())
+    parameter("offset", offset)
+    parameter("include_total_comments", includeTotalComments)
+}
 
 suspend fun PixivClient.illustDetail(
     pid: Long
-): IllustSingle = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustDetail,
-    deserializer = IllustSingle.serializer(),
-    paramsMap = mapOf(
-        "illust_id" to pid
-    )
-)
+): IllustSingle = httpClient.get(AppApiUrls.illustDetail) {
+    parameter("illust_id", pid.toString())
+}
 
 suspend fun PixivClient.illustFollow(
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0
-): IllustData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustFollow,
-    deserializer = IllustData.serializer(),
-    paramsMap = mapOf(
-        "restrict" to restrict,
-        "offset" to offset
-    )
-)
+): IllustData = httpClient.get(AppApiUrls.illustFollow) {
+    parameter("restrict", restrict.value())
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.illustMyPixiv(
     contentType: ContentType = ContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0
-): IllustData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustMyPixiv,
-    deserializer = IllustData.serializer(),
-    paramsMap = mapOf(
-        "content_type" to contentType,
-        "restrict" to restrict,
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): IllustData = httpClient.get(AppApiUrls.illustMyPixiv) {
+    parameter("content_type", contentType.value())
+    parameter("restrict", restrict.value())
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.illustNew(
     contentType: ContentType = ContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0
-): IllustData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustNew,
-    deserializer = IllustData.serializer(),
-    paramsMap = mapOf(
-        "content_type" to contentType,
-        "restrict" to restrict,
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): IllustData = httpClient.get(AppApiUrls.illustNew) {
+    parameter("content_type", contentType.value())
+    parameter("restrict", restrict.value())
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.illustRanking(
     date: String? = null,
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0
-): IllustData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustRanking,
-    deserializer = IllustData.serializer(),
-    paramsMap = mapOf(
-        "date" to date,
-        "mode" to mode,
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): IllustData = httpClient.get(AppApiUrls.illustRanking) {
+    parameter("date", date)
+    parameter("mode", mode?.value())
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.illustRanking(
     date: WDate,
@@ -160,33 +115,25 @@ suspend fun PixivClient.illustRecommended(
     includePrivacyPolicy: Boolean = true,
     minBookmarkIdForRecentIllust: Long? = null,
     maxBookmarkIdForRecommend: Long? = null
-): RecommendedData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustRecommended,
-    deserializer = RecommendedData.serializer(),
-    paramsMap = mapOf(
-        "content_type" to contentType,
-        "filter" to filter,
-        "include_ranking_label" to includeRankingLabel,
-        "include_privacy_policy" to includePrivacyPolicy,
-        "min_bookmark_id_for_recent_illust" to minBookmarkIdForRecentIllust,
-        "max_bookmark_id_for_recommend" to maxBookmarkIdForRecommend,
-    )
-)
+): RecommendedData = httpClient.get(AppApiUrls.illustRecommended) {
+    parameter("content_type", contentType.value())
+    parameter("filter", filter)
+    parameter("include_ranking_label", includeRankingLabel)
+    parameter("include_privacy_policy", includePrivacyPolicy)
+    parameter("min_bookmark_id_for_recent_illust", minBookmarkIdForRecentIllust)
+    parameter("max_bookmark_id_for_recommend", maxBookmarkIdForRecommend)
+}
 
 suspend fun PixivClient.illustRelated(
     pid: Long,
-    seedIllustIds: Iterable<Long> = listOf(),
+    seedIllustIds: List<Long> = listOf(),
     filter: String = "for_ios",
     offset: Long = 0
-): IllustData = useRESTful(
-    method = Method.GET,
-    apiUrl = AppApiUrls.illustRelated,
-    deserializer = IllustData.serializer(),
-    paramsMap = mapOf(
-        "illust_id" to pid,
-        "filter" to filter,
-        "offset" to offset,
-        "seed_illust_ids" to seedIllustIds
-    )
-)
+): IllustData = httpClient.get(AppApiUrls.illustRelated) {
+    parameter("illust_id", pid)
+    parameter("filter", filter)
+    parameter("offset", offset)
+    seedIllustIds.forEachIndexed { index, item ->
+        parameter("seed_illust_ids[$index]", item)
+    }
+}

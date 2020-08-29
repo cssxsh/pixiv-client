@@ -1,8 +1,9 @@
 package xyz.cssxsh.pixiv.api.app
 
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonElementSerializer
-import xyz.cssxsh.pixiv.Method
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.PublicityType
 import xyz.cssxsh.pixiv.WorkType
@@ -12,174 +13,113 @@ suspend fun PixivClient.userBookmarksIllust(
     uid: Long,
     restrict: PublicityType = PublicityType.PUBLIC,
     maxBookmarkId: Long? = null
-): IllustData = useRESTful(
-    method = Method.GET,
-    deserializer = IllustData.serializer(),
-    apiUrl = AppApiUrls.userBookmarksIllust,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "restrict" to restrict.value(),
-        "max_bookmark_Id" to maxBookmarkId
-    )
-)
+): IllustData = httpClient.get(AppApiUrls.userBookmarksIllust) {
+    parameter("user_id", uid)
+    parameter("restrict", restrict.value())
+    parameter("max_bookmark_Id", maxBookmarkId)
+}
 
 suspend fun PixivClient.userBookmarksNovel(
     uid: Long,
     restrict: PublicityType = PublicityType.PUBLIC,
     maxBookmarkId: Long? = null
-): NovelData = useRESTful(
-    method = Method.GET,
-    deserializer = NovelData.serializer(),
-    apiUrl = AppApiUrls.userBookmarksNovel,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "restrict" to restrict.value(),
-        "max_bookmark_Id" to maxBookmarkId
-    )
-)
+): NovelData = httpClient.get(AppApiUrls.userBookmarksNovel) {
+    parameter("user_id", uid)
+    parameter("restrict", restrict.value())
+    parameter("max_bookmark_Id", maxBookmarkId)
+}
 
 suspend fun PixivClient.userBlacklist(
     filter: String = "for_ios",
-): Blacklist = useRESTful(
-    method = Method.GET,
-    deserializer = Blacklist.serializer(),
-    apiUrl = AppApiUrls.userBlacklist,
-    paramsMap = mapOf(
-        "filter" to filter
-    )
-)
+): Blacklist = httpClient.get(AppApiUrls.userBlacklist) {
+    parameter("filter", filter)
+}
 
 suspend fun PixivClient.userBookmarksTagsIllust(
     restrict: PublicityType = PublicityType.PUBLIC
-): BookmarkTagData = useRESTful(
-    method = Method.GET,
-    deserializer = BookmarkTagData.serializer(),
-    apiUrl = AppApiUrls.userBookmarksTagsIllust,
-    paramsMap = mapOf(
-        "restrict" to restrict
-    )
-)
+): BookmarkTagData = httpClient.get(AppApiUrls.userBookmarksTagsIllust) {
+    parameter("restrict", restrict.value())
+}
 
 suspend fun PixivClient.userBookmarksTagsNovel(
     restrict: PublicityType = PublicityType.PUBLIC
-): BookmarkTagData = useRESTful(
-    method = Method.GET,
-    deserializer = BookmarkTagData.serializer(),
-    apiUrl = AppApiUrls.userBookmarksTagsNovel,
-    paramsMap = mapOf(
-        "restrict" to restrict
-    )
-)
+): BookmarkTagData = httpClient.get(AppApiUrls.userBookmarksTagsNovel) {
+    parameter("restrict", restrict.value())
+}
 
 suspend fun PixivClient.userDetail(
     uid: Long,
     filter: String = "for_ios"
-): UserDetail = useRESTful(
-    method = Method.GET,
-    deserializer = UserDetail.serializer(),
-    apiUrl = AppApiUrls.userDetail,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "filter" to filter
-    )
-)
+): UserDetail = httpClient.get(AppApiUrls.userDetail) {
+    parameter("user_id", uid)
+    parameter("filter", filter)
+}
 
 suspend fun PixivClient.userFollowAdd(
     uid: Long,
     restrict: PublicityType = PublicityType.PUBLIC
-): JsonElement = useRESTful(
-    method = Method.POST,
-    deserializer = JsonElementSerializer,
-    apiUrl = AppApiUrls.userFollowAdd,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "restrict" to restrict
-    )
-)
+): JsonElement = httpClient.post(AppApiUrls.userFollowAdd) {
+    body = FormDataContent(Parameters.build {
+        append("user_id", uid.toString())
+        append("restrict", restrict.value())
+    })
+}
 
 suspend fun PixivClient.userFollowDelete(
     uid: Long
-): JsonElement = useRESTful(
-    method = Method.POST,
-    deserializer = JsonElementSerializer,
-    apiUrl = AppApiUrls.userFollowDelete,
-    paramsMap = mapOf(
-        "user_id" to uid
-    )
-)
+): JsonElement = httpClient.post(AppApiUrls.userFollowDelete) {
+    body = FormDataContent(Parameters.build {
+        append("user_id", uid.toString())
+    })
+}
 
 suspend fun PixivClient.userFollower(
     uid: Long,
     filter: String = "for_ios",
     offset: Long = 0
-): PreviewData = useRESTful(
-    method = Method.GET,
-    deserializer = PreviewData.serializer(),
-    apiUrl = AppApiUrls.userFollower,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): PreviewData = httpClient.get(AppApiUrls.userFollower) {
+    parameter("user_id", uid)
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.userFollowing(
     uid: Long,
     filter: String = "for_ios",
     offset: Long = 0
-): PreviewData = useRESTful(
-    method = Method.GET,
-    deserializer = PreviewData.serializer(),
-    apiUrl = AppApiUrls.userFollowing,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): PreviewData = httpClient.get(AppApiUrls.userFollowing) {
+    parameter("user_id", uid)
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.userIllusts(
     uid: Long,
     type: WorkType = WorkType.ILLUST,
     filter: String = "for_ios",
     offset: Long = 0
-): IllustData = useRESTful(
-    method = Method.GET,
-    deserializer = IllustData.serializer(),
-    apiUrl = AppApiUrls.userIllusts,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "type" to type.value(),
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): IllustData =  httpClient.get(AppApiUrls.userIllusts) {
+    parameter("user_id", uid)
+    parameter("type", type.value())
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 
 suspend fun PixivClient.userMyPixiv(
     uid: Long,
     filter: String = "for_ios",
     offset: Long = 0
-): PreviewData = useRESTful(
-    method = Method.GET,
-    deserializer = PreviewData.serializer(),
-    apiUrl = AppApiUrls.userMyPixiv,
-    paramsMap = mapOf(
-        "user_id" to uid,
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): PreviewData = httpClient.get(AppApiUrls.userMyPixiv) {
+    parameter("user_id", uid)
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
 
 suspend fun PixivClient.userRecommended(
     filter: String = "for_ios",
     offset: Long = 0
-): PreviewData = useRESTful(
-    method = Method.GET,
-    deserializer = PreviewData.serializer(),
-    apiUrl = AppApiUrls.userRecommended,
-    paramsMap = mapOf(
-        "filter" to filter,
-        "offset" to offset
-    )
-)
+): PreviewData =  httpClient.get(AppApiUrls.userRecommended) {
+    parameter("filter", filter)
+    parameter("offset", offset)
+}
