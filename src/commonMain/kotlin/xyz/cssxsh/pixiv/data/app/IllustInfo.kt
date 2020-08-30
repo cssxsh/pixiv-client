@@ -69,7 +69,7 @@ data class IllustInfo(
     )
 
     fun getImageUrls(): List<FileUrls> =
-        if (this.pageCount == 1) listOf(this.metaSinglePage) else this.metaPages.map { it.imageUrls }
+        if (pageCount == 1) listOf(metaSinglePage + imageUrls) else metaPages.map { it.imageUrls }
 
     companion object {
         object CreateDateSerializer : DateTimeSerializer(
