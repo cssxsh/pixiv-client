@@ -17,7 +17,7 @@ data class NovelInfo(
     @Serializable(with = CreateDateSerializer::class)
     val createDate: WDateTimeTz,
     @SerialName("id")
-    val pid: Int,
+    val pid: Long,
     @SerialName("image_urls")
     val imageUrls: FileUrls,
     @SerialName("is_bookmarked")

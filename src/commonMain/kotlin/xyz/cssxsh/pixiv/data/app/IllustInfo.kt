@@ -20,7 +20,7 @@ data class IllustInfo(
     @SerialName("height")
     val height: Int,
     @SerialName("id")
-    val pid: Int,
+    val pid: Long,
     @SerialName("image_urls")
     val imageUrls: FileUrls,
     @SerialName("is_bookmarked")
