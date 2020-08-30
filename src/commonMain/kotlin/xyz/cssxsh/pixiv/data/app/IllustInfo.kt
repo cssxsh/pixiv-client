@@ -68,6 +68,9 @@ data class IllustInfo(
         val imageUrls: FileUrls
     )
 
+    fun getImageUrls(): List<FileUrls> =
+        if (this.pageCount == 1) listOf(this.metaSinglePage) else this.metaPages.map { it.imageUrls }
+
     companion object {
         object CreateDateSerializer : DateTimeSerializer(
             PatternDateFormat(
