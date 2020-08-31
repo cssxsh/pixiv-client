@@ -2,15 +2,9 @@
 
 package xyz.cssxsh.pixiv
 
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
-import kotlinx.serialization.json.*
-import xyz.cssxsh.pixiv.api.app.*
-import xyz.cssxsh.pixiv.client.PixivClient
 
 typealias ParamsMap = Map<String, Any?>
 

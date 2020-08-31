@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
-version = "0.2.1-dev-4"
+version = "0.6.0-dev-3"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/releases")
@@ -68,6 +68,7 @@ kotlin {
                 implementation(kotlinx("serialization-runtime", Versions.serialization))
                 implementation(ktor("client-core", Versions.ktor))
                 implementation(ktor("client-serialization", Versions.ktor))
+                implementation(ktor("client-encoding", Versions.ktor))
                 implementation(korlibs("klock", Versions.klock))
                 implementation(korlibs("krypto", Versions.krypto))
             }

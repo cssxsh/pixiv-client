@@ -23,12 +23,12 @@ abstract class AbstractPixivClient : PixivClient {
 
     abstract override var httpClient: HttpClient
 
-    suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo {
+    open suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo {
         config { account = PixivConfig.Account(mailOrPixivID, password) }
         return login()
     }
 
-    suspend fun refresh(token: String): AuthResult.AuthInfo {
+    open suspend fun refresh(token: String): AuthResult.AuthInfo {
         config { refreshToken = token }
         return refresh()
     }
@@ -60,6 +60,6 @@ abstract class AbstractPixivClient : PixivClient {
             })
         }.also {
             authResult = it
-            httpClient = httpClient.config { defaultRequest { header("Authorization", "Bearer ${it.accessToken}") } }
+            httpClient = httpClient.config { defaultRequest { headers["Authorization"] = "Bearer ${it.accessToken}" } }
         }.info
 }

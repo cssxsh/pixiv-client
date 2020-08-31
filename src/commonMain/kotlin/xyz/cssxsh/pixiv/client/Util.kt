@@ -20,5 +20,6 @@ object Util {
         "App-Version" to "5.0.64"
     )
 
-    fun PixivConfig(block: PixivConfig.() -> Unit): PixivConfig = PixivConfig().apply(block)
+    fun PixivConfig(block: PixivConfig.() -> Unit): PixivConfig =
+        PixivConfig().apply(block)
 }
