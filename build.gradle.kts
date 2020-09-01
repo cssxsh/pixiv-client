@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
-version = "0.6.0-dev-3"
+version = "0.6.0-dev-4"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/releases")
@@ -59,6 +59,8 @@ kotlin {
             languageSettings.useExperimentalAnnotation("com.soywiz.klock.annotations.KlockExperimental")
             languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
             languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
+            languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
         }
         getByName("commonMain") {
             dependencies {
