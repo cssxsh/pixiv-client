@@ -53,9 +53,11 @@ suspend fun PixivClient.illustDetail(
 }
 
 suspend fun PixivClient.illustFollow(
+    contentType: ContentType = ContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0
 ): IllustData = httpClient.get(AppApiUrls.illustFollow) {
+    parameter("content_type", contentType.value())
     parameter("restrict", restrict.value())
     parameter("offset", offset)
 }
