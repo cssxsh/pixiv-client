@@ -39,7 +39,7 @@ internal class IllustInfoTest: ApiTest() {
     @Test
     fun getIllustDetail() = runBlocking {
         val data = pixivClient.illustDetail(83919385)
-        Assertions.assertTrue(data.illust.pid == 83919385)
+        Assertions.assertTrue(data.illust.pid == 83919385L)
     }
 
     @Test
