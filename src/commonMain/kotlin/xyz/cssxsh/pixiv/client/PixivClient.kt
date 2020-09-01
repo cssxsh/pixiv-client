@@ -1,13 +1,14 @@
 package xyz.cssxsh.pixiv.client
 
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineScope
 import xyz.cssxsh.pixiv.GrantType
 import xyz.cssxsh.pixiv.data.AuthResult
 
 /**
  * PixivClient，Multiplatform interface
  */
-interface PixivClient {
+interface PixivClient : CoroutineScope {
 
     val httpClient: HttpClient
 

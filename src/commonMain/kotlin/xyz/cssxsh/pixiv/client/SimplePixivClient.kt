@@ -1,5 +1,14 @@
 package xyz.cssxsh.pixiv.client
 
-expect open class SimplePixivClient(config: PixivConfig) : PixivClient, AbstractPixivClient {
-    constructor(block: PixivConfig.() -> Unit = {})
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+
+expect open class SimplePixivClient(
+    parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
+    config: PixivConfig
+) : PixivClient, AbstractPixivClient {
+    constructor(
+        parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
+        block: PixivConfig.() -> Unit = {}
+    )
 }
