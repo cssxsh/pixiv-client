@@ -23,8 +23,10 @@ suspend inline fun <reified T> PixivClient.downloadImage(
 ): List<Result<T>> = illust.getImageUrls().flatMap { fileUrls ->
     fileUrls.filter { predicate(it.key, it.value) }.values
 }.map { url ->
-    runCatching {
-        async { httpClient.get<T>(url) { headers["Referer"] = referer } }
+    (this).async {
+        runCatching {
+            httpClient.get<T>(url) { headers["Referer"] = referer }
+        }
     }
 }.run {
     awaitAll()
