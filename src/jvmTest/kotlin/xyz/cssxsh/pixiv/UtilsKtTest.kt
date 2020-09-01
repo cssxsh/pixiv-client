@@ -5,7 +5,7 @@ import org.junit.jupiter.api.*
 import xyz.cssxsh.pixiv.api.app.illustDetail
 import xyz.cssxsh.pixiv.client.SimplePixivClient
 import xyz.cssxsh.pixiv.data.app.IllustSingle
-import xyz.cssxsh.pixiv.download.downloadImage
+import xyz.cssxsh.pixiv.tool.downloadImage
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class UtilsKtTest {
@@ -23,7 +23,7 @@ internal class UtilsKtTest {
     @Test
     fun download() = runBlocking {
         val data: IllustSingle = pixivClient.illustDetail(83919385L)
-        val result: List<Result<ByteArray>> = pixivClient.downloadImage(data.illust, Regex("""original"""))
+        val result: List<Result<ByteArray>> = pixivClient.downloadImage(data.illust, { name, _ -> "origin" in name })
         result.forEach {
             it.onSuccess { bytes ->
                 print(bytes.size)
