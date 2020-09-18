@@ -16,6 +16,10 @@ data class PixivConfig(
     var headers: HeadersMap = Util.IOS_HEADERS,
     @SerialName("proxy")
     var proxy: String? = null,
+    @SerialName("dns")
+    var dns: String = "https://1.0.0.1/dns-query",
+    @SerialName("ruby_ssl_factory")
+    var RubySSLFactory: Boolean = true,
     @SerialName("account")
     var account: Account? = null,
     @SerialName("refresh_token")

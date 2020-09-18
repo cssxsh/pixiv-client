@@ -6,17 +6,16 @@ import io.ktor.client.features.*
 import io.ktor.client.features.compression.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.request.header
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.*
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
 import okio.ByteString.Companion.toByteString
+import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 actual open class SimplePixivClient
 actual constructor(
@@ -33,7 +32,7 @@ actual constructor(
         parentCoroutineContext + CoroutineName("PixivHelper")
     }
 
-    override var httpClient: HttpClient = HttpClient(OkHttp) {
+    override val httpClient: HttpClient = HttpClient(OkHttp) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
@@ -41,9 +40,6 @@ actual constructor(
             gzip()
             deflate()
             identity()
-        }
-        defaultRequest {
-            config.headers.forEach(::header)
         }
         expectSuccess = false
         HttpResponseValidator {
@@ -78,7 +74,34 @@ actual constructor(
         }
         engine {
             config {
-                proxy(Tool.getProxyByUrl(config.proxy))
+                addInterceptor { chain ->
+                    chain.request().let { request ->
+                        request.newBuilder().apply {
+                            // headers
+                            config.headers.forEach(this::header)
+                            if (request.url.host != config.auth.url.toHttpUrlOrNull()?.host) {
+                                header("Authorization", "Bearer ${authInfo.accessToken}")
+                            }
+                            // proxy
+                            proxy(Tool.getProxyByUrl(config.proxy))
+                            // ssl
+                            if (config.RubySSLFactory) {
+                                sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                                hostnameVerifier { _, _ -> true }
+                            }
+                        }.build()
+                    }.let {
+                        chain.proceed(it)
+                    }
+                }
+                // dns
+                dns(DnsOverHttps.Builder().apply {
+                    config.dns.toHttpUrlOrNull()?.let { url(it) }
+                    client(OkHttpClient())
+                    post(true)
+                    resolvePrivateAddresses(true)
+                    resolvePublicAddresses(true)
+                }.build())
             }
         }
     }

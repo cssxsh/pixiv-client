@@ -21,7 +21,7 @@ abstract class AbstractPixivClient : PixivClient {
     override val isLoggedIn: Boolean
         get() = authResult != null
 
-    abstract override var httpClient: HttpClient
+    abstract override val httpClient: HttpClient
 
     open suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo {
         config { account = PixivConfig.Account(mailOrPixivID, password) }
@@ -45,21 +45,16 @@ abstract class AbstractPixivClient : PixivClient {
                 append("client_secret", config.client.secret)
                 append("grant_type", grantType.value())
                 when (grantType) {
-                    GrantType.PASSWORD -> {
-                        config.account?.let {
-                            append("username", it.mailOrUID)
-                            append("password", it.password)
-                        } ?: throw IllegalArgumentException("账户为空")
+                    GrantType.PASSWORD -> requireNotNull(config.account) { "账户为空" }.let {
+                        append("username", it.mailOrUID)
+                        append("password", it.password)
                     }
-                    GrantType.REFRESH_TOKEN -> {
-                        config.refreshToken?.let {
-                            append("refresh_token", it)
-                        } ?: throw IllegalArgumentException("Token为空")
+                    GrantType.REFRESH_TOKEN -> requireNotNull(config.refreshToken) { "Token为空" }.let {
+                        append("refresh_token", it)
                     }
                 }
             })
         }.also {
             authResult = it
-            httpClient = httpClient.config { defaultRequest { headers["Authorization"] = "Bearer ${it.accessToken}" } }
         }.info
 }

@@ -8,7 +8,6 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.bits.*

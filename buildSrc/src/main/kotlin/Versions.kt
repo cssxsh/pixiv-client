@@ -8,7 +8,7 @@ object Versions {
     const val serialization = "1.0-M1-1.4.0-rc"
     const val ktor = "1.4.0"
 
-    const val okhttp = "4.8.0"
+    const val okhttp = "4.9.0"
 
     const val androidGradle = "3.6.2"
 

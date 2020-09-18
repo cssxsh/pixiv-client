@@ -20,7 +20,7 @@ import xyz.cssxsh.pixiv.data.app.IllustInfo
 fun PixivClient.task(
     name: String,
     block: suspend PixivClient.() -> Unit
-) = launch(CoroutineName("${this::class.qualifiedName}.task: $name")) {
+) = launch(CoroutineName("${this::class.qualifiedName}#task: $name")) {
     block()
 }
 
@@ -29,7 +29,7 @@ inline fun <reified T> PixivClient.timerTask(
     duration: TimeSpan,
     origin: T,
     crossinline block: suspend PixivClient.(prev: T) -> T
-) = launch(CoroutineName("${this::class.qualifiedName}.timerTask: $name")) {
+) = launch(CoroutineName("${this::class.qualifiedName}#timerTask: $name")) {
     var prev: T = origin
     while (isActive) {
         delay(duration.millisecondsLong)

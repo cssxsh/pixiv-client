@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
-version = "0.6.0-dev-4"
+version = "0.7.0-dev-5"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/releases")
@@ -93,7 +93,11 @@ kotlin {
         }
         getByName("jvmMain") {
             dependencies {
-                implementation(ktor("client-okhttp", Versions.ktor))
+                implementation(ktor("client-okhttp", Versions.ktor)) {
+                    exclude(group = "com.squareup.okhttp3")
+                }
+                implementation(okhttp3("okhttp", Versions.okhttp))
+                implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
             }
         }
         getByName("jvmTest") {
