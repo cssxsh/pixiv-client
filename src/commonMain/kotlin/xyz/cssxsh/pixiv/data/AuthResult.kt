@@ -45,7 +45,7 @@ data class AuthResult(
         @SerialName("account")
         val account: String,
         @SerialName("id")
-        val uid: String,
+        val uid: Long,
         @SerialName("is_mail_authorized")
         val isMailAuthorized: Boolean,
         @SerialName("is_premium")

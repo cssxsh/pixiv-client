@@ -36,6 +36,11 @@ actual constructor(
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
+        install(HttpTimeout) {
+            socketTimeoutMillis = 30_000
+            connectTimeoutMillis = 30_000
+            requestTimeoutMillis = 30_000
+        }
         ContentEncoding {
             gzip()
             deflate()
@@ -79,29 +84,31 @@ actual constructor(
                         request.newBuilder().apply {
                             // headers
                             config.headers.forEach(this::header)
-                            if (request.url.host != config.auth.url.toHttpUrlOrNull()?.host) {
+                            if (request.url.host !in config.auth.url) {
                                 header("Authorization", "Bearer ${authInfo.accessToken}")
-                            }
-                            // proxy
-                            proxy(Tool.getProxyByUrl(config.proxy))
-                            // ssl
-                            if (config.RubySSLFactory) {
-                                sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
-                                hostnameVerifier { _, _ -> true }
                             }
                         }.build()
                     }.let {
                         chain.proceed(it)
                     }
                 }
+                // proxy
+                proxy(Tool.getProxyByUrl(config.proxy))
+                // ssl
+                if (config.RubySSLFactory) {
+                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                    hostnameVerifier { _, _ -> true }
+                }
                 // dns
-                dns(DnsOverHttps.Builder().apply {
-                    config.dns.toHttpUrlOrNull()?.let { url(it) }
-                    client(OkHttpClient())
-                    post(true)
-                    resolvePrivateAddresses(true)
-                    resolvePublicAddresses(true)
-                }.build())
+                config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
+                    dns(DnsOverHttps.Builder().apply {
+                        url(dnsUrl)
+                        client(OkHttpClient())
+                        post(true)
+                        resolvePrivateAddresses(true)
+                        resolvePublicAddresses(true)
+                    }.build())
+                }
             }
         }
     }

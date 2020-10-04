@@ -10,13 +10,13 @@ import xyz.cssxsh.pixiv.api.ApiTest
 internal class UserTest: ApiTest() {
     @Test
     fun getUserBookmarksIllust() = runBlocking {
-        val data = pixivClient.userBookmarksIllust(3569577L)
+        val data = pixivClient.userBookmarksIllust(12905943L)
         Assertions.assertTrue(data.illusts.isNotEmpty())
     }
 
     @Test
     fun getUserBookmarksNovel() = runBlocking {
-        val data = pixivClient.userBookmarksNovel(3569577L)
+        val data = pixivClient.userBookmarksNovel(12905943L)
         Assertions.assertTrue(data.novels.isNotEmpty())
     }
 

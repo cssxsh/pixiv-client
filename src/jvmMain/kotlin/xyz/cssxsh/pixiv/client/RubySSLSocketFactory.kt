@@ -7,26 +7,33 @@ import javax.net.ssl.SSLSocketFactory
 
 object RubySSLSocketFactory : SSLSocketFactory() {
 
-    private fun Socket?.setProtocols(): SSLSocket = (this as SSLSocket).apply {
-        enabledProtocols = supportedProtocols
+    private fun Socket?.setServerNames(): Socket? = when(this) {
+        is SSLSocket -> apply {
+            enabledProtocols = supportedProtocols
+            enabledCipherSuites = supportedCipherSuites
+            sslParameters.serverNames = emptyList()
+            // ("Address: ${inetAddress.hostAddress}, Protocol: ${session.protocol}, PeerHost: ${session.peerHost}, CipherSuite: ${session.cipherSuite}.")
+        }
+        else -> this
     }
 
     override fun createSocket(s: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? = s?.let {
-        if (autoClose) it.close()
-        getDefault().createSocket(it.inetAddress, port).setProtocols()
-    }
+        // TODO autoClose
+        // if(autoClose) { it.close() }
+        getDefault().createSocket(it.inetAddress, port).setServerNames()
+    } ?: getDefault().createSocket(host, port).setServerNames()
 
     override fun createSocket(host: String?, port: Int): Socket? =
-        getDefault().createSocket(host, port).setProtocols()
+        null // getDefault().createSocket(host, port).setServerNames()
 
     override fun createSocket(host: String?, port: Int, localHost: InetAddress?, localPort: Int): Socket? =
-        getDefault().createSocket(host, port, localHost, localPort).setProtocols()
+        null // getDefault().createSocket(host, port, localHost, localPort).setServerNames()
 
     override fun createSocket(host: InetAddress?, port: Int): Socket? =
-        getDefault().createSocket(host, port).setProtocols()
+        null // getDefault().createSocket(host, port).setServerNames()
 
     override fun createSocket(address: InetAddress?, port: Int, localAddress: InetAddress?, localPort: Int): Socket? =
-        getDefault().createSocket(address, port, localAddress, localPort).setProtocols()
+        null // getDefault().createSocket(address, port, localAddress, localPort).setServerNames()
 
     override fun getDefaultCipherSuites(): Array<String> = emptyArray()
 

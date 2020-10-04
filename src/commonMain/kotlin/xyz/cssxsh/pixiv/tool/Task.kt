@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package xyz.cssxsh.pixiv.tool
 
 import com.soywiz.klock.TimeSpan
@@ -74,7 +76,7 @@ fun PixivClient.addIllustNewListener(
 /**
  * 只会检查前30个新作品
  */
-fun PixivClient.addIllustMyPixiv(
+fun PixivClient.addIllustMyPixivListener(
     contentType: ContentType = ContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
@@ -91,7 +93,7 @@ fun PixivClient.addIllustMyPixiv(
 /**
  * 只会检查前30个新作品
  */
-fun PixivClient.addIllustFollow(
+fun PixivClient.addIllustFollowListener(
     contentType: ContentType = ContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),

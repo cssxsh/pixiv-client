@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
-version = "0.7.0-dev-5"
+version = "0.7.0-dev-7"
 
 repositories {
     maven(url = "https://maven.aliyun.com/repository/releases")
