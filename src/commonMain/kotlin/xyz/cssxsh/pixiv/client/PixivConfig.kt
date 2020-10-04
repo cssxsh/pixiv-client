@@ -18,6 +18,12 @@ data class PixivConfig(
     var proxy: String? = null,
     @SerialName("dns")
     var dns: String = "https://1.0.0.1/dns-query",
+    @SerialName("cname")
+    var cname: Map<String, String> = mapOf(
+        "oauth.secure.pixiv.net" to "api.fanbox.cc",
+        "app-api.pixiv.net" to "api.fanbox.cc",
+        "public.pixiv.net" to "api.fanbox.cc"
+    ),
     @SerialName("ruby_ssl_factory")
     var RubySSLFactory: Boolean = true,
     @SerialName("account")

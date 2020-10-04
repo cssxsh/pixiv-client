@@ -7,21 +7,21 @@ import javax.net.ssl.SSLSocketFactory
 
 object RubySSLSocketFactory : SSLSocketFactory() {
 
-    private fun Socket?.setServerNames(): Socket? = when(this) {
+    private fun Socket.setServerNames(): Socket = when(this) {
         is SSLSocket -> apply {
             enabledProtocols = supportedProtocols
             enabledCipherSuites = supportedCipherSuites
-            sslParameters.serverNames = emptyList()
-            // ("Address: ${inetAddress.hostAddress}, Protocol: ${session.protocol}, PeerHost: ${session.peerHost}, CipherSuite: ${session.cipherSuite}.")
+            sslParameters = sslParameters.apply {
+                serverNames = emptyList()
+            }
+            // println("Address: ${inetAddress.hostAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { toString() }}.")
         }
         else -> this
     }
 
-    override fun createSocket(s: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? = s?.let {
-        // TODO autoClose
-        // if(autoClose) { it.close() }
+    override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? = socket?.let {
         getDefault().createSocket(it.inetAddress, port).setServerNames()
-    } ?: getDefault().createSocket(host, port).setServerNames()
+    }
 
     override fun createSocket(host: String?, port: Int): Socket? =
         null // getDefault().createSocket(host, port).setServerNames()

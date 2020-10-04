@@ -9,12 +9,15 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineName
+import okhttp3.Dns
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okio.ByteString.Companion.toByteString
 import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
+import java.net.InetAddress
 import kotlin.coroutines.CoroutineContext
 
 actual open class SimplePixivClient
@@ -30,6 +33,22 @@ actual constructor(
 
     override val coroutineContext: CoroutineContext by lazy {
         parentCoroutineContext + CoroutineName("PixivHelper")
+    }
+
+    private fun newDns(url: HttpUrl) : Dns = object : Dns {
+        private val client = OkHttpClient()
+        val doh = DnsOverHttps.Builder().apply {
+            client(client)
+            url(url)
+            includeIPv6(false)
+            post(true)
+        }.build()
+
+        val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
+
+        override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
+            (config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname))
+        }
     }
 
     override val httpClient: HttpClient = HttpClient(OkHttp) {
@@ -101,13 +120,7 @@ actual constructor(
                 }
                 // dns
                 config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
-                    dns(DnsOverHttps.Builder().apply {
-                        url(dnsUrl)
-                        client(OkHttpClient())
-                        post(true)
-                        resolvePrivateAddresses(true)
-                        resolvePublicAddresses(true)
-                    }.build())
+                    dns(newDns(dnsUrl))
                 }
             }
         }
