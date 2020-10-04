@@ -18,6 +18,7 @@ import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import java.net.InetAddress
+import java.util.Collections.shuffle
 import kotlin.coroutines.CoroutineContext
 
 actual open class SimplePixivClient
@@ -48,7 +49,7 @@ actual constructor(
 
         override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
             (config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname))
-        }
+        }.toMutableList().apply { shuffle() }
     }
 
     override val httpClient: HttpClient = HttpClient(OkHttp) {
