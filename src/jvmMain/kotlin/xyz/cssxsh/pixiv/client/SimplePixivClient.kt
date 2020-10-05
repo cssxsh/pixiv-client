@@ -44,13 +44,25 @@ actual constructor(
             url(url)
             includeIPv6(false)
             post(true)
+            resolvePrivateAddresses(true)
+            resolvePublicAddresses(true)
         }.build()
 
         val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
 
         override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
-            (config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname))
-        }.toMutableList().apply {
+            if (hostIsIp(hostname)) {
+                listOf(InetAddress.getByName(hostname))
+            } else {
+                config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname)
+            }
+        }.let {
+            if (it.isEmpty()) {
+                InetAddress.getAllByName(hostname).toMutableList()
+            } else {
+                it.toMutableList()
+            }
+        }.apply {
             shuffle()
         }
     }
@@ -128,6 +140,9 @@ actual constructor(
                 // dns
                 config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
                     dns(newDns(dnsUrl))
+                } ?: if (config.RubySSLFactory) {
+                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                    hostnameVerifier { _, _ -> true }
                 }
             }
         }

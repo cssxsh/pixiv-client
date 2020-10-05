@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.Assertions
 import xyz.cssxsh.pixiv.ContentType
-import xyz.cssxsh.pixiv.api.ApiTest
+import xyz.cssxsh.pixiv.ApiTest
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class IllustInfoTest: ApiTest() {
@@ -37,7 +37,7 @@ internal class IllustInfoTest: ApiTest() {
     }
 
     @Test
-    fun getIllustDetail() = runBlocking {
+    fun getIllustDetail(): Unit = runBlocking {
         val data = pixivClient.illustDetail(83919385)
         Assertions.assertTrue(data.illust.pid == 83919385L)
     }

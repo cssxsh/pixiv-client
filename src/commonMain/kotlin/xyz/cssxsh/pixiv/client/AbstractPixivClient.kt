@@ -19,9 +19,13 @@ abstract class AbstractPixivClient : PixivClient {
         account = PixivConfig.Account(mailOrPixivID, password)
     })
 
+    open suspend fun login(): AuthResult.AuthInfo = auth(GrantType.PASSWORD, config)
+
     override suspend fun refresh(token: String): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config {
         refreshToken = token
     })
+
+    open suspend fun refresh(): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config)
 
     override suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult.AuthInfo =
         httpClient.post<AuthResult>(config.auth.url) {

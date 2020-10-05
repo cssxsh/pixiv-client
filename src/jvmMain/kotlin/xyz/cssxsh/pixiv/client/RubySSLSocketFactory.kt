@@ -2,6 +2,7 @@ package xyz.cssxsh.pixiv.client
 
 import java.net.InetAddress
 import java.net.Socket
+import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
@@ -19,22 +20,22 @@ object RubySSLSocketFactory : SSLSocketFactory() {
         else -> this
     }
 
-    override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? = socket?.let {
-        if (autoClose) socket.close()
-        getDefault().createSocket(it.inetAddress, port).setServerNames()
-    }
+    private val socketFactory: SSLSocketFactory = SSLContext.getDefault().socketFactory
+
+    override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? =
+        socketFactory.createSocket(socket, host, port, autoClose).setServerNames()
 
     override fun createSocket(host: String?, port: Int): Socket? =
-        null // getDefault().createSocket(host, port).setServerNames()
+        socketFactory.createSocket(host, port).setServerNames()
 
     override fun createSocket(host: String?, port: Int, localHost: InetAddress?, localPort: Int): Socket? =
-        null // getDefault().createSocket(host, port, localHost, localPort).setServerNames()
+        socketFactory.createSocket(host, port, localHost, localPort).setServerNames()
 
     override fun createSocket(host: InetAddress?, port: Int): Socket? =
-        null // getDefault().createSocket(host, port).setServerNames()
+        socketFactory.createSocket(host, port).setServerNames()
 
     override fun createSocket(address: InetAddress?, port: Int, localAddress: InetAddress?, localPort: Int): Socket? =
-        null // getDefault().createSocket(address, port, localAddress, localPort).setServerNames()
+        socketFactory.createSocket(address, port, localAddress, localPort).setServerNames()
 
     override fun getDefaultCipherSuites(): Array<String> = emptyArray()
 
