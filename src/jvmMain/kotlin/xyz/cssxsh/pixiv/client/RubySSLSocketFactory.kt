@@ -20,6 +20,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
     }
 
     override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? = socket?.let {
+        if (autoClose) socket.close()
         getDefault().createSocket(it.inetAddress, port).setServerNames()
     }
 
