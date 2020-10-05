@@ -130,9 +130,10 @@ actual constructor(
                         chain.proceed(it)
                     }
                 }
-                // proxy
-                proxy(Tool.getProxyByUrl(config.proxy))
-                // ssl
+
+                Tool.getProxyByUrl(config.proxy)?.let {
+                    proxy(it)
+                }
                 if (config.RubySSLFactory) {
                     sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                     hostnameVerifier { _, _ -> true }
@@ -140,9 +141,6 @@ actual constructor(
                 // dns
                 config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
                     dns(newDns(dnsUrl))
-                } ?: if (config.RubySSLFactory) {
-                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
-                    hostnameVerifier { _, _ -> true }
                 }
             }
         }
