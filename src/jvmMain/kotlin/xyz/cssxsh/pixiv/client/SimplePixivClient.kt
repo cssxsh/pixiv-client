@@ -49,7 +49,9 @@ actual constructor(
 
         override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
             (config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname))
-        }.toMutableList().apply { shuffle() }
+        }.toMutableList().apply {
+            shuffle()
+        }
     }
 
     override val httpClient: HttpClient = HttpClient(OkHttp) {

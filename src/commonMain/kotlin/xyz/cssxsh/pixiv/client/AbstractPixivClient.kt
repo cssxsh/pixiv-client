@@ -15,17 +15,15 @@ abstract class AbstractPixivClient : PixivClient {
 
     abstract override val httpClient: HttpClient
 
-    open suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo {
-        config { account = PixivConfig.Account(mailOrPixivID, password) }
-        return login()
-    }
+    override suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo = auth(GrantType.PASSWORD, config {
+        account = PixivConfig.Account(mailOrPixivID, password)
+    })
 
-    open suspend fun refresh(token: String): AuthResult.AuthInfo {
-        config { refreshToken = token }
-        return refresh()
-    }
+    override suspend fun refresh(token: String): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config {
+        refreshToken = token
+    })
 
-    override suspend fun auth(grantType: GrantType): AuthResult.AuthInfo =
+    override suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult.AuthInfo =
         httpClient.post<AuthResult>(config.auth.url) {
             WDateTime.now().format("yyyy-MM-dd'T'HH:mm:ssXXX").let {
                 header("X-Client-Hash", (it + config.client.hashSecret).encodeToByteArray().md5().hex)

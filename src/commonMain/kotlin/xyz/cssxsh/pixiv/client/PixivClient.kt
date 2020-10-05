@@ -18,11 +18,11 @@ interface PixivClient : CoroutineScope {
 
     fun config(block: PixivConfig.() -> Unit) = config.apply(block)
 
-    suspend fun login(): AuthResult.AuthInfo = auth(GrantType.PASSWORD)
+    suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo
 
-    suspend fun refresh(): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN)
+    suspend fun refresh(token: String): AuthResult.AuthInfo
 
-    suspend fun auth(grantType: GrantType): AuthResult.AuthInfo
+    suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult.AuthInfo
 
     fun close() = httpClient.close()
 }
