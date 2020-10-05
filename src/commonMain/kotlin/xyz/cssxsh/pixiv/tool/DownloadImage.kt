@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.tool
 
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
 import xyz.cssxsh.pixiv.api.app.AppApiUrls
@@ -28,7 +29,14 @@ suspend inline fun <reified T> PixivClient.downloadImage(
 }.map { url ->
     (this).async {
         runCatching {
-            httpClient.get<T>(url) { headers["Referer"] = referer }
+            httpClient.get<T>(url) {
+                headers["Referer"] = referer
+                timeout {
+                    socketTimeoutMillis = 30_000
+                    connectTimeoutMillis = 30_000
+                    requestTimeoutMillis = 300_000
+                }
+            }
         }.onSuccess(block)
     }
 }.run {
