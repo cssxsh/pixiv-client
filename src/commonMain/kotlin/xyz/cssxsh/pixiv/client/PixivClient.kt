@@ -14,9 +14,7 @@ interface PixivClient : CoroutineScope {
 
     val config: PixivConfig
 
-    val authInfo: AuthResult.AuthInfo
-
-    val isLoggedIn: Boolean
+    val authInfo: AuthResult.AuthInfo?
 
     fun config(block: PixivConfig.() -> Unit) = config.apply(block)
 

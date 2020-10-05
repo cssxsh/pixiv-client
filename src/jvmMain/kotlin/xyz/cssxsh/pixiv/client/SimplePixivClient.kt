@@ -17,8 +17,8 @@ import okio.ByteString.Companion.toByteString
 import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
+import xyz.cssxsh.pixiv.client.exception.NotLoginException
 import java.net.InetAddress
-import java.util.Collections.shuffle
 import kotlin.coroutines.CoroutineContext
 
 actual open class SimplePixivClient
@@ -105,7 +105,7 @@ actual constructor(
                             // headers
                             config.headers.forEach(this::header)
                             if (request.url.host !in config.auth.url) {
-                                header("Authorization", "Bearer ${authInfo.accessToken}")
+                                header("Authorization", "Bearer ${(authInfo ?: throw NotLoginException()).accessToken}")
                             }
                         }.build()
                     }.let {

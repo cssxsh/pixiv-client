@@ -3,23 +3,15 @@ package xyz.cssxsh.pixiv.client
 import com.soywiz.klock.wrapped.WDateTime
 import com.soywiz.krypto.md5
 import io.ktor.client.*
-import io.ktor.client.features.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.GrantType
-import xyz.cssxsh.pixiv.client.exception.NotLoginException
 import xyz.cssxsh.pixiv.data.AuthResult
 
 abstract class AbstractPixivClient : PixivClient {
 
-    private var authResult: AuthResult? = null
-
-    override val authInfo: AuthResult.AuthInfo
-        get() = authResult?.info ?: throw NotLoginException()
-
-    override val isLoggedIn: Boolean
-        get() = authResult != null
+    override var authInfo: AuthResult.AuthInfo? = null
 
     abstract override val httpClient: HttpClient
 
@@ -55,6 +47,6 @@ abstract class AbstractPixivClient : PixivClient {
                 }
             })
         }.also {
-            authResult = it
+            authInfo = it.info
         }.info
 }
