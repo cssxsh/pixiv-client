@@ -59,9 +59,9 @@ actual constructor(
             serializer = KotlinxSerializer()
         }
         install(HttpTimeout) {
-            socketTimeoutMillis = 30_000
-            connectTimeoutMillis = 30_000
-            requestTimeoutMillis = 30_000
+            socketTimeoutMillis = 180_000
+            connectTimeoutMillis = 180_000
+            requestTimeoutMillis = 180_000
         }
         ContentEncoding {
             gzip()
