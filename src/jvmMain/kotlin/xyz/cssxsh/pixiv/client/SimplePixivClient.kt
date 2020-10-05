@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.*
 import io.ktor.client.features.compression.*
+import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.*
@@ -59,9 +60,12 @@ actual constructor(
             serializer = KotlinxSerializer()
         }
         install(HttpTimeout) {
-            socketTimeoutMillis = 180_000
-            connectTimeoutMillis = 180_000
-            requestTimeoutMillis = 180_000
+            socketTimeoutMillis = 30_000
+            connectTimeoutMillis = 30_000
+            requestTimeoutMillis = 30_000
+        }
+        install(HttpCookies) {
+            storage = AcceptAllCookiesStorage()
         }
         ContentEncoding {
             gzip()
