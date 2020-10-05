@@ -17,6 +17,7 @@ import xyz.cssxsh.pixiv.api.app.illustMyPixiv
 import xyz.cssxsh.pixiv.api.app.illustNew
 import xyz.cssxsh.pixiv.api.app.userIllusts
 import xyz.cssxsh.pixiv.client.PixivClient
+import xyz.cssxsh.pixiv.client.exception.NotLoginException
 import xyz.cssxsh.pixiv.data.app.IllustInfo
 
 fun PixivClient.task(
@@ -65,7 +66,7 @@ fun PixivClient.addIllustNewListener(
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
-) = timerTask(name = "IllustNewListener(${authInfo.user.uid})", duration = timerDuration, origin = start) {
+) = timerTask(name = "IllustNewListener(${(authInfo ?: throw NotLoginException()).user.uid})", duration = timerDuration, origin = start) {
     illustNew(contentType = contentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
@@ -82,7 +83,7 @@ fun PixivClient.addIllustMyPixivListener(
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
-) = timerTask(name = "IllustMyPixivListener(${authInfo.user.uid})", duration = timerDuration, origin = start) {
+) = timerTask(name = "IllustMyPixivListener(${(authInfo ?: throw NotLoginException()).user.uid})", duration = timerDuration, origin = start) {
     illustMyPixiv(contentType = contentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
@@ -99,7 +100,7 @@ fun PixivClient.addIllustFollowListener(
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
-) = timerTask(name = "IllustFollowListener(${authInfo.user.uid})", duration = timerDuration, origin = start) {
+) = timerTask(name = "IllustFollowListener(${(authInfo ?: throw NotLoginException()).user.uid})", duration = timerDuration, origin = start) {
     illustFollow(contentType = contentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
