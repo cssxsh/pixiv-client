@@ -16,7 +16,7 @@ internal class UtilsKtTest {
 
     @BeforeAll
     fun setUp() = runBlocking {
-        pixivClient.refresh()
+        pixivClient.refresh("dmQyznswcjxsZp4oTTMTluQZNtLtX4HPaWSFGiQrAOY")
         println(pixivClient.authInfo)
     }
 
