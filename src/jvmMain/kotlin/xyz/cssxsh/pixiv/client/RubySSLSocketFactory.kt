@@ -15,6 +15,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
             enabledProtocols = supportedProtocols
             enabledCipherSuites = supportedCipherSuites
             sslParameters = sslParameters.apply {
+                cipherSuites = supportedCipherSuites
                 protocols = supportedProtocols
                 serverNames = emptyList()
             }
