@@ -20,7 +20,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
         else -> this
     }
 
-    private val socketFactory: SSLSocketFactory = SSLContext.getInstance("TLS1.2").socketFactory
+    private val socketFactory: SSLSocketFactory = SSLContext.getInstance("TLSv1.2").socketFactory
 
     override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? =
         socketFactory.createSocket(socket, host, port, autoClose).setServerNames()
