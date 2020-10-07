@@ -126,7 +126,6 @@ actual constructor(
                             if (request.url.host !in config.auth.url) {
                                 header("Authorization", "Bearer ${authInfo?.accessToken}")
                             }
-                            println(request.url)
                         }.build()
                     }.let {
                         chain.proceed(it)
