@@ -126,24 +126,24 @@ actual constructor(
                             if (request.url.host !in config.auth.url) {
                                 header("Authorization", "Bearer ${authInfo?.accessToken}")
                             }
+                            println(request.url)
                         }.build()
                     }.let {
                         chain.proceed(it)
                     }
                 }
 
-                proxy(Tool.getProxyByUrl(config.proxy))
-//                proxySelector(object : ProxySelector() {
-//                    override fun select(uri: URI?): MutableList<Proxy> {
-//                        return Tool.getProxyByUrl(config.proxy)?.let {
-//                            mutableListOf(it)
-//                        } ?: mutableListOf()
-//                    }
-//
-//                    override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-//                        println("connectFailed； $uri")
-//                    }
-//                })
+//                proxy(Tool.getProxyByUrl(config.proxy))
+                Tool.getProxyByUrl(config.proxy)?.let { proxy ->
+                    proxySelector(object : ProxySelector() {
+                        override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
+                            if ( uri?.host !in config.cname) add(proxy)
+                        }
+                        override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
+                            println("connectFailed； $uri")
+                        }
+                    })
+                }
 
                 if (config.RubySSLFactory) {
                     sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
