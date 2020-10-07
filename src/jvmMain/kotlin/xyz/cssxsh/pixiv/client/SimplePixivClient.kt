@@ -64,7 +64,7 @@ actual constructor(
             }
         }.apply {
             shuffle()
-            println("dns: $hostname: $this")
+            // println("dns: $hostname: $this")
         }
     }
 
