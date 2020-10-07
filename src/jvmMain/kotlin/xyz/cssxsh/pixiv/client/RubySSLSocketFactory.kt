@@ -15,7 +15,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
             sslParameters = sslParameters.apply {
                 serverNames = emptyList()
             }
-            // println("Address: ${inetAddress.hostAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { toString() }}.")
+            println("Address: ${inetAddress.hostAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { toString() }}.")
         }
         else -> this
     }
