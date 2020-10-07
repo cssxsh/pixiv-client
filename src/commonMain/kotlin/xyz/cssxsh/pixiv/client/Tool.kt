@@ -13,7 +13,7 @@ object Tool {
             val proxy = Url(proxyUrl)
             when (proxy.protocol.name) {
                 "http" -> ProxyBuilder.http(proxy)
-                "socks" -> ProxyBuilder.socks(proxy.host, proxy.port)
+                "socks","socks4", "socks5" -> ProxyBuilder.socks(proxy.host, proxy.port)
                 else -> throw ProxyException(proxyUrl.toString())
             }
         }

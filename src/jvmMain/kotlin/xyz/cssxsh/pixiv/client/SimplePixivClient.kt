@@ -18,8 +18,8 @@ import okio.ByteString.Companion.toByteString
 import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
-import xyz.cssxsh.pixiv.client.exception.NotLoginException
-import java.net.InetAddress
+import java.io.IOException
+import java.net.*
 import kotlin.coroutines.CoroutineContext
 
 actual open class SimplePixivClient
@@ -52,7 +52,7 @@ actual constructor(
 
         override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
             if (hostIsIp(hostname)) {
-                listOf(InetAddress.getByName(hostname))
+                InetAddress.getAllByName(hostname).toList()
             } else {
                 config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname)
             }
@@ -132,9 +132,18 @@ actual constructor(
                     }
                 }
 
-                Tool.getProxyByUrl(config.proxy)?.let {
-                    proxy(it)
-                }
+                proxySelector(object : ProxySelector() {
+                    override fun select(uri: URI?): MutableList<Proxy> {
+                        return Tool.getProxyByUrl(config.proxy)?.let {
+                            mutableListOf(it)
+                        } ?: mutableListOf()
+                    }
+
+                    override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
+                        println("connectFailed； $uri")
+                    }
+                })
+
                 if (config.RubySSLFactory) {
                     sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                     hostnameVerifier { _, _ -> true }
