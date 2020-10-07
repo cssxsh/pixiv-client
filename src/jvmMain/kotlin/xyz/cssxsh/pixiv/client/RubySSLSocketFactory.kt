@@ -10,7 +10,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
 
     private fun Socket.setServerNames(): Socket = when(this) {
         is SSLSocket -> apply {
-            println("hostAddress: ${inetAddress?.hostAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { it.toString() }}.")
+            println("inetAddress: ${inetAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { it.toString() }}.")
             enabledProtocols = supportedProtocols
             enabledCipherSuites = supportedCipherSuites
             sslParameters = sslParameters.apply {
