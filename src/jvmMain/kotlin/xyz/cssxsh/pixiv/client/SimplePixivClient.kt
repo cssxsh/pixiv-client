@@ -132,17 +132,18 @@ actual constructor(
                     }
                 }
 
-                proxySelector(object : ProxySelector() {
-                    override fun select(uri: URI?): MutableList<Proxy> {
-                        return Tool.getProxyByUrl(config.proxy)?.let {
-                            mutableListOf(it)
-                        } ?: mutableListOf()
-                    }
-
-                    override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-                        println("connectFailed； $uri")
-                    }
-                })
+                proxy(Tool.getProxyByUrl(config.proxy))
+//                proxySelector(object : ProxySelector() {
+//                    override fun select(uri: URI?): MutableList<Proxy> {
+//                        return Tool.getProxyByUrl(config.proxy)?.let {
+//                            mutableListOf(it)
+//                        } ?: mutableListOf()
+//                    }
+//
+//                    override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
+//                        println("connectFailed； $uri")
+//                    }
+//                })
 
                 if (config.RubySSLFactory) {
                     sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
