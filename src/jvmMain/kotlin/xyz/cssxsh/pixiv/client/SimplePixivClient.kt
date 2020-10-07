@@ -64,6 +64,7 @@ actual constructor(
             }
         }.apply {
             shuffle()
+            println(this)
         }
     }
 
