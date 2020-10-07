@@ -10,7 +10,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
 
     private fun Socket.setServerNames(): Socket = when(this) {
         is SSLSocket -> apply {
-            println("hostAddress: ${inetAddress?.hostAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { toString() }}.")
+            println("hostAddress: ${inetAddress?.hostAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.map { it.toString() }}.")
             enabledProtocols = supportedProtocols
             enabledCipherSuites = supportedCipherSuites
             sslParameters = sslParameters.apply {
@@ -26,16 +26,16 @@ object RubySSLSocketFactory : SSLSocketFactory() {
         socketFactory.createSocket(socket, host, port, autoClose).setServerNames()
 
     override fun createSocket(host: String?, port: Int): Socket? =
-        null // socketFactory.createSocket(host, port).setServerNames()
+        socketFactory.createSocket(host, port).setServerNames()
 
     override fun createSocket(host: String?, port: Int, localHost: InetAddress?, localPort: Int): Socket? =
-        null // socketFactory.createSocket(host, port, localHost, localPort).setServerNames()
+        socketFactory.createSocket(host, port, localHost, localPort).setServerNames()
 
     override fun createSocket(host: InetAddress?, port: Int): Socket? =
-        null // socketFactory.createSocket(host, port).setServerNames()
+        socketFactory.createSocket(host, port).setServerNames()
 
     override fun createSocket(address: InetAddress?, port: Int, localAddress: InetAddress?, localPort: Int): Socket? =
-        null // socketFactory.createSocket(address, port, localAddress, localPort).setServerNames()
+        socketFactory.createSocket(address, port, localAddress, localPort).setServerNames()
 
     override fun getDefaultCipherSuites(): Array<String> = emptyArray()
 
