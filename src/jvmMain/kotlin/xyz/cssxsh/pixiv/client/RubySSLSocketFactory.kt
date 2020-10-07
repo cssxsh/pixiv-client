@@ -10,10 +10,8 @@ object RubySSLSocketFactory : SSLSocketFactory() {
 
     private fun Socket.setServerNames(): Socket = when(this) {
         is SSLSocket -> apply {
-            println("inetAddress: ${inetAddress}, \"serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.toList()}.")
-            println("supportedProtocols: ${supportedProtocols.toList()}")
-            enabledProtocols = supportedProtocols
-            enabledCipherSuites = supportedCipherSuites
+            println("inetAddress: ${inetAddress}, serverNames: ${sslParameters.serverNames}, Protocols: ${sslParameters.protocols.toList()}")
+            println("enabledProtocols: ${enabledProtocols.toList()}, enabledCipherSuites: ${enabledCipherSuites.toList()}")
             sslParameters = sslParameters.apply {
                 cipherSuites = supportedCipherSuites
                 protocols = supportedProtocols
@@ -24,6 +22,7 @@ object RubySSLSocketFactory : SSLSocketFactory() {
     }
 
     private val socketFactory: SSLSocketFactory = SSLContext.getDefault().socketFactory
+
 
     override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? =
         socketFactory.createSocket(socket, host, port, autoClose).setServerNames()
