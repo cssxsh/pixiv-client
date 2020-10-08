@@ -8,7 +8,29 @@ import xyz.cssxsh.pixiv.data.app.IllustInfo
 
 suspend inline fun <reified T> PixivClient.downloadImage(
     illust: IllustInfo,
-    predicate: (name: String, url: String) -> Boolean = { name, _ -> "origin" in name },
+    crossinline block:  PixivClient.(T) -> Unit = {}
+): List<Result<T>> = illust.getOriginUrl().map { url ->
+    (this).async {
+        runCatching {
+            httpClient.get<T>(url) {
+                headers["Referer"] = url
+                timeout {
+                    socketTimeoutMillis = 30_000
+                    connectTimeoutMillis = 30_000
+                    requestTimeoutMillis = 300_000
+                }
+            }
+        }.onSuccess {
+            block(it)
+        }
+    }
+}.run {
+    awaitAll()
+}
+
+suspend inline fun <reified T> PixivClient.downloadImage(
+    illust: IllustInfo,
+    predicate: (name: String, url: String) -> Boolean,
     crossinline block:  PixivClient.(T) -> Unit = {}
 ): List<Result<T>> = illust.getImageUrls().flatMap { fileUrls ->
     fileUrls.filter { predicate(it.key, it.value) }.values
