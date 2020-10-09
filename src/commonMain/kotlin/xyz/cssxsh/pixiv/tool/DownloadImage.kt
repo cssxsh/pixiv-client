@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.tool
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.app.IllustInfo
 
@@ -23,13 +24,13 @@ suspend inline fun <reified T> PixivClient.downloadImage(
 
 suspend inline fun <reified T>  PixivClient.downloadImageUrl(
     list: List<String>,
-    max: Int = 8,
+    maxAsyncNum: Int = 8,
     crossinline block:  PixivClient.(T) -> Unit
 ): List<Result<T>> = list.let {
-    var count = 0
+    val channel = Channel<String>(maxAsyncNum)
     it.map { url ->
         (this).async {
-            if (count < max) count++
+            channel.send(url)
             runCatching {
                 httpClient.get<T>(url) {
                     headers["Referer"] = url
@@ -41,10 +42,10 @@ suspend inline fun <reified T>  PixivClient.downloadImageUrl(
                 }.also { content ->
                     block(content)
                 }
+            }.also {
+                channel.receive()
             }
-            count--
         }
-    }
-    awaitAll()
+    }.awaitAll()
 }
 
