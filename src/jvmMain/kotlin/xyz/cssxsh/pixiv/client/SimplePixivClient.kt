@@ -18,6 +18,7 @@ import okio.ByteString.Companion.toByteString
 import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
+import xyz.cssxsh.pixiv.client.exception.OtherClientException
 import java.io.IOException
 import java.net.*
 import kotlin.coroutines.CoroutineContext
@@ -92,7 +93,6 @@ actual constructor(
                 when (statusCode) {
                     in 300..399 -> throw RedirectResponseException(response)
                     in 400..499 -> {
-                        println(response.request.headers)
                         // 判断是否为登录状态
                         when {
                             "grant_type" in response.request.headers -> {
@@ -105,7 +105,7 @@ actual constructor(
                                     throw ApiException(response, it.toByteString().string(response.charset() ?: Charsets.UTF_8))
                                 }
                             }
-                            else -> throw ClientRequestException(response)
+                            else -> throw OtherClientException(response)
                         }
                     }
                     in 500..599 -> throw ServerResponseException(response)
@@ -122,7 +122,7 @@ actual constructor(
                     chain.request().let { request ->
                         request.newBuilder().apply {
                             // headers
-                            config.headers.forEach(this::header)
+                             config.headers.forEach(::header)
                             if (request.url.host !in config.auth.url) {
                                 header("Authorization", "Bearer ${authInfo?.accessToken}")
                             }

@@ -11,7 +11,7 @@ class AuthException(response: HttpResponse, val authError: AuthError) : Response
         Json.decodeFromString(AuthError.serializer(), json)
     )
 
-    override val message: String? = response.run {
+    override val message: String = response.run {
         "AuthException(url: ${call.request.url} header: ${request.headers} invalid: ${status}, error: ${authError})"
     }
 }
