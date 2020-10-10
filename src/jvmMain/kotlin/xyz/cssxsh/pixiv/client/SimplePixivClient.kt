@@ -124,7 +124,7 @@ actual constructor(
                             // headers
                              config.headers.forEach(::header)
                             if (request.url.host !in config.auth.url) {
-                                header("Authorization", "Bearer ${authInfo?.accessToken}")
+                                header("Authorization", "Bearer ${getAuthInfoOrThrow().accessToken}")
                             }
                         }.build()
                     }.let {

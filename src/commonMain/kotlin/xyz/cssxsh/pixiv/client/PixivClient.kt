@@ -16,6 +16,10 @@ interface PixivClient : CoroutineScope {
 
     val authInfo: AuthResult.AuthInfo?
 
+    fun getAuthInfoOrThrow(): AuthResult.AuthInfo = requireNotNull(authInfo) {
+        "Not Logged In For PixivClient."
+    }
+
     fun config(block: PixivConfig.() -> Unit) = config.apply(block)
 
     suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo
