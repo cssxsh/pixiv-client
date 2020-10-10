@@ -6,6 +6,6 @@ import io.ktor.util.*
 
 class OtherClientException(response: HttpResponse): ResponseException(response) {
     override val message: String = response.run {
-        "OtherException(url: ${call.request.url} invalid: ${status}, headers: ${headers.toMap()}})"
+        "OtherException(url: ${call.request.url} invalid: ${status}, headers: ${request.headers.toMap()}})"
     }
 }
