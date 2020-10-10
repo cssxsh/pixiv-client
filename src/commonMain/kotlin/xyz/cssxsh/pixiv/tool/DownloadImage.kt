@@ -27,20 +27,18 @@ suspend inline fun <reified T>  PixivClient.downloadImageUrl(
     list: List<String>,
     maxAsyncNum: Int = 8,
     crossinline block:  PixivClient.(T) -> Unit
-): List<Result<T>> = list.let {
+): List<Result<T>> = useHttpClient { client ->
     val channel = Channel<String>(maxAsyncNum)
-    it.map { url ->
-        (this).async {
+    list.map { url ->
+        async {
             channel.send(url)
             runCatching {
-                useHttpClient { client ->
-                    client.get<T>(url) {
-                        headers["Referer"] = url
-                        timeout {
-                            socketTimeoutMillis = 30_000
-                            connectTimeoutMillis = 30_000
-                            requestTimeoutMillis = 300_000
-                        }
+                client.get<T>(url) {
+                    headers["Referer"] = url
+                    timeout {
+                        socketTimeoutMillis = 30_000
+                        connectTimeoutMillis = 30_000
+                        requestTimeoutMillis = 300_000
                     }
                 }.also { content ->
                     block(content)
