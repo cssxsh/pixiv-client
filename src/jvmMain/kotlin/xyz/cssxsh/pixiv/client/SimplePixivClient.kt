@@ -69,7 +69,7 @@ actual constructor(
         }
     }
 
-    override val httpClient: HttpClient = HttpClient(OkHttp) {
+    override fun httpClient(): HttpClient = HttpClient(OkHttp) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }

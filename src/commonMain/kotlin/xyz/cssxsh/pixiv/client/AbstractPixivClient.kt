@@ -2,18 +2,16 @@ package xyz.cssxsh.pixiv.client
 
 import com.soywiz.klock.wrapped.WDateTime
 import com.soywiz.krypto.md5
-import io.ktor.client.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.GrantType
 import xyz.cssxsh.pixiv.data.AuthResult
+import xyz.cssxsh.pixiv.useHttpClient
 
 abstract class AbstractPixivClient : PixivClient {
 
     override var authInfo: AuthResult.AuthInfo? = null
-
-    abstract override val httpClient: HttpClient
 
     override suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo = auth(GrantType.PASSWORD, config {
         account = PixivConfig.Account(mailOrPixivID, password)
@@ -27,8 +25,11 @@ abstract class AbstractPixivClient : PixivClient {
 
     open suspend fun refresh(): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config)
 
-    override suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult.AuthInfo =
-        httpClient.post<AuthResult>(config.auth.url) {
+    override suspend fun auth(
+        grantType: GrantType,
+        config: PixivConfig
+    ): AuthResult.AuthInfo = useHttpClient { client ->
+        client.post<AuthResult>(config.auth.url) {
             WDateTime.now().format("yyyy-MM-dd'T'HH:mm:ssXXX").let {
                 header("X-Client-Hash", (it + config.client.hashSecret).encodeToByteArray().md5().hex)
                 header("X-Client-Time", it)
@@ -48,7 +49,8 @@ abstract class AbstractPixivClient : PixivClient {
                     }
                 }
             })
-        }.also {
-            authInfo = it.info
-        }.info
+        }
+    }.also {
+        authInfo = it.info
+    }.info
 }

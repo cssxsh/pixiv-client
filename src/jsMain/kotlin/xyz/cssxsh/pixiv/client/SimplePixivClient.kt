@@ -32,7 +32,7 @@ actual constructor(
     }
 
     @KtorExperimentalAPI
-    override var httpClient: HttpClient = HttpClient(Js) {
+    override fun httpClient(): HttpClient = HttpClient(Js) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }

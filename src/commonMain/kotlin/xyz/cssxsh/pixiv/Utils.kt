@@ -2,9 +2,18 @@
 
 package xyz.cssxsh.pixiv
 
+import io.ktor.client.*
+import io.ktor.utils.io.core.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
+import xyz.cssxsh.pixiv.client.PixivClient
+
+inline fun <reified R> PixivClient.useHttpClient(
+    block: PixivClient.(HttpClient) -> R
+) = httpClient().use {
+    block(it)
+}
 
 typealias ParamsMap = Map<String, Any?>
 

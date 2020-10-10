@@ -12,13 +12,15 @@ suspend fun PixivClient.searchIllust(
     duration: DurationType? = null,
     filter: String = "for_ios",
     offset: Long = 0
-): IllustData = httpClient.get(AppApiUrls.searchIllust) {
-    parameter("word", word)
-    parameter("search_target", searchTarget.value())
-    parameter("sort", sort.value())
-    duration?.let { parameter("duration", it.value()) }
-    parameter("filter", filter)
-    parameter("offset", offset)
+): IllustData = useHttpClient { client ->
+    client.get(AppApiUrls.searchIllust) {
+        parameter("word", word)
+        parameter("search_target", searchTarget.value())
+        parameter("sort", sort.value())
+        duration?.let { parameter("duration", it.value()) }
+        parameter("filter", filter)
+        parameter("offset", offset)
+    }
 }
 
 suspend fun PixivClient.searchNovel(
@@ -28,17 +30,21 @@ suspend fun PixivClient.searchNovel(
     duration: DurationType? = null,
     filter: String = "for_ios",
     offset: Long = 0
-): NovelData = httpClient.get(AppApiUrls.searchNovel) {
-    parameter("word", word)
-    parameter("search_target", searchTarget.value())
-    parameter("sort", sort.value())
-    duration?.let { parameter("duration", it.value()) }
-    parameter("filter", filter)
-    parameter("offset", offset)
+): NovelData = useHttpClient { client ->
+    client.get(AppApiUrls.searchNovel) {
+        parameter("word", word)
+        parameter("search_target", searchTarget.value())
+        parameter("sort", sort.value())
+        duration?.let { parameter("duration", it.value()) }
+        parameter("filter", filter)
+        parameter("offset", offset)
+    }
 }
 
 suspend fun PixivClient.searchAutoComplete(
     word: String
-): KeywordsData = httpClient.get(AppApiUrls.searchAutoComplete) {
-    parameter("word", word)
+): KeywordsData = useHttpClient { client ->
+    client.get(AppApiUrls.searchAutoComplete) {
+        parameter("word", word)
+    }
 }

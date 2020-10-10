@@ -33,7 +33,7 @@ actual constructor(
     }
 
     @ExperimentalIoApi
-    override var httpClient: HttpClient = HttpClient(Curl) {
+    override fun httpClient(): HttpClient = HttpClient(Curl) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }

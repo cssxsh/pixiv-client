@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.app.IllustInfo
+import xyz.cssxsh.pixiv.useHttpClient
 
 suspend inline fun <reified T> PixivClient.downloadImage(
     illust: IllustInfo,
@@ -32,12 +33,14 @@ suspend inline fun <reified T>  PixivClient.downloadImageUrl(
         (this).async {
             channel.send(url)
             runCatching {
-                httpClient.get<T>(url) {
-                    headers["Referer"] = url
-                    timeout {
-                        socketTimeoutMillis = 30_000
-                        connectTimeoutMillis = 30_000
-                        requestTimeoutMillis = 300_000
+                useHttpClient { client ->
+                    client.get<T>(url) {
+                        headers["Referer"] = url
+                        timeout {
+                            socketTimeoutMillis = 30_000
+                            connectTimeoutMillis = 30_000
+                            requestTimeoutMillis = 300_000
+                        }
                     }
                 }.also { content ->
                     block(content)

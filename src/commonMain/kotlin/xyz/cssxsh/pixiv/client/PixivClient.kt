@@ -1,6 +1,6 @@
 package xyz.cssxsh.pixiv.client
 
-import io.ktor.client.HttpClient
+import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
 import xyz.cssxsh.pixiv.GrantType
 import xyz.cssxsh.pixiv.data.AuthResult
@@ -10,7 +10,7 @@ import xyz.cssxsh.pixiv.data.AuthResult
  */
 interface PixivClient : CoroutineScope {
 
-    val httpClient: HttpClient
+    fun httpClient(): HttpClient
 
     val config: PixivConfig
 
@@ -23,6 +23,4 @@ interface PixivClient : CoroutineScope {
     suspend fun refresh(token: String): AuthResult.AuthInfo
 
     suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult.AuthInfo
-
-    fun close() = httpClient.close()
 }
