@@ -6,7 +6,7 @@ import com.soywiz.klock.locale.japanese
 import com.soywiz.klock.wrapped.WDateTimeTz
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.cssxsh.pixiv.ContentType
+import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.FileUrls
 import xyz.cssxsh.pixiv.data.DateTimeSerializer
 
@@ -52,7 +52,7 @@ data class IllustInfo(
     @SerialName("total_view")
     val totalView: Int? = null,
     @SerialName("type")
-    val type: ContentType,
+    val type: WorkContentType,
     @SerialName("user")
     val user: UserInfo,
     @SerialName("visible")

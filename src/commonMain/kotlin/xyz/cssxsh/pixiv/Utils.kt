@@ -195,16 +195,16 @@ enum class WorkType : ParamEnum {
 }
 
 @Serializable
-enum class ContentType : ParamEnum {
+enum class WorkContentType : ParamEnum {
     ILLUST,
     UGOIRA,
     MANGA;
 
-    @Serializer(forClass = ContentType::class)
-    companion object : ParamEnumSerializer<ContentType>, KSerializer<ContentType> {
-        override val serialName: String = "ParamEnumSerializer<${ContentType::class}>"
+    @Serializer(forClass = WorkContentType::class)
+    companion object : ParamEnumSerializer<WorkContentType>, KSerializer<WorkContentType> {
+        override val serialName: String = "ParamEnumSerializer<${WorkContentType::class}>"
 
-        override fun deserialize(decoder: Decoder): ContentType =
+        override fun deserialize(decoder: Decoder): WorkContentType =
             valueOf(decoder.decodeString().toUpperCase())
     }
 }

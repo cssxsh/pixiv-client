@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import xyz.cssxsh.pixiv.ContentType
+import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.PublicityType
 import xyz.cssxsh.pixiv.WorkType
 import xyz.cssxsh.pixiv.api.app.illustFollow
@@ -60,13 +60,13 @@ fun PixivClient.addUserListener(
  * 只会检查前30个新作品
  */
 fun PixivClient.addIllustNewListener(
-    contentType: ContentType = ContentType.ILLUST,
+    workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
 ) = timerTask(name = "IllustNewListener(${getAuthInfoOrThrow().user.uid})", duration = timerDuration, origin = start) {
-    illustNew(contentType = contentType, restrict = restrict).illusts.filter {
+    illustNew(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
         forEach { launch { block(it) }  }
@@ -77,13 +77,13 @@ fun PixivClient.addIllustNewListener(
  * 只会检查前30个新作品
  */
 fun PixivClient.addIllustMyPixivListener(
-    contentType: ContentType = ContentType.ILLUST,
+    workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
 ) = timerTask(name = "IllustMyPixivListener(${getAuthInfoOrThrow().user.uid})", duration = timerDuration, origin = start) {
-    illustMyPixiv(contentType = contentType, restrict = restrict).illusts.filter {
+    illustMyPixiv(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
         forEach { launch { block(it) }  }
@@ -94,13 +94,13 @@ fun PixivClient.addIllustMyPixivListener(
  * 只会检查前30个新作品
  */
 fun PixivClient.addIllustFollowListener(
-    contentType: ContentType = ContentType.ILLUST,
+    workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
 ) = timerTask(name = "IllustFollowListener(${getAuthInfoOrThrow().user.uid})", duration = timerDuration, origin = start) {
-    illustFollow(contentType = contentType, restrict = restrict).illusts.filter {
+    illustFollow(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
         forEach { launch { block(it) }  }
