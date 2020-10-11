@@ -126,16 +126,13 @@ actual constructor(
         engine {
             config {
                 addInterceptor { chain ->
-                    chain.request().let { request ->
-                        request.newBuilder().apply {
-                            // headers
-                            config.headers.forEach(::header)
-                            println(request.body.toString())
-                            authInfo?.let {
-                                header("Authorization", "Bearer ${it.accessToken}")
-                            }
-                        }.build()
-                    }.let {
+                    chain.request().newBuilder().apply {
+                        // headers
+                        config.headers.forEach(::header)
+                        authInfo?.let {
+                            header("Authorization", "Bearer ${it.accessToken}")
+                        }
+                    }.build().let {
                         chain.proceed(it)
                     }
                 }
