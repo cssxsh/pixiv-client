@@ -2,7 +2,7 @@ package xyz.cssxsh.pixiv.api.app
 
 object AppApi {
     const val ROOT_PATH = "https://app-api.pixiv.net"
-    const val PAGE_SIZE = 30
+    const val PAGE_SIZE = 30L
 
     // ILLUST_
     const val ILLUST_BOOKMARK_ADD =  "${ROOT_PATH}/v2/illust/bookmark/add"
