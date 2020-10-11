@@ -6,9 +6,10 @@ import xyz.cssxsh.pixiv.data.app.UgoiraMetadata
 import xyz.cssxsh.pixiv.useHttpClient
 
 suspend fun PixivClient.ugoiraMetadata(
-    pid: Long
+    pid: Long,
+    url: String = AppApi.UGOIRA_METADATA
 ): UgoiraMetadata = useHttpClient { client ->
-    client.get(AppApiUrls.ugoiraMetadata) {
+    client.get(url) {
         parameter("illust_id", pid)
     }
 }

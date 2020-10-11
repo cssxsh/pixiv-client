@@ -6,17 +6,19 @@ import xyz.cssxsh.pixiv.data.app.TrendTagData
 import xyz.cssxsh.pixiv.useHttpClient
 
 suspend fun PixivClient.trendingTagsIllust(
-    filter: String = "for_ios"
+    filter: String = "for_ios",
+    url: String = AppApi.TRENDING_TAGS_ILLUST
 ): TrendTagData = useHttpClient { client ->
-    client.get(AppApiUrls.trendingTagsIllust) {
+    client.get(url) {
         parameter("filter", filter)
     }
 }
 
 suspend fun PixivClient.trendingTagsNovel(
-    filter: String = "for_ios"
+    filter: String = "for_ios",
+    url: String = AppApi.TRENDING_TAGS_NOVEL
 ): TrendTagData = useHttpClient { client ->
-    client.get(AppApiUrls.trendingTagsNovel) {
+    client.get(url) {
         parameter("filter", filter)
     }
 }

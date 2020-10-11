@@ -10,8 +10,6 @@ import xyz.cssxsh.pixiv.HeadersMap
 data class PixivConfig(
     @SerialName("client")
     var client: Client = Client(),
-    @SerialName("auth")
-    var auth: Auth = Auth(),
     @SerialName("headers")
     var headers: HeadersMap = Util.IOS_HEADERS,
     @SerialName("proxy")
@@ -36,10 +34,6 @@ data class PixivConfig(
         client = client.apply(block)
     }
 
-    fun auth(block: Auth.() -> Unit) {
-        auth = auth.apply(block)
-    }
-
     fun account(block: Account.() -> Unit) {
         account = account?.apply(block) ?: Account("", "").apply(block)
     }
@@ -52,12 +46,6 @@ data class PixivConfig(
         var secret: String = Util.CLIENT_SECRET,
         @SerialName("hash_secret")
         var hashSecret: String = Util.HASH_SECRET
-    )
-
-    @Serializable
-    data class Auth(
-        @SerialName("url")
-        var url: String = Util.OAUTH_URL
     )
 
     @Serializable

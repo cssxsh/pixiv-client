@@ -11,13 +11,14 @@ suspend fun PixivClient.searchIllust(
     sort: SortType = SortType.DATE_DESC,
     duration: DurationType? = null,
     filter: String = "for_ios",
-    offset: Long = 0
+    offset: Long = 0,
+    url: String = AppApi.SEARCH_ILLUST
 ): IllustData = useHttpClient { client ->
-    client.get(AppApiUrls.searchIllust) {
+    client.get(url) {
         parameter("word", word)
         parameter("search_target", searchTarget.value())
         parameter("sort", sort.value())
-        duration?.let { parameter("duration", it.value()) }
+        parameter("duration", duration?.value())
         parameter("filter", filter)
         parameter("offset", offset)
     }
@@ -29,22 +30,24 @@ suspend fun PixivClient.searchNovel(
     sort: SortType = SortType.DATE_DESC,
     duration: DurationType? = null,
     filter: String = "for_ios",
-    offset: Long = 0
+    offset: Long = 0,
+    url: String = AppApi.SEARCH_NOVEL
 ): NovelData = useHttpClient { client ->
-    client.get(AppApiUrls.searchNovel) {
+    client.get(url) {
         parameter("word", word)
         parameter("search_target", searchTarget.value())
         parameter("sort", sort.value())
-        duration?.let { parameter("duration", it.value()) }
+        parameter("duration", duration?.value())
         parameter("filter", filter)
         parameter("offset", offset)
     }
 }
 
 suspend fun PixivClient.searchAutoComplete(
-    word: String
+    word: String,
+    url: String = AppApi.SEARCH_AUTO_COMPLETE
 ): KeywordsData = useHttpClient { client ->
-    client.get(AppApiUrls.searchAutoComplete) {
+    client.get(url) {
         parameter("word", word)
     }
 }

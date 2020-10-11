@@ -6,6 +6,7 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.GrantType
+import xyz.cssxsh.pixiv.api.OauthApi
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.useHttpClient
 
@@ -25,11 +26,10 @@ abstract class AbstractPixivClient : PixivClient {
 
     open suspend fun refresh(): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config)
 
-    override suspend fun auth(
-        grantType: GrantType,
-        config: PixivConfig
-    ): AuthResult.AuthInfo = useHttpClient { client ->
-        client.post<AuthResult>(config.auth.url) {
+    override suspend fun auth(grantType: GrantType, config: PixivConfig) = auth(grantType, config, OauthApi.OAUTH_URL)
+
+    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = useHttpClient { client ->
+        client.post<AuthResult>(url) {
             WDateTime.now().format("yyyy-MM-dd'T'HH:mm:ssXXX").let {
                 header("X-Client-Hash", (it + config.client.hashSecret).encodeToByteArray().md5().hex)
                 header("X-Client-Time", it)
