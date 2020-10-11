@@ -6,7 +6,7 @@ import kotlinx.serialization.json.JsonNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.Assertions
-import xyz.cssxsh.pixiv.ContentType
+import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.ApiTest
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -56,7 +56,7 @@ internal class IllustInfoTest: ApiTest() {
 
     @Test
     fun getIllustNew() = runBlocking {
-        val data = pixivClient.illustNew(contentType = ContentType.MANGA)
+        val data = pixivClient.illustNew(workContentType = WorkContentType.MANGA)
         Assertions.assertTrue(data.illusts.isNotEmpty())
     }
 
