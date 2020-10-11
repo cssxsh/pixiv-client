@@ -7,8 +7,8 @@ import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.coroutines.CoroutineName
 import okhttp3.Dns
 import okhttp3.HttpUrl
@@ -92,21 +92,28 @@ actual constructor(
                 val statusCode = response.status.value
                 when (statusCode) {
                     in 300..399 -> throw RedirectResponseException(response)
-                    in 400..499 -> {
-                        // 判断是否为登录状态
-                        when {
-                            "grant_type" in response.request.headers -> {
-                                response.content.read {
-                                    throw AuthException(response, it.toByteString().string(response.charset() ?: Charsets.UTF_8))
-                                }
+                    in 400..499 -> response.run {
+                            val content = content.toByteArray().toByteString().string(charset() ?: Charsets.UTF_8)
+
+                            runCatching {
+                                ApiException(response, content)
+                            }.onSuccess {
+                                throw it
                             }
-                            "Authorization" in response.request.headers -> {
-                                response.content.read {
-                                    throw ApiException(response, it.toByteString().string(response.charset() ?: Charsets.UTF_8))
-                                }
+
+                            runCatching {
+                                AuthException(response, content)
+                            }.onSuccess {
+                                throw it
                             }
-                            else -> throw OtherClientException(response)
-                        }
+
+                            runCatching {
+                                OtherClientException(response, content)
+                            }.onSuccess {
+                                throw it
+                            }
+
+                            throw ClientRequestException(response)
                     }
                     in 500..599 -> throw ServerResponseException(response)
                 }
