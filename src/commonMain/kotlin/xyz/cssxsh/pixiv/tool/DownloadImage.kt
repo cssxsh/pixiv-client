@@ -11,25 +11,25 @@ import xyz.cssxsh.pixiv.useHttpClient
 suspend inline fun <reified T> PixivClient.downloadImage(
     illust: IllustInfo,
     crossinline block:  PixivClient.(T) -> Unit = {}
-): List<Result<T>> = downloadImageUrl(list = illust.getOriginUrl(), block = block)
+): List<Result<T>> = downloadImageUrl(urls = illust.getOriginUrl(), block = block)
 
 suspend inline fun <reified T> PixivClient.downloadImage(
     illust: IllustInfo,
-    predicate: (name: String, url: String) -> Boolean,
+    predicate: (type: String, url: String) -> Boolean,
     crossinline block:  PixivClient.(T) -> Unit = {}
 ): List<Result<T>> = illust.getImageUrls().flatMap { fileUrls ->
     fileUrls.filter { predicate(it.key, it.value) }.values
 }.let {
-    downloadImageUrl(list = it, block = block)
+    downloadImageUrl(urls = it, block = block)
 }
 
 suspend inline fun <reified T>  PixivClient.downloadImageUrl(
-    list: List<String>,
+    urls: List<String>,
     maxAsyncNum: Int = 8,
     crossinline block:  PixivClient.(T) -> Unit
 ): List<Result<T>> = useHttpClient { client ->
     val channel = Channel<String>(maxAsyncNum)
-    list.map { url ->
+    urls.map { url ->
         async {
             channel.send(url)
             runCatching {
