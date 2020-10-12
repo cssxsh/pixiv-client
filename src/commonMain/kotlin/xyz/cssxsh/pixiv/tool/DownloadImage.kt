@@ -10,7 +10,7 @@ import xyz.cssxsh.pixiv.useHttpClient
 
 suspend inline fun <reified T, R> PixivClient.downloadImage(
     illust: IllustInfo,
-    crossinline block:  PixivClient.(Int, Result<T>) -> R
+    crossinline block:  PixivClient.(Int, String, Result<T>) -> R
 ): List<R> = downloadImageUrl(
     urls = illust.getOriginUrl(),
     block = block
@@ -19,7 +19,7 @@ suspend inline fun <reified T, R> PixivClient.downloadImage(
 suspend inline fun <reified T, R> PixivClient.downloadImage(
     illust: IllustInfo,
     predicate: (type: String, url: String) -> Boolean,
-    crossinline block:  PixivClient.(Int, Result<T>) -> R
+    crossinline block:  PixivClient.(Int, String, Result<T>) -> R
 ): List<R> = illust.getImageUrls().flatMap { fileUrls ->
     fileUrls.filter { predicate(it.key, it.value) }.values
 }.let {
@@ -29,7 +29,7 @@ suspend inline fun <reified T, R> PixivClient.downloadImage(
 suspend inline fun <reified T, R>  PixivClient.downloadImageUrl(
     urls: List<String>,
     maxAsyncNum: Int = 8,
-    crossinline block:  PixivClient.(Int, Result<T>) -> R
+    crossinline block:  PixivClient.(Int, String, Result<T>) -> R
 ): List<R> = useHttpClient { client ->
     val channel = Channel<String>(maxAsyncNum)
     urls.mapIndexed { index, url ->
@@ -47,7 +47,7 @@ suspend inline fun <reified T, R>  PixivClient.downloadImageUrl(
             }.also {
                 channel.receive()
             }.let { content ->
-                block(index, content)
+                block(index, url, content)
             }
         }
     }.awaitAll()
