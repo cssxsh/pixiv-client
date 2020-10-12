@@ -59,13 +59,13 @@ fun PixivClient.addUserListener(
 /**
  * 只会检查前30个新作品
  */
-fun PixivClient.addIllustNewListener(
+suspend fun PixivClient.addIllustNewListener(
     workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
-) = timerTask(name = "IllustNewListener(${getAuthInfoOrThrow().user.uid})", duration = timerDuration, origin = start) {
+) = timerTask(name = "IllustNewListener(${getAuthInfo().user.uid})", duration = timerDuration, origin = start) {
     illustNew(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
@@ -76,13 +76,13 @@ fun PixivClient.addIllustNewListener(
 /**
  * 只会检查前30个新作品
  */
-fun PixivClient.addIllustMyPixivListener(
+suspend fun PixivClient.addIllustMyPixivListener(
     workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
-) = timerTask(name = "IllustMyPixivListener(${getAuthInfoOrThrow().user.uid})", duration = timerDuration, origin = start) {
+) = timerTask(name = "IllustMyPixivListener(${getAuthInfo().user.uid})", duration = timerDuration, origin = start) {
     illustMyPixiv(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
@@ -93,13 +93,13 @@ fun PixivClient.addIllustMyPixivListener(
 /**
  * 只会检查前30个新作品
  */
-fun PixivClient.addIllustFollowListener(
+suspend fun PixivClient.addIllustFollowListener(
     workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: WDateTimeTz = WDateTimeTz.nowLocal(),
     timerDuration: TimeSpan = (10).minutes,
     block: suspend PixivClient.(IllustInfo) -> Unit
-) = timerTask(name = "IllustFollowListener(${getAuthInfoOrThrow().user.uid})", duration = timerDuration, origin = start) {
+) = timerTask(name = "IllustFollowListener(${getAuthInfo().user.uid})", duration = timerDuration, origin = start) {
     illustFollow(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
     }.apply {
