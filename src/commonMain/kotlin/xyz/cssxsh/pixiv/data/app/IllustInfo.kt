@@ -46,11 +46,11 @@ data class IllustInfo(
     @SerialName("tools")
     val tools: List<String>,
     @SerialName("total_bookmarks")
-    val totalBookmarks: Int? = null,
+    val totalBookmarks: Long? = null,
     @SerialName("total_comments")
-    val totalComments: Int? = null,
+    val totalComments: Long? = null,
     @SerialName("total_view")
-    val totalView: Int? = null,
+    val totalView: Long? = null,
     @SerialName("type")
     val type: WorkContentType,
     @SerialName("user")
