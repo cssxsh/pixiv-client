@@ -17,7 +17,7 @@ abstract class AbstractPixivClient : PixivClient {
     protected open var authInfo: AuthResult.AuthInfo? = null
 
     override suspend fun getAuthInfo(): AuthResult.AuthInfo {
-        if (expiresTime > WDateTime.now()) authInfo = null
+        if (expiresTime <= WDateTime.now()) authInfo = null
         return authInfo ?: autoAuth()
     }
 
