@@ -21,6 +21,5 @@ abstract class ApiTest {
         System.setProperty("https.protocols", "TLSv1")
 
         pixivClient.refresh("8BdkCQAa_VbtR4VC7Ou7ov3Hgs4ag6gqxQ8Ye74Czfg")
-        println(pixivClient.authInfo)
     }
 }

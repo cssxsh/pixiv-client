@@ -10,6 +10,7 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.runBlocking
 import okhttp3.Dns
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -127,10 +128,11 @@ actual constructor(
             config {
                 addInterceptor { chain ->
                     chain.request().newBuilder().apply {
-                        // headers
                         config.headers.forEach(::header)
-                        authInfo?.let {
-                            header("Authorization", "Bearer ${it.accessToken}")
+                        if ("X-Client-Hash" !in build().headers.names()) {
+                            runBlocking {
+                                header("Authorization", "Bearer ${getAuthInfo().accessToken}")
+                            }
                         }
                     }.build().let {
                         chain.proceed(it)

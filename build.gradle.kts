@@ -45,14 +45,6 @@ kotlin {
             }
         }
     }
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
 
     sourceSets {
         all {
@@ -104,14 +96,6 @@ kotlin {
             dependencies {
                 implementation("org.junit.jupiter:junit-jupiter:${Versions.junit}")
             }
-        }
-        getByName("nativeMain") {
-            dependencies {
-                implementation(ktor("client-curl", Versions.ktor))
-            }
-        }
-        getByName("nativeTest") {
-
         }
     }
 }

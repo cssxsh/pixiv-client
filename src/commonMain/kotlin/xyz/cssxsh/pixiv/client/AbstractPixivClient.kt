@@ -1,6 +1,8 @@
 package xyz.cssxsh.pixiv.client
 
+import com.soywiz.klock.seconds
 import com.soywiz.klock.wrapped.WDateTime
+import com.soywiz.klock.wrapped.wrapped
 import com.soywiz.krypto.md5
 import io.ktor.client.request.forms.*
 import io.ktor.client.request.*
@@ -12,7 +14,22 @@ import xyz.cssxsh.pixiv.useHttpClient
 
 abstract class AbstractPixivClient : PixivClient {
 
-    override var authInfo: AuthResult.AuthInfo? = null
+    protected open var authInfo: AuthResult.AuthInfo? = null
+
+    override suspend fun getAuthInfo(): AuthResult.AuthInfo {
+        if (expiresTime > WDateTime.now()) authInfo = null
+        return authInfo ?: autoAuth()
+    }
+
+    private var expiresTime: WDateTime = WDateTime.now()
+
+    override suspend fun autoAuth(): AuthResult.AuthInfo = config.run {
+        refreshToken?.let { token ->
+            refresh(token)
+        } ?: account?.let { account ->
+            login(account.mailOrUID, account.password)
+        } ?: throw IllegalArgumentException("没有登陆参数")
+    }
 
     override suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo = auth(GrantType.PASSWORD, config {
         account = PixivConfig.Account(mailOrPixivID, password)
@@ -51,6 +68,7 @@ abstract class AbstractPixivClient : PixivClient {
             })
         }
     }.also {
+        expiresTime = WDateTime.now() + it.info.expiresIn.seconds.wrapped
         authInfo = it.info
     }.info
 }

@@ -9,8 +9,8 @@ import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import xyz.cssxsh.pixiv.client.PixivClient
 
-inline fun <reified R> PixivClient.useHttpClient(
-    block: PixivClient.(HttpClient) -> R
+suspend inline fun <reified R> PixivClient.useHttpClient(
+    crossinline block: suspend PixivClient.(HttpClient) -> R
 ) = httpClient().use {
     block(it)
 }
