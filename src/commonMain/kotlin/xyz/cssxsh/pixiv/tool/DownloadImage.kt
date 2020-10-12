@@ -8,28 +8,31 @@ import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.app.IllustInfo
 import xyz.cssxsh.pixiv.useHttpClient
 
-suspend inline fun <reified T> PixivClient.downloadImage(
+suspend inline fun <reified T, R> PixivClient.downloadImage(
     illust: IllustInfo,
-    crossinline block:  PixivClient.(T) -> Unit = {}
-): List<Result<T>> = downloadImageUrl(urls = illust.getOriginUrl(), block = block)
+    crossinline block:  PixivClient.(Int, Result<T>) -> R
+): List<R> = downloadImageUrl(
+    urls = illust.getOriginUrl(),
+    block = block
+)
 
-suspend inline fun <reified T> PixivClient.downloadImage(
+suspend inline fun <reified T, R> PixivClient.downloadImage(
     illust: IllustInfo,
     predicate: (type: String, url: String) -> Boolean,
-    crossinline block:  PixivClient.(T) -> Unit = {}
-): List<Result<T>> = illust.getImageUrls().flatMap { fileUrls ->
+    crossinline block:  PixivClient.(Int, Result<T>) -> R
+): List<R> = illust.getImageUrls().flatMap { fileUrls ->
     fileUrls.filter { predicate(it.key, it.value) }.values
 }.let {
     downloadImageUrl(urls = it, block = block)
 }
 
-suspend inline fun <reified T>  PixivClient.downloadImageUrl(
+suspend inline fun <reified T, R>  PixivClient.downloadImageUrl(
     urls: List<String>,
     maxAsyncNum: Int = 8,
-    crossinline block:  PixivClient.(T) -> Unit
-): List<Result<T>> = useHttpClient { client ->
+    crossinline block:  PixivClient.(Int, Result<T>) -> R
+): List<R> = useHttpClient { client ->
     val channel = Channel<String>(maxAsyncNum)
-    urls.map { url ->
+    urls.mapIndexed { index, url ->
         async {
             channel.send(url)
             runCatching {
@@ -40,11 +43,11 @@ suspend inline fun <reified T>  PixivClient.downloadImageUrl(
                         connectTimeoutMillis = 30_000
                         requestTimeoutMillis = 300_000
                     }
-                }.also { content ->
-                    block(content)
                 }
             }.also {
                 channel.receive()
+            }.let { content ->
+                block(index, content)
             }
         }
     }.awaitAll()
