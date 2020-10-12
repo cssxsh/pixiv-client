@@ -160,7 +160,7 @@ suspend fun PixivClient.illustRecommended(
 
 suspend fun PixivClient.illustRelated(
     pid: Long,
-    seedIllustIds: List<Long> = listOf(),
+    seedIllustIds: List<Long> = emptyList(),
     filter: String = "for_ios",
     offset: Long = 0,
     url: String = AppApi.ILLUST_RELATED
