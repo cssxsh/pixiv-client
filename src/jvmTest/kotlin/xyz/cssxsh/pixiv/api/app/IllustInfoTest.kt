@@ -62,7 +62,7 @@ internal class IllustInfoTest: ApiTest() {
 
     @Test
     fun getIllustRanking() = runBlocking {
-        val data = pixivClient.illustRanking(date = WDate.invoke(year = 2020, month = 8 ,day = 20))
+        val data = pixivClient.illustRanking(date = WDate(year = 2020, month = 8 ,day = 20))
         Assertions.assertTrue(data.illusts.isNotEmpty())
     }
 
