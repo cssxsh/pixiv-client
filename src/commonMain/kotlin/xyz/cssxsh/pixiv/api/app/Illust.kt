@@ -31,7 +31,7 @@ suspend fun PixivClient.illustBookmarkDelete(
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
-            parameter("illust_id", pid)
+            append("illust_id", pid.toString())
         })
     }
 }
