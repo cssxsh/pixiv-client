@@ -14,6 +14,7 @@ import io.ktor.utils.io.bits.*
 import kotlinx.coroutines.CoroutineName
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
+import xyz.cssxsh.pixiv.data.AuthResult
 import kotlin.coroutines.CoroutineContext
 
 actual open class SimplePixivClient
@@ -82,5 +83,9 @@ actual constructor(
         engine {
             proxy = Tool.getProxyByUrl(config.proxy)
         }
+    }
+
+    override suspend fun getAuthInfo(): AuthResult.AuthInfo {
+        TODO("Not yet implemented")
     }
 }

@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.client
 
+import com.soywiz.klock.wrapped.WDateTime
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.*
@@ -20,6 +21,7 @@ import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import xyz.cssxsh.pixiv.client.exception.OtherClientException
+import xyz.cssxsh.pixiv.data.AuthResult
 import java.io.IOException
 import java.net.*
 import kotlin.coroutines.CoroutineContext
@@ -37,6 +39,13 @@ actual constructor(
 
     override val coroutineContext: CoroutineContext by lazy {
         parentCoroutineContext + CoroutineName("PixivHelper")
+    }
+
+    private fun autoAuthBlock() = runBlocking { autoAuth() }
+
+    override suspend fun getAuthInfo(): AuthResult.AuthInfo = synchronized(expiresTime) {
+        if (expiresTime <= WDateTime.now()) authInfo = null
+        authInfo ?: autoAuthBlock()
     }
 
     private fun newDns(url: HttpUrl) : Dns = object : Dns {
