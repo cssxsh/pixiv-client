@@ -79,6 +79,8 @@ actual constructor(
         }
     }
 
+    private val cookiesStorage = AcceptAllCookiesStorage()
+
     override fun httpClient(): HttpClient = HttpClient(OkHttp) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
@@ -89,7 +91,7 @@ actual constructor(
             requestTimeoutMillis = 60_000
         }
         install(HttpCookies) {
-            storage = AcceptAllCookiesStorage()
+            storage = cookiesStorage
         }
         ContentEncoding {
             gzip()
