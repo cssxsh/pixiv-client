@@ -66,9 +66,9 @@ abstract class AbstractPixivClient : PixivClient {
                     }
                 }
             })
-        }
+        }.info
     }.also {
-        expiresTime = WDateTime.now() + it.info.expiresIn.seconds.wrapped
-        authInfo = it.info
-    }.info
+        expiresTime = WDateTime.now() + it.expiresIn.seconds.wrapped
+        authInfo = it
+    }
 }
