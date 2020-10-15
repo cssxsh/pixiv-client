@@ -16,7 +16,7 @@ abstract class AbstractPixivClient : PixivClient {
 
     protected open var authInfo: AuthResult.AuthInfo? = null
 
-    protected var expiresTime: WDateTime = WDateTime.now()
+    protected open var expiresTime: WDateTime = WDateTime.now()
 
     override suspend fun autoAuth(): AuthResult.AuthInfo = config.run {
         refreshToken?.let { token ->
