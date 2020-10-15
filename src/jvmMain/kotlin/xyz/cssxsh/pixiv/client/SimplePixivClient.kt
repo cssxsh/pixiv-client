@@ -29,16 +29,18 @@ import kotlin.coroutines.CoroutineContext
 actual open class SimplePixivClient
 actual constructor(
     parentCoroutineContext: CoroutineContext,
+    coroutineName: String,
     override val config: PixivConfig
 ) : PixivClient, AbstractPixivClient() {
 
     actual constructor(
         parentCoroutineContext: CoroutineContext,
+        coroutineName: String,
         block: PixivConfig.() -> Unit
-    ) : this(parentCoroutineContext, PixivConfig().apply(block))
+    ) : this(parentCoroutineContext, coroutineName, PixivConfig().apply(block))
 
     override val coroutineContext: CoroutineContext by lazy {
-        parentCoroutineContext + CoroutineName("PixivHelper")
+        parentCoroutineContext + CoroutineName("SimplePixivClient")
     }
 
     private fun autoAuthBlock() = runBlocking { autoAuth() }
