@@ -40,7 +40,7 @@ actual constructor(
     ) : this(parentCoroutineContext, coroutineName, PixivConfig().apply(block))
 
     override val coroutineContext: CoroutineContext by lazy {
-        parentCoroutineContext + CoroutineName("SimplePixivClient")
+        parentCoroutineContext + CoroutineName(coroutineName)
     }
 
     private fun autoAuthBlock() = runBlocking { autoAuth() }
