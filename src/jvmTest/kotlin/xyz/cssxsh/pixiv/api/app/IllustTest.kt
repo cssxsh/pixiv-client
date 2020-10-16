@@ -10,7 +10,7 @@ import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.ApiTest
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class IllustInfoTest: ApiTest() {
+internal class IllustTest: ApiTest() {
 
     @Suppress("unused")
     fun addIllustBookmark() = runBlocking {
