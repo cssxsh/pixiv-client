@@ -17,9 +17,11 @@ object AppApi {
     const val ILLUST_RECOMMENDED = "${ROOT_PATH}/v1/illust/recommended"
     const val ILLUST_RELATED = "${ROOT_PATH}/v2/illust/related"
     // Novel
+    const val NOVEL_BOOKMARK_ADD =  "${ROOT_PATH}/v2/novel/bookmark/add"
+    const val NOVEL_BOOKMARK_DELETE = "${ROOT_PATH}/v1/novel/bookmark/delete"
     const val NOVEL_BOOKMARK_DETAIL = "${ROOT_PATH}/v2/novel/bookmark/detail"
     const val NOVEL_COMMENTS = "${ROOT_PATH}/v2/novel/comments"
-    const val NOVEL_DETAIL = "${ROOT_PATH}/v1/novel/detail"
+    const val NOVEL_DETAIL = "${ROOT_PATH}/v2/novel/detail"
     const val NOVEL_FOLLOW = "${ROOT_PATH}/v2/novel/follow"
     const val NOVEL_MARKERS = "${ROOT_PATH}/v2/novel/markers"
     const val NOVEL_MYPIXIV = "${ROOT_PATH}/v2/novel/mypixiv"
