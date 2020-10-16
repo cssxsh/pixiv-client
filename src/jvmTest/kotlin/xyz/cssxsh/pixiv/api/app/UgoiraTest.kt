@@ -9,7 +9,7 @@ import xyz.cssxsh.pixiv.ApiTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class UgoiraTest: ApiTest() {
     @Test
-    fun getUgoiraMetadata() = runBlocking<Unit> {
+    fun getUgoiraMetadata(): Unit = runBlocking {
         val data = pixivClient.ugoiraMetadata(79007274L)
         Assertions.assertTrue(data.ugoiraMetadata.frames.isNotEmpty())
         Assertions.assertTrue(data.ugoiraMetadata.zipUrls.isNotEmpty())

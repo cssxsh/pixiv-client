@@ -15,7 +15,7 @@ abstract class ApiTest {
     }
 
     @BeforeAll
-    fun setUp() = runBlocking {
+    fun setUp(): Unit = runBlocking {
 
         System.setProperty("javax.net.debug", "ssl")
         System.setProperty("https.protocols", "TLSv1")

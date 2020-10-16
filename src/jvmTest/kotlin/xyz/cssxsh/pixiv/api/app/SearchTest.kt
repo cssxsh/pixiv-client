@@ -9,19 +9,19 @@ import xyz.cssxsh.pixiv.ApiTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SearchTest: ApiTest() {
     @Test
-    fun searchIllust() = runBlocking {
+    fun searchIllust(): Unit = runBlocking {
         val data = pixivClient.searchIllust("arknights")
         Assertions.assertTrue(data.illusts.isNotEmpty())
     }
 
     @Test
-    fun searchNovel() = runBlocking {
+    fun searchNovel(): Unit = runBlocking {
         val data = pixivClient.searchNovel("e")
         Assertions.assertTrue(data.novels.isNotEmpty())
     }
 
     @Test
-    fun searchAutoComplete() = runBlocking {
+    fun searchAutoComplete(): Unit = runBlocking {
         val data = pixivClient.searchAutoComplete("ark")
         Assertions.assertTrue(data.keywords.isNotEmpty())
     }

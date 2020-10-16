@@ -9,49 +9,49 @@ import xyz.cssxsh.pixiv.ApiTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class UserTest: ApiTest() {
     @Test
-    fun getUserBookmarksIllust() = runBlocking {
+    fun getUserBookmarksIllust(): Unit = runBlocking {
         val data = pixivClient.userBookmarksIllust(12905943L)
         Assertions.assertTrue(data.illusts.isNotEmpty())
     }
 
     @Test
-    fun getUserBookmarksNovel() = runBlocking {
+    fun getUserBookmarksNovel(): Unit = runBlocking {
         val data = pixivClient.userBookmarksNovel(12905943L)
         Assertions.assertTrue(data.novels.isNotEmpty())
     }
 
     @Test
-    fun userBlacklist() = runBlocking {
+    fun userBlacklist(): Unit = runBlocking {
         val data = pixivClient.userBlacklist()
         Assertions.assertTrue(data.users.isNotEmpty())
     }
 
     @Test
-    fun userBookmarksTagsIllust() = runBlocking {
+    fun userBookmarksTagsIllust(): Unit = runBlocking {
         val data = pixivClient.userBookmarksTagsIllust()
         Assertions.assertTrue(data.bookmarkTags.isNotEmpty())
     }
 
     @Test
-    fun userBookmarksTagsNovel() = runBlocking {
+    fun userBookmarksTagsNovel(): Unit = runBlocking {
         val data = pixivClient.userBookmarksTagsNovel()
         Assertions.assertTrue(data.bookmarkTags.isNotEmpty())
     }
 
     @Test
-    fun getUserDetail() = runBlocking {
+    fun getUserDetail(): Unit = runBlocking {
         val data = pixivClient.userDetail(3569577L)
         Assertions.assertTrue(data.user.id == 3569577L)
     }
 
     @Test
-    fun getUserRecommended() = runBlocking {
+    fun getUserRecommended(): Unit = runBlocking {
         val data =pixivClient.userRecommended()
         Assertions.assertTrue(data.userPreviews.isNotEmpty())
     }
 
     @Test
-    fun getUserFollowing() = runBlocking {
+    fun getUserFollowing(): Unit = runBlocking {
         pixivClient.userFollowAdd(4102577)
         pixivClient.userFollowing(4102577).run {
             Assertions.assertTrue(userPreviews.isNotEmpty())
@@ -63,19 +63,19 @@ internal class UserTest: ApiTest() {
     }
 
     @Test
-    fun getUserFollower() = runBlocking {
+    fun getUserFollower(): Unit = runBlocking {
         val data = pixivClient.userFollower(4102577)
         Assertions.assertTrue(data.userPreviews.isNotEmpty())
     }
 
     @Test
-    fun getUserMyPixiv() = runBlocking {
+    fun getUserMyPixiv(): Unit = runBlocking {
         val data =pixivClient.userMyPixiv(4102577)
         Assertions.assertTrue(data.userPreviews.isNotEmpty())
     }
 
     @Test
-    fun getUserIllusts() = runBlocking {
+    fun getUserIllusts(): Unit = runBlocking {
         val data = pixivClient.userIllusts(3569577L)
         Assertions.assertTrue(data.illusts.isNotEmpty())
     }

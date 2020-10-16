@@ -8,7 +8,7 @@ import xyz.cssxsh.pixiv.ApiTest
 class NovelTest: ApiTest() {
 
     @Test
-    fun getNovelBookmarkDetail() = runBlocking {
+    fun getNovelBookmarkDetail(): Unit = runBlocking {
         val data = pixivClient.novelBookmarkDetail(83919385)
         Assertions.assertFalse(data.bookmarkDetail.isBookmarked)
     }

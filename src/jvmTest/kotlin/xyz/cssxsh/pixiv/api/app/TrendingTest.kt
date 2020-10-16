@@ -9,13 +9,13 @@ import xyz.cssxsh.pixiv.ApiTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class TrendingTest: ApiTest() {
     @Test
-    fun getTrendingTagsIllust() = runBlocking {
+    fun getTrendingTagsIllust(): Unit = runBlocking {
         val data = pixivClient.trendingTagsIllust()
         Assertions.assertTrue(data.trendTags.isNotEmpty())
     }
 
     @Test
-    fun getTrendingTagsNovel() = runBlocking<Unit> {
+    fun getTrendingTagsNovel(): Unit = runBlocking {
         val data = pixivClient.trendingTagsNovel()
         Assertions.assertTrue(data.trendTags.isNotEmpty())
     }

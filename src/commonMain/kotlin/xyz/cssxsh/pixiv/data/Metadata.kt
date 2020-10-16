@@ -16,6 +16,6 @@ data class Metadata(
         @SerialName("delay")
         val delay: Int,
         @SerialName("file")
-        val fileUrl: String
+        val file: String
     )
 }

@@ -11,7 +11,8 @@ internal class ToolsTest : ApiTest() {
     @Test
     fun downloadImage(): Unit = runBlocking {
         val data = pixivClient.illustDetail(83919385)
-        pixivClient.downloadImage<HttpResponse>(illust = data.illust) { httpResponse ->
+        pixivClient.downloadImage<HttpResponse, Unit>(illust = data.illust) { _, _, result ->
+            val httpResponse = result.getOrThrow()
             val length = httpResponse.contentLength()
             assert(httpResponse.status.value == 200) {
                 "状态码不正确"
