@@ -46,7 +46,7 @@ actual constructor(
     private fun autoAuthBlock() = runBlocking { autoAuth() }
 
     override suspend fun getAuthInfo(): AuthResult.AuthInfo = synchronized(expiresTime) {
-        if (expiresTime <= WDateTime.now()) authInfo = null
+        if (expiresTime <= WDateTime.now().local) authInfo = null
         authInfo ?: autoAuthBlock()
     }
 

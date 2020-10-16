@@ -2,6 +2,7 @@ package xyz.cssxsh.pixiv.client
 
 import com.soywiz.klock.seconds
 import com.soywiz.klock.wrapped.WDateTime
+import com.soywiz.klock.wrapped.WDateTimeTz
 import com.soywiz.klock.wrapped.wrapped
 import com.soywiz.krypto.md5
 import io.ktor.client.request.forms.*
@@ -16,7 +17,7 @@ abstract class AbstractPixivClient : PixivClient {
 
     protected open var authInfo: AuthResult.AuthInfo? = null
 
-    protected open var expiresTime: WDateTime = WDateTime.now()
+    protected open var expiresTime: WDateTimeTz = WDateTime.now().local
 
     override suspend fun autoAuth(): AuthResult.AuthInfo = config.run {
         refreshToken?.let { token ->
@@ -63,7 +64,7 @@ abstract class AbstractPixivClient : PixivClient {
             })
         }.info
     }.also {
-        expiresTime = WDateTime.now() + it.expiresIn.seconds.wrapped
+        expiresTime = (WDateTime.now() + it.expiresIn.seconds.wrapped).local
         authInfo = it
     }
 }
