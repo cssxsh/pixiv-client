@@ -13,7 +13,6 @@ import io.ktor.util.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import okhttp3.Dns
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okio.ByteString.Companion.toByteString
@@ -50,18 +49,20 @@ actual constructor(
         authInfo ?: autoAuthBlock()
     }
 
-    private fun newDns(url: HttpUrl) : Dns = object : Dns {
-        private val client = OkHttpClient()
-        val doh = DnsOverHttps.Builder().apply {
-            client(client)
-            url(url)
-            includeIPv6(false)
-            post(true)
-            resolvePrivateAddresses(true)
-            resolvePublicAddresses(true)
-        }.build()
+    private val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
 
-        val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
+    protected open fun localDns() : Dns = object : Dns {
+        val client = OkHttpClient()
+        private val doh = config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
+            DnsOverHttps.Builder().apply {
+                client(client)
+                includeIPv6(false)
+                url(dnsUrl)
+                post(true)
+                resolvePrivateAddresses(true)
+                resolvePublicAddresses(true)
+            }.build()
+        } ?: Dns.SYSTEM
 
         override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
             if (hostIsIp(hostname)) {
@@ -169,9 +170,7 @@ actual constructor(
                     hostnameVerifier { _, _ -> true }
                 }
                 // dns
-                config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
-                    dns(newDns(dnsUrl))
-                }
+                dns(localDns())
             }
         }
     }
