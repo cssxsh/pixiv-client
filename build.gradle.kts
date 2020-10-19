@@ -63,8 +63,8 @@ kotlin {
                 implementation(ktor("client-core", Versions.ktor))
                 implementation(ktor("client-serialization", Versions.ktor))
                 implementation(ktor("client-encoding", Versions.ktor))
-                api(korlibs("klock", Versions.klock))
-                api(korlibs("krypto", Versions.krypto))
+                api(korlibs("klock", Versions.korlibs))
+                api(korlibs("krypto", Versions.korlibs))
             }
         }
         getByName("commonTest") {
