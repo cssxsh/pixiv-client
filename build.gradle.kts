@@ -56,7 +56,7 @@ kotlin {
         }
         getByName("commonMain") {
             dependencies {
-                implementation(kotlin("stdlib", Versions.kotlin))
+                // implementation(kotlin("stdlib", Versions.kotlin))
                 implementation(kotlin("serialization", Versions.kotlin))
                 implementation(kotlinx("coroutines-core", Versions.coroutines))
                 implementation(kotlinx("serialization-runtime", Versions.serialization))
