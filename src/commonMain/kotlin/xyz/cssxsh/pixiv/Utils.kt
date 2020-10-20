@@ -233,34 +233,3 @@ enum class RankMode : ParamEnum {
             valueOf(decoder.decodeString().toUpperCase())
     }
 }
-/*
-suspend inline fun <reified P, reified D, reified T: AppRESTful<P, D>> PixivClient.useAppRESTful(
-    call: T
-): T = httpClient.request<D>(call.url) {
-    method = HttpMethod.parse(call.method)
-
-    dataToParameters(call.data).let {
-        when(method){
-            HttpMethod.Get -> {
-                url.parameters.appendAll(it)
-            }
-            HttpMethod.Post -> {
-                body = FormDataContent(it)
-            }
-        }
-    }
-}.let { call.copyResult(it) } as T
-
-inline fun <reified P> dataToParameters(data: P): Parameters = Parameters.build {
-    // FI-XME: define reader by dataToParameters
-    Json.encodeToJsonElement(data).jsonObject.forEach {
-        if (it.value is JsonArray) {
-            (it.value as JsonArray).forEachIndexed { index, item ->
-                append("${it.key}[${index}]", item.jsonPrimitive.content)
-            }
-        } else if (it.value !is JsonNull) {
-            append(it.key, it.value.jsonPrimitive.content)
-        }
-    }
-}
-*/
