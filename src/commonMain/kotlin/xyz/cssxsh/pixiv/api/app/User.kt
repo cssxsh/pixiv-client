@@ -19,7 +19,7 @@ suspend fun PixivClient.userBookmarksIllust(
     client.get(url) {
         parameter("user_id", uid)
         parameter("restrict", restrict.value())
-        parameter("max_bookmark_Id", maxBookmarkId)
+        parameter("max_bookmark_id", maxBookmarkId)
     }
 }
 
@@ -32,7 +32,7 @@ suspend fun PixivClient.userBookmarksNovel(
     client.get(url) {
         parameter("user_id", uid)
         parameter("restrict", restrict.value())
-        parameter("max_bookmark_Id", maxBookmarkId)
+        parameter("max_bookmark_id", maxBookmarkId)
     }
 }
 
