@@ -12,7 +12,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 open class DateTimeSerializer(
-    var dateFormat: PatternDateFormat
+    val dateFormat: PatternDateFormat
 ): KSerializer<WDateTimeTz> {
 
     override val descriptor: SerialDescriptor
