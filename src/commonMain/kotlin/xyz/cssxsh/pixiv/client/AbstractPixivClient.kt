@@ -66,5 +66,8 @@ abstract class AbstractPixivClient : PixivClient {
     }.also {
         expiresTime = (WDateTime.now() + it.expiresIn.seconds.wrapped).local
         authInfo = it
+        config {
+            refreshToken = it.refreshToken
+        }
     }
 }
