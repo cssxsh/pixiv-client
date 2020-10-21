@@ -5,7 +5,6 @@ import io.ktor.client.statement.*
 import io.ktor.util.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import xyz.cssxsh.pixiv.data.AuthError
 
 class OtherClientException(response: HttpResponse, val jsonElement: JsonElement): ResponseException(response) {
     constructor(response: HttpResponse, json: String) : this(
@@ -13,7 +12,9 @@ class OtherClientException(response: HttpResponse, val jsonElement: JsonElement)
         Json.parseToJsonElement(json)
     )
 
-    override val message: String = response.run {
+    override val message: String = jsonElement.toString()
+
+    override fun toString(): String = response.run {
         "OtherException(url: ${call.request.url}, invalid: ${status}, headers: ${request.headers.toMap()}, json: ${jsonElement})"
     }
 }
