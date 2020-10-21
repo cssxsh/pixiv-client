@@ -12,7 +12,9 @@ class ApiException(response: HttpResponse, val apiError: ApiError) : ResponseExc
         Json.decodeFromString(ApiError.serializer(), json)
     )
 
-    override val message: String = response.run {
+    override val message: String = apiError.error.message
+
+    override fun toString(): String = response.run {
         "ApiException(url: ${call.request.url}, invalid: ${status}, header: ${request.headers.toMap()}, error: ${apiError})"
     }
 }
