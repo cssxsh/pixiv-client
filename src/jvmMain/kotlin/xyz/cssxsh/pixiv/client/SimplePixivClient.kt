@@ -145,7 +145,9 @@ actual constructor(
                         config.headers.forEach(::header)
                         if ("X-Client-Hash" !in build().headers.names()) {
                             runBlocking {
-                                header("Authorization", "Bearer ${getAuthInfo().accessToken}")
+                                runCatching {
+                                    header("Authorization", "Bearer ${getAuthInfo().accessToken}")
+                                }
                             }
                         }
                     }.build().let {
