@@ -4,7 +4,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
-import xyz.cssxsh.pixiv.ApiTest
+import xyz.cssxsh.pixiv.api.ApiTest
 import xyz.cssxsh.pixiv.api.app.illustDetail
 
 internal class ToolsTest : ApiTest() {

@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.api.app
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import xyz.cssxsh.pixiv.ApiTest
+import xyz.cssxsh.pixiv.api.ApiTest
 
 class NovelTest: ApiTest() {
 

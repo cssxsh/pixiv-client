@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.Assertions
-import xyz.cssxsh.pixiv.ApiTest
+import xyz.cssxsh.pixiv.api.ApiTest
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class UgoiraTest: ApiTest() {

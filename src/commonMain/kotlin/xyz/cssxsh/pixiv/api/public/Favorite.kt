@@ -8,7 +8,7 @@ import xyz.cssxsh.pixiv.data.public.FavoriteUserData
 import xyz.cssxsh.pixiv.data.public.FavoriteWorkData
 import xyz.cssxsh.pixiv.useHttpClient
 
-suspend fun PixivClient.postFavoriteWorks(
+suspend fun PixivClient.addFavoriteWorks(
     pid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     url: String = PublicApi.ME_FAVORITE_WORKS
@@ -27,10 +27,11 @@ suspend fun PixivClient.deleteFavoriteWorks(
 ): FavoriteWorkData = useHttpClient { client ->
     client.delete(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
+
         parameter("ids", pids.joinToString(","))
     }
 }
-suspend fun PixivClient.postFavoriteUsers(
+suspend fun PixivClient.addFavoriteUsers(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     url: String = PublicApi.ME_FAVORITE_USERS

@@ -1,11 +1,8 @@
 package xyz.cssxsh.pixiv.api.public
 
-import xyz.cssxsh.pixiv.api.app.AppApi
-
 object PublicApi {
     const val ROOT_PATH = "https://public-api.secure.pixiv.net"
     const val REFERER = "http://spapi.pixiv-app.net/"
-
 
     // favorite
     const val ME_FAVORITE_WORKS = "${ROOT_PATH}/v1/me/favorite_works"
