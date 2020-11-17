@@ -35,8 +35,8 @@ suspend fun HttpClient.downloadIgnoreException(
     get<ByteArray>(url) {
         headers["Referer"] = url
         timeout {
-            socketTimeoutMillis = 10_000
-            connectTimeoutMillis = 10_000
+            socketTimeoutMillis = 60_000
+            connectTimeoutMillis = 60_000
             requestTimeoutMillis = requestTimeout
         }
     }
@@ -45,7 +45,7 @@ suspend fun HttpClient.downloadIgnoreException(
 suspend inline fun <R> PixivClient.downloadImageUrls(
     urls: Iterable<String>,
     maxAsyncNum: Int = 8,
-    requestTimeout: Long = 300_000,
+    requestTimeout: Long = 600_000,
     noinline ignore: (String, Throwable) -> Boolean = { _, _ -> false },
     crossinline block: PixivClient.(Int, String, Result<ByteArray>) -> R
 ): List<R> = useHttpClient { client ->
