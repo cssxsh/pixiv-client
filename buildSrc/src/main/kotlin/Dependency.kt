@@ -1,13 +1,12 @@
+@file:Suppress("unused")
 
+import org.gradle.api.artifacts.dsl.DependencyHandler
 
-fun kotlinx(simpleModuleName: String, version: String? = null) =
-    "org.jetbrains.kotlinx:kotlinx-$simpleModuleName${version?.let { ":$it" } ?:""}"
+fun DependencyHandler.kotlinx(module: String, version: String = Versions.kotlin) =
+    "org.jetbrains.kotlinx:kotlinx-$module:$version"
 
-fun ktor(simpleModuleName: String, version: String? = null) =
-    "io.ktor:ktor-$simpleModuleName${version?.let { ":$it" } ?:""}"
+fun DependencyHandler.ktor(module: String, version: String= Versions.ktor) =
+    "io.ktor:ktor-$module:$version"
 
-fun korlibs(simpleModuleName: String, version: String? = null) =
-    "com.soywiz.korlibs.$simpleModuleName:$simpleModuleName${version?.let { ":$it" } ?:""}"
-
-fun okhttp3(simpleModuleName: String, version: String? = null) =
+fun DependencyHandler.okhttp3(simpleModuleName: String, version: String? = null) =
     "com.squareup.okhttp3:$simpleModuleName${version?.let { ":$it" } ?:""}"
