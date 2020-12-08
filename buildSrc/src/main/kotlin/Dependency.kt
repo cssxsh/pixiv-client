@@ -8,5 +8,5 @@ fun DependencyHandler.kotlinx(module: String, version: String = Versions.kotlin)
 fun DependencyHandler.ktor(module: String, version: String= Versions.ktor) =
     "io.ktor:ktor-$module:$version"
 
-fun DependencyHandler.okhttp3(simpleModuleName: String, version: String? = null) =
-    "com.squareup.okhttp3:$simpleModuleName${version?.let { ":$it" } ?:""}"
+fun DependencyHandler.okhttp3(module: String, version: String = Versions.okhttp) =
+    "com.squareup.okhttp3:$module:$version"
