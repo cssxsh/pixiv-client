@@ -1,7 +1,6 @@
 plugins {
-    kotlin("multiplatform") version Versions.kotlin
+    kotlin("jvm") version Versions.kotlin
     kotlin("plugin.serialization") version Versions.kotlin
-    `maven-publish`
 }
 group = "xzy.cssxsh.pixiv"
 version = "0.7.0-dev-7"
@@ -13,7 +12,6 @@ repositories {
     maven(url = "https://bintray.proxy.ustclug.org/him188moe/mirai/")
     maven(url = "https://bintray.proxy.ustclug.org/kotlin/kotlin-dev")
     maven(url = "https://bintray.proxy.ustclug.org/kotlin/kotlinx/")
-    maven(url = "https://bintray.proxy.ustclug.org/korlibs/korlibs/")
     // central
     maven(url = "https://maven.aliyun.com/repository/central")
     mavenCentral()
@@ -22,80 +20,46 @@ repositories {
     jcenter()
 }
 
-kotlin {
-    jvm {
-        compilations {
-            all {
-                kotlinOptions {
-                    jvmTarget = "11"
-                }
-            }
-        }
-        tasks.getByName("jvmTest", Test::class) {
-            useJUnitPlatform()
-        }
+dependencies {
+    implementation(kotlinx("coroutines-core", Versions.coroutines))
+    implementation(kotlinx("serialization-runtime", Versions.serialization))
+    implementation(ktor("client-core", Versions.ktor))
+    implementation(ktor("client-serialization", Versions.ktor))
+    implementation(ktor("client-encoding", Versions.ktor))
+    implementation(ktor("client-okhttp", Versions.ktor))
+    implementation(ktor("client-okhttp", Versions.ktor)) {
+        exclude(group = "com.squareup.okhttp3")
     }
-    js {
-        browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
-                }
-            }
-        }
-    }
+    implementation(okhttp3("okhttp", Versions.okhttp))
+    implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = Versions.junit)
+}
 
+kotlin {
     sourceSets {
         all {
-            languageSettings.useExperimentalAnnotation("com.soywiz.klock.annotations.KlockExperimental")
             languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
             languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
             languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
             languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
         }
-        getByName("commonMain") {
-            dependencies {
-                // implementation(kotlin("stdlib", Versions.kotlin))
-                implementation(kotlin("serialization", Versions.kotlin))
-                implementation(kotlinx("coroutines-core", Versions.coroutines))
-                implementation(kotlinx("serialization-runtime", Versions.serialization))
-                implementation(ktor("client-core", Versions.ktor))
-                implementation(ktor("client-serialization", Versions.ktor))
-                implementation(ktor("client-encoding", Versions.ktor))
-                api(korlibs("klock", Versions.korlibs))
-                api(korlibs("krypto", Versions.korlibs))
-            }
-        }
-        getByName("commonTest") {
-            dependencies {
-                implementation(kotlin("test-common", Versions.kotlin))
-                implementation(kotlin("test-annotations-common", Versions.kotlin))
-            }
-        }
-        getByName("jsMain") {
-            dependencies {
-                implementation(ktor("client-js", Versions.ktor))
-            }
-        }
-        getByName("jsTest") {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
-        getByName("jvmMain") {
-            dependencies {
-                implementation(ktor("client-okhttp", Versions.ktor)) {
-                    exclude(group = "com.squareup.okhttp3")
-                }
-                implementation(okhttp3("okhttp", Versions.okhttp))
-                implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
-            }
-        }
-        getByName("jvmTest") {
-            dependencies {
-                implementation("org.junit.jupiter:junit-jupiter:${Versions.junit}")
-            }
-        }
+    }
+}
+
+tasks {
+
+    test {
+        useJUnitPlatform()
+    }
+
+    compileKotlin {
+        kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
+        kotlinOptions.jvmTarget = "11"
+    }
+
+    compileTestKotlin {
+        kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
+        kotlinOptions.jvmTarget = "11"
     }
 }
