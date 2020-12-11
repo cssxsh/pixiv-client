@@ -70,5 +70,5 @@ data class IllustInfo(
 
     fun getOriginUrl(): List<String> = getImageUrls().map { urls ->
         urls.filter { "origin" in it.key }.values.first()
-    }
+    }.sorted()
 }
