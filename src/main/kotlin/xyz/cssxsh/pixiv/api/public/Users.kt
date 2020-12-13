@@ -2,10 +2,9 @@ package xyz.cssxsh.pixiv.api.public
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import xyz.cssxsh.pixiv.PublicityType
+import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.public.ListArtData
-import xyz.cssxsh.pixiv.useHttpClient
 
 suspend fun PixivClient.getUsersFavoriteWorks(
     uid: Long,
@@ -16,8 +15,9 @@ suspend fun PixivClient.getUsersFavoriteWorks(
     includeStats: Boolean = true,
     includeSanityLevel: Boolean = true,
     imageSizes: List<String> = listOf(),
-    profileImageSizes: List<String> = listOf()
-): ListArtData = useHttpClient { client ->
+    profileImageSizes: List<String> = listOf(),
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): ListArtData = useHttpClient(ignore) { client ->
     client.get(PublicApi.USERS_FAVORITE_WORKS(uid)) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -42,8 +42,9 @@ suspend fun PixivClient.getUserWork(
     includeSanityLevel: Boolean = true,
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
-    url: String = PublicApi.USERS_WORKS(uid)
-): ListArtData = useHttpClient { client ->
+    url: String = PublicApi.USERS_WORKS(uid),
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 

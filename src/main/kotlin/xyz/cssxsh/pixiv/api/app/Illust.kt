@@ -15,8 +15,9 @@ suspend fun PixivClient.illustBookmarkAdd(
     pid: Long,
     tags: List<String>,
     restrict: PublicityType = PublicityType.PUBLIC,
-    url: String = AppApi.ILLUST_BOOKMARK_ADD
-): JsonElement = useHttpClient { client ->
+    url: String = AppApi.ILLUST_BOOKMARK_ADD,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): JsonElement = useHttpClient(ignore) { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
             append("illust_id", pid.toString())
@@ -28,8 +29,9 @@ suspend fun PixivClient.illustBookmarkAdd(
 
 suspend fun PixivClient.illustBookmarkDelete(
     pid: Long,
-    url: String = AppApi.ILLUST_BOOKMARK_DELETE
-): JsonElement = useHttpClient { client ->
+    url: String = AppApi.ILLUST_BOOKMARK_DELETE,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): JsonElement = useHttpClient(ignore) { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
             append("illust_id", pid.toString())
@@ -39,8 +41,9 @@ suspend fun PixivClient.illustBookmarkDelete(
 
 suspend fun PixivClient.illustBookmarkDetail(
     pid: Long,
-    url: String = AppApi.ILLUST_BOOKMARK_DETAIL
-): BookmarkDetailSingle = useHttpClient { client ->
+    url: String = AppApi.ILLUST_BOOKMARK_DETAIL,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): BookmarkDetailSingle = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("illust_id", pid)
     }
@@ -50,8 +53,9 @@ suspend fun PixivClient.illustComments(
     pid: Long,
     offset: Long = 0,
     includeTotalComments: Boolean? = null,
-    url: String = AppApi.ILLUST_COMMENTS
-): CommentData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_COMMENTS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): CommentData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("illust_id", pid.toString())
         parameter("offset", offset)
@@ -61,8 +65,9 @@ suspend fun PixivClient.illustComments(
 
 suspend fun PixivClient.illustDetail(
     pid: Long,
-    url: String = AppApi.ILLUST_DETAIL
-): IllustSingle = useHttpClient { client ->
+    url: String = AppApi.ILLUST_DETAIL,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): IllustSingle = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("illust_id", pid.toString())
     }
@@ -72,8 +77,9 @@ suspend fun PixivClient.illustFollow(
     workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0,
-    url: String = AppApi.ILLUST_FOLLOW
-): IllustData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_FOLLOW,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): IllustData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
         parameter("restrict", restrict.value())
@@ -86,8 +92,9 @@ suspend fun PixivClient.illustMyPixiv(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_MYPIXIV
-): IllustData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_MYPIXIV,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): IllustData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
         parameter("restrict", restrict.value())
@@ -101,8 +108,9 @@ suspend fun PixivClient.illustNew(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_NEW
-): IllustData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_NEW,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): IllustData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
         parameter("restrict", restrict.value())
@@ -116,8 +124,9 @@ suspend fun PixivClient.illustRanking(
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_RANKING
-): IllustData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_RANKING,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): IllustData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("date", date)
         parameter("mode", mode?.value())
@@ -131,13 +140,15 @@ suspend fun PixivClient.illustRanking(
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_RANKING
+    url: String = AppApi.ILLUST_RANKING,
+    ignore: (Throwable) -> Boolean = { _ -> false },
 ): IllustData = illustRanking(
     date = date.format(DateTimeFormatter.ISO_DATE),
     mode = mode,
     filter = filter,
     offset = offset,
-    url = url
+    url = url,
+    ignore = ignore
 )
 
 suspend fun PixivClient.illustRecommended(
@@ -147,8 +158,9 @@ suspend fun PixivClient.illustRecommended(
     includePrivacyPolicy: Boolean = true,
     minBookmarkIdForRecentIllust: Long? = null,
     maxBookmarkIdForRecommend: Long? = null,
-    url: String = AppApi.ILLUST_RECOMMENDED
-): RecommendedData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_RECOMMENDED,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): RecommendedData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
         parameter("filter", filter)
@@ -164,8 +176,9 @@ suspend fun PixivClient.illustRelated(
     seedIllustIds: List<Long> = emptyList(),
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_RELATED
-): IllustData = useHttpClient { client ->
+    url: String = AppApi.ILLUST_RELATED,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): IllustData = useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("illust_id", pid)
         parameter("filter", filter)

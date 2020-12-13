@@ -4,12 +4,13 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonElement
 import xyz.cssxsh.pixiv.client.PixivClient
-import xyz.cssxsh.pixiv.useHttpClient
+import xyz.cssxsh.pixiv.*
 
 suspend fun PixivClient.postViewedWorks(
     pids:  List<Long>,
-    url: String = PublicApi.ME_VIEWED_WORKS
-): JsonElement = useHttpClient { client ->
+    url: String = PublicApi.ME_VIEWED_WORKS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): JsonElement = useHttpClient(ignore) { client ->
     client.post(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 

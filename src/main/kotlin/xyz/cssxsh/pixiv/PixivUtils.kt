@@ -10,9 +10,18 @@ import kotlinx.serialization.encoding.*
 import xyz.cssxsh.pixiv.client.PixivClient
 
 suspend inline fun <reified R> PixivClient.useHttpClient(
-    crossinline block: suspend PixivClient.(HttpClient) -> R
-) = httpClient().use {
-    block(it)
+    ignore: (Throwable) -> Boolean,
+    crossinline block: suspend PixivClient.(HttpClient) -> R,
+) = httpClient().use { client ->
+    runCatching {
+        block(client)
+    }.onFailure {
+        if (ignore(it).not()) {
+            throw it
+        }
+    }.getOrElse {
+        block(client)
+    }
 }
 
 typealias ParamsMap = Map<String, Any?>

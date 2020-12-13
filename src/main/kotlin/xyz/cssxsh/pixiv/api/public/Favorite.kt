@@ -2,17 +2,17 @@ package xyz.cssxsh.pixiv.api.public
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import xyz.cssxsh.pixiv.PublicityType
+import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.public.FavoriteUserData
 import xyz.cssxsh.pixiv.data.public.FavoriteWorkData
-import xyz.cssxsh.pixiv.useHttpClient
 
 suspend fun PixivClient.addFavoriteWorks(
     pid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
-    url: String = PublicApi.ME_FAVORITE_WORKS
-): FavoriteWorkData = useHttpClient { client ->
+    url: String = PublicApi.ME_FAVORITE_WORKS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): FavoriteWorkData = useHttpClient(ignore) { client ->
     client.post(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -23,8 +23,9 @@ suspend fun PixivClient.addFavoriteWorks(
 
 suspend fun PixivClient.deleteFavoriteWorks(
     pids: List<Long>,
-    url: String = PublicApi.ME_FAVORITE_WORKS
-): FavoriteWorkData = useHttpClient { client ->
+    url: String = PublicApi.ME_FAVORITE_WORKS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): FavoriteWorkData = useHttpClient(ignore) { client ->
     client.delete(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -34,8 +35,9 @@ suspend fun PixivClient.deleteFavoriteWorks(
 suspend fun PixivClient.addFavoriteUsers(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
-    url: String = PublicApi.ME_FAVORITE_USERS
-): FavoriteUserData = useHttpClient { client ->
+    url: String = PublicApi.ME_FAVORITE_USERS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): FavoriteUserData = useHttpClient(ignore) { client ->
     client.post(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -46,8 +48,9 @@ suspend fun PixivClient.addFavoriteUsers(
 
 suspend fun PixivClient.deleteFavoriteUsers(
     uids: List<Long>,
-    url: String = PublicApi.ME_FAVORITE_USERS
-): FavoriteUserData = useHttpClient { client ->
+    url: String = PublicApi.ME_FAVORITE_USERS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): FavoriteUserData = useHttpClient(ignore) { client ->
     client.delete(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 

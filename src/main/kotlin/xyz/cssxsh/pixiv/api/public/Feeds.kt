@@ -4,14 +4,15 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonElement
 import xyz.cssxsh.pixiv.client.PixivClient
-import xyz.cssxsh.pixiv.useHttpClient
+import xyz.cssxsh.pixiv.*
 
 suspend fun PixivClient.getFeeds(
     type: String = "touch_nottext",
     relation: String = "all",
     showR18: Boolean = false,
-    url: String = PublicApi.ME_FEEDS
-): JsonElement = useHttpClient { client ->
+    url: String = PublicApi.ME_FEEDS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): JsonElement = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 

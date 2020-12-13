@@ -7,7 +7,6 @@ import xyz.cssxsh.pixiv.GrantType
 import xyz.cssxsh.pixiv.api.OauthApi
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
-import xyz.cssxsh.pixiv.useHttpClient
 import java.security.MessageDigest
 import java.time.OffsetDateTime
 import java.time.Duration
@@ -40,7 +39,7 @@ abstract class AbstractPixivClient : PixivClient {
 
     override suspend fun auth(grantType: GrantType, config: PixivConfig) = auth(grantType, config, OauthApi.OAUTH_URL)
 
-    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = useHttpClient { client ->
+    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = httpClient().use { client ->
         client.post<AuthResult>(url) {
             OffsetDateTime.now().format(JapanDateTimeSerializer.dateFormat).let { time ->
                 header("X-Client-Hash", (time + config.client.hashSecret).encodeToByteArray().let { data ->

@@ -7,8 +7,9 @@ import xyz.cssxsh.pixiv.useHttpClient
 
 suspend fun PixivClient.trendingTagsIllust(
     filter: String = "for_ios",
-    url: String = AppApi.TRENDING_TAGS_ILLUST
-): TrendTagData = useHttpClient { client ->
+    url: String = AppApi.TRENDING_TAGS_ILLUST,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): TrendTagData = useHttpClient(ignore)  { client ->
     client.get(url) {
         parameter("filter", filter)
     }
@@ -16,8 +17,9 @@ suspend fun PixivClient.trendingTagsIllust(
 
 suspend fun PixivClient.trendingTagsNovel(
     filter: String = "for_ios",
-    url: String = AppApi.TRENDING_TAGS_NOVEL
-): TrendTagData = useHttpClient { client ->
+    url: String = AppApi.TRENDING_TAGS_NOVEL,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): TrendTagData = useHttpClient(ignore)  { client ->
     client.get(url) {
         parameter("filter", filter)
     }

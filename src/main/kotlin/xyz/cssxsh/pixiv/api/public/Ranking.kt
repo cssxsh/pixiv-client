@@ -4,7 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.public.RankingData
-import xyz.cssxsh.pixiv.useHttpClient
+import xyz.cssxsh.pixiv.*
 
 suspend fun PixivClient.ranking(
     type: PublicApi.RankingType,
@@ -16,8 +16,9 @@ suspend fun PixivClient.ranking(
     includeSanityLevel: Boolean = true,
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
-    url: String = PublicApi.RANKING(type)
-): RankingData = useHttpClient { client ->
+    url: String = PublicApi.RANKING(type),
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): RankingData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 

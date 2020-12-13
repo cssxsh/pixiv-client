@@ -4,7 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.public.ListArtData
-import xyz.cssxsh.pixiv.useHttpClient
+import xyz.cssxsh.pixiv.*
 
 suspend fun PixivClient.getFriendsWorks(
     page: Int = 1,
@@ -13,8 +13,9 @@ suspend fun PixivClient.getFriendsWorks(
     includeSanityLevel: Boolean = true,
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
-    url: String = PublicApi.ME_FRIENDS_WORKS
-): ListArtData = useHttpClient { client ->
+    url: String = PublicApi.ME_FRIENDS_WORKS,
+    ignore: (Throwable) -> Boolean = { _ -> false },
+): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
