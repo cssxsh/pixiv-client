@@ -29,22 +29,34 @@ suspend inline fun <R> PixivClient.downloadImages(
 
 suspend fun HttpClient.downloadIgnoreException(
     url: String,
+    socketTimeout: Long,
+    connectTimeout: Long,
     requestTimeout: Long,
     ignore: (String, Throwable) -> Boolean
 ): ByteArray = runCatching {
     get<ByteArray>(url) {
         headers["Referer"] = url
         timeout {
-            socketTimeoutMillis = 60_000
-            connectTimeoutMillis = 60_000
+            socketTimeoutMillis = socketTimeout
+            connectTimeoutMillis = connectTimeout
             requestTimeoutMillis = requestTimeout
         }
     }
-}.onFailure { if (ignore(url, it).not()) throw it }.getOrElse { downloadIgnoreException(url, requestTimeout, ignore) }
+}.onFailure { if (ignore(url, it).not()) throw it }.getOrElse {
+    downloadIgnoreException(
+        url = url,
+        socketTimeout = socketTimeout,
+        connectTimeout = connectTimeout,
+        requestTimeout = requestTimeout,
+        ignore = ignore
+    )
+}
 
 suspend inline fun <R> PixivClient.downloadImageUrls(
     urls: Iterable<String>,
     maxAsyncNum: Int = 8,
+    socketTimeout: Long = 10_000,
+    connectTimeout: Long = 10_000,
     requestTimeout: Long = 600_000,
     noinline ignore: (String, Throwable) -> Boolean = { _, _ -> false },
     crossinline block: PixivClient.(Int, String, Result<ByteArray>) -> R
@@ -54,7 +66,13 @@ suspend inline fun <R> PixivClient.downloadImageUrls(
         async {
             channel.send(url)
             runCatching {
-                client.downloadIgnoreException(url, requestTimeout, ignore)
+                client.downloadIgnoreException(
+                    url = url,
+                    socketTimeout = socketTimeout,
+                    connectTimeout = connectTimeout,
+                    requestTimeout = requestTimeout,
+                    ignore = ignore
+                )
             }.also {
                 channel.receive()
             }.let { content ->
