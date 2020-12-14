@@ -8,7 +8,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.PublicityType
-import xyz.cssxsh.pixiv.WorkType
 import xyz.cssxsh.pixiv.api.app.illustFollow
 import xyz.cssxsh.pixiv.api.app.illustMyPixiv
 import xyz.cssxsh.pixiv.api.app.illustNew
@@ -44,7 +43,7 @@ inline fun <reified T> PixivClient.timerTask(
  */
 fun PixivClient.addUserListener(
     uid: Long,
-    type: WorkType,
+    type: WorkContentType? = null,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
     block: suspend PixivClient.(IllustInfo) -> Unit

@@ -134,7 +134,7 @@ suspend fun PixivClient.userFollowing(
 
 suspend fun PixivClient.userIllusts(
     uid: Long,
-    type: WorkType = WorkType.ILLUST,
+    type: WorkContentType? = null,
     filter: String = "for_ios",
     offset: Long = 0,
     url: String = AppApi.USER_ILLUSTS,
@@ -142,7 +142,7 @@ suspend fun PixivClient.userIllusts(
 ): IllustData =  useHttpClient(ignore) { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("type", type.value())
+        parameter("type", type?.value())
         parameter("filter", filter)
         parameter("offset", offset)
     }
