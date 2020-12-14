@@ -9,18 +9,18 @@ import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import xyz.cssxsh.pixiv.client.PixivClient
 
-suspend inline fun <reified R> PixivClient.useHttpClient(
+suspend fun <R> PixivClient.useHttpClient(
     ignore: (Throwable) -> Boolean,
-    crossinline block: suspend PixivClient.(HttpClient) -> R,
-) = httpClient().use { client ->
+    block: suspend PixivClient.(HttpClient) -> R,
+): R = httpClient().use { client ->
     runCatching {
         block(client)
-    }.onFailure {
-        if (ignore(it).not()) {
-            throw it
+    }.getOrElse { throwable ->
+        if (ignore(throwable)) {
+            useHttpClient(ignore = ignore, block = block)
+        } else {
+            throw throwable
         }
-    }.getOrElse {
-        block(client)
     }
 }
 

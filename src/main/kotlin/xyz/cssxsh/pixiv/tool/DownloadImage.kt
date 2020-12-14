@@ -43,14 +43,18 @@ suspend fun HttpClient.downloadIgnoreException(
             requestTimeoutMillis = requestTimeout
         }
     }
-}.onFailure { if (ignore(url, it).not()) throw it }.getOrElse {
-    downloadIgnoreException(
-        url = url,
-        socketTimeout = socketTimeout,
-        connectTimeout = connectTimeout,
-        requestTimeout = requestTimeout,
-        ignore = ignore
-    )
+}.getOrElse { throwable ->
+    if (ignore(url, throwable)) {
+        downloadIgnoreException(
+            url = url,
+            socketTimeout = socketTimeout,
+            connectTimeout = connectTimeout,
+            requestTimeout = requestTimeout,
+            ignore = ignore
+        )
+    } else {
+        throw throwable
+    }
 }
 
 suspend inline fun <R> PixivClient.downloadImageUrls(
