@@ -7,20 +7,17 @@ import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.utils.*
 import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
-import okhttp3.Dns
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
 import okio.ByteString.Companion.toByteString
-import okhttp3.dnsoverhttps.DnsOverHttps
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import xyz.cssxsh.pixiv.client.exception.OtherClientException
 import xyz.cssxsh.pixiv.data.AuthResult
+import xyz.cssxsh.pixiv.tool.LocalDns
 import java.io.IOException
 import java.net.*
 import java.time.OffsetDateTime
@@ -50,46 +47,16 @@ open class SimplePixivClient(
         authInfo ?: autoAuthBlock()
     }
 
-    private val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
-
-    protected open fun localDns() : Dns = object : Dns {
-        val client = OkHttpClient()
-        private val doh = config.dns.toHttpUrlOrNull()?.let { dnsUrl ->
-            DnsOverHttps.Builder().apply {
-                client(client)
-                includeIPv6(false)
-                url(dnsUrl)
-                post(true)
-                resolvePrivateAddresses(true)
-                resolvePublicAddresses(true)
-            }.build()
-        } ?: Dns.SYSTEM
-
-        override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
-            if (hostIsIp(hostname)) {
-                InetAddress.getAllByName(hostname).toList()
-            } else {
-                config.cname[hostname]?.let { doh.lookup(it) } ?: doh.lookup(hostname)
-            }
-        }.let {
-            if (it.isEmpty()) {
-                InetAddress.getAllByName(hostname).toMutableList()
-            } else {
-                it.toMutableList()
-            }
-        }.apply {
-            shuffle()
-            // println("dns: $hostname: $this")
-        }
-    }
-
     private val cookiesStorage = AcceptAllCookiesStorage()
+
+    private val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
 
     override fun httpClient(): HttpClient = HttpClient(OkHttp) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
         install(HttpTimeout) {
+            // TODO: Set by Config
             socketTimeoutMillis = 30_000
             connectTimeoutMillis = 30_000
             requestTimeoutMillis = 60_000
@@ -171,8 +138,12 @@ open class SimplePixivClient(
                     sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                     hostnameVerifier { _, _ -> true }
                 }
-                // dns
-                dns(localDns())
+
+                dns(LocalDns(
+                    dnsUrl = config.dns.toHttpUrlOrNull(),
+                    host = host,
+                    cname = config.cname
+                ))
             }
         }
     }
