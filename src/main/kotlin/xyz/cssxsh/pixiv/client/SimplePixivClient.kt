@@ -57,9 +57,9 @@ open class SimplePixivClient(
         }
         install(HttpTimeout) {
             // TODO: Set by Config
-            socketTimeoutMillis = 30_000
-            connectTimeoutMillis = 30_000
-            requestTimeoutMillis = 60_000
+            socketTimeoutMillis = 15_000
+            connectTimeoutMillis = 15_000
+            requestTimeoutMillis = 20_000
         }
         install(HttpCookies) {
             storage = cookiesStorage
