@@ -17,7 +17,7 @@ suspend fun PixivClient.ranking(
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
     url: String = PublicApi.RANKING(type),
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): RankingData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)

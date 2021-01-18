@@ -14,7 +14,7 @@ suspend fun PixivClient.getFollowing(
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
     url: String = PublicApi.ME_FOLLOWING_WORKS,
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)

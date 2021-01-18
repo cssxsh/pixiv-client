@@ -10,7 +10,7 @@ import kotlinx.serialization.encoding.*
 import xyz.cssxsh.pixiv.client.PixivClient
 
 suspend fun <R> PixivClient.useHttpClient(
-    ignore: (Throwable) -> Boolean,
+    ignore: suspend (Throwable) -> Boolean,
     block: suspend PixivClient.(HttpClient) -> R,
 ): R = httpClient().use { client ->
     runCatching {

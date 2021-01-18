@@ -14,7 +14,7 @@ suspend fun PixivClient.getWorks(
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
     url: String = PublicApi.WORKS,
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
@@ -35,7 +35,7 @@ suspend fun PixivClient.worksByPid(
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
     url: String = PublicApi.WORKS_BY_PID(pid),
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)

@@ -16,7 +16,7 @@ suspend fun PixivClient.getUsersFavoriteWorks(
     includeSanityLevel: Boolean = true,
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): ListArtData = useHttpClient(ignore) { client ->
     client.get(PublicApi.USERS_FAVORITE_WORKS(uid)) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
@@ -43,7 +43,7 @@ suspend fun PixivClient.getUserWork(
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
     url: String = PublicApi.USERS_WORKS(uid),
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)

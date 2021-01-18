@@ -9,7 +9,7 @@ import xyz.cssxsh.pixiv.*
 suspend fun PixivClient.postViewedWorks(
     pids:  List<Long>,
     url: String = PublicApi.ME_VIEWED_WORKS,
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): JsonElement = useHttpClient(ignore) { client ->
     client.post(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)

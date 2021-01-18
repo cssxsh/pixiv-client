@@ -19,7 +19,7 @@ suspend fun PixivClient.getSearchWorks(
     imageSizes: List<String> = listOf(),
     profileImageSizes: List<String> = listOf(),
     url: String = PublicApi.SEARCH_WORKS,
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): ListArtData = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)

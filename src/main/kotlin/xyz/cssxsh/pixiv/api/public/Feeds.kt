@@ -11,7 +11,7 @@ suspend fun PixivClient.getFeeds(
     relation: String = "all",
     showR18: Boolean = false,
     url: String = PublicApi.ME_FEEDS,
-    ignore: (Throwable) -> Boolean = { _ -> false },
+    ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): JsonElement = useHttpClient(ignore) { client ->
     client.get(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
