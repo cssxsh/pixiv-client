@@ -19,7 +19,7 @@ import kotlin.time.ExperimentalTime
 
 fun PixivClient.task(
     name: String,
-    block: suspend PixivClient.() -> Unit
+    block: suspend PixivClient.() -> Unit,
 ) = launch(CoroutineName("${this::class.qualifiedName}#task: $name")) {
     block()
 }
@@ -29,7 +29,7 @@ inline fun <reified T> PixivClient.timerTask(
     name: String,
     delay: Long,
     origin: T,
-    crossinline block: suspend PixivClient.(prev: T) -> T
+    crossinline block: suspend PixivClient.(prev: T) -> T,
 ) = launch(CoroutineName("${this::class.qualifiedName}#timerTask: $name")) {
     var prev: T = origin
     while (isActive) {
@@ -46,12 +46,12 @@ fun PixivClient.addUserListener(
     type: WorkContentType? = null,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
-    block: suspend PixivClient.(IllustInfo) -> Unit
+    block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "UserListener($uid)", delay = delay, origin = start) {
     userIllusts(uid = uid, type = type).illusts.filter {
-             it.createDate > start
-    }.apply {
-        forEach { launch { block(it) }  }
+        it.createDate > start
+    }.onEach {
+        launch { block(it) }
     }.lastOrNull()?.createDate ?: start
 }
 
@@ -63,12 +63,12 @@ suspend fun PixivClient.addIllustNewListener(
     restrict: PublicityType = PublicityType.PUBLIC,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
-    block: suspend PixivClient.(IllustInfo) -> Unit
+    block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustNewListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
     illustNew(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
-    }.apply {
-        forEach { launch { block(it) }  }
+    }.onEach {
+        launch { block(it) }
     }.lastOrNull()?.createDate ?: start
 }
 
@@ -80,12 +80,12 @@ suspend fun PixivClient.addIllustMyPixivListener(
     restrict: PublicityType = PublicityType.PUBLIC,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
-    block: suspend PixivClient.(IllustInfo) -> Unit
+    block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustMyPixivListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
     illustMyPixiv(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
-    }.apply {
-        forEach { launch { block(it) }  }
+    }.onEach {
+        launch { block(it) }
     }.lastOrNull()?.createDate ?: start
 }
 
@@ -97,11 +97,11 @@ suspend fun PixivClient.addIllustFollowListener(
     restrict: PublicityType = PublicityType.PUBLIC,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
-    block: suspend PixivClient.(IllustInfo) -> Unit
+    block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustFollowListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
     illustFollow(workContentType = workContentType, restrict = restrict).illusts.filter {
         it.createDate > start
-    }.apply {
-        forEach { launch { block(it) }  }
+    }.onEach {
+        launch { block(it) }
     }.lastOrNull()?.createDate ?: start
 }
