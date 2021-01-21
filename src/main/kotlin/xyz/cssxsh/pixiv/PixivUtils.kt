@@ -220,19 +220,23 @@ enum class WorkContentType : ParamEnum {
 
 @Serializable
 enum class RankMode : ParamEnum {
+    // MONTH
+    MONTH,
+    // WEEK
+    WEEK,
+    WEEK_ORIGINAL,
+    WEEK_ROOKIE,
+    // DAY
     DAY,
     DAY_MALE,
     DAY_FEMALE,
-    WEEK_ORIGINAL,
-    WEEK_ROOKIE,
-    WEEK,
-    MONTH,
+    DAY_MANGA,
+    // R18
     DAY_R18,
     DAY_MALE_R18,
     DAY_FEMALE_R18,
     WEEK_R18,
-    WEEK_R18G,
-    DAY_MANGA;
+    WEEK_R18G;
 
     @Serializer(forClass = RankMode::class)
     companion object : ParamEnumSerializer<RankMode>, KSerializer<RankMode> {
