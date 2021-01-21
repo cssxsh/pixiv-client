@@ -17,11 +17,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.InetAddress
 
 open class PixivDownloader(
-    maxAsyncNum: Int = 16,
-    var blockSize: Int = 1024 * 1024,
+    maxUrlAsyncNum: Int = 16,
+    var blockSize: Int = 256 * 1024,
     var socketTimeout: Long = 15_000,
     var connectTimeout: Long = 15_000,
-    var requestTimeout: Long = 60_000,
+    var requestTimeout: Long = 15_000,
     var proxyUrl: String? = null,
     var dnsUrl: String = "https://public.dns.iij.jp/dns-query",
     var cname: Map<String, String> = emptyMap(),
@@ -58,7 +58,6 @@ open class PixivDownloader(
         }
     }
 
-
     private suspend fun HttpClient.getSizeIgnoreException(url: String): Int = runCatching {
         head<HttpResponse>(url) { headers[Referrer] = url }.contentLength()!!.toInt()
     }.getOrElse { throwable ->
@@ -69,6 +68,8 @@ open class PixivDownloader(
         }
     }
 
+    private fun IntRange.getLength() = (last - first + 1)
+
     private suspend fun HttpClient.downloadIgnoreException(
         url: String,
         range: IntRange,
@@ -76,19 +77,31 @@ open class PixivDownloader(
         get<HttpResponse>(url) {
             header(Referrer, url)
             header(Range, "bytes=${range.first}-${range.last}")
-            timeout {
-                requestTimeoutMillis = maxOf((range.last - range.first + 1).toLong(), requestTimeout)
-            }
-        }.readBytes((range.last - range.first + 1))
+        }.readBytes(range.getLength())
     }.getOrElse { throwable ->
         if (ignore(url, throwable, "bytes=${range.first}-${range.last}")) {
+            // delay((0..999L).random())
             downloadIgnoreException(url = url, range = range)
         } else {
             throw throwable
         }
     }
 
-    private val channel = Channel<String>(maxAsyncNum)
+    private val urlChannel = Channel<String>(maxUrlAsyncNum)
+
+    private suspend fun HttpClient.downloadRange(
+        url: String,
+        length: Int
+    ): ByteArray = withContext(Dispatchers.IO) {
+        (0 until length step blockSize).map { offset ->
+            async {
+                downloadIgnoreException(
+                    url = url,
+                    range = offset until minOf(offset + blockSize, length)
+                )
+            }
+        }.awaitAll().reduce { acc, bytes -> acc + bytes }
+    }
 
     suspend fun <R> downloadImageUrls(
         urls: List<String>,
@@ -97,22 +110,14 @@ open class PixivDownloader(
         urls.mapIndexed { index, url ->
             async {
                 httpClient().use { client ->
-                    runCatching {
-                        val length = client.getSizeIgnoreException(url = url)
-                        (0 until length step blockSize).map { offset ->
-                            async {
-                                channel.send(url)
-                                kotlin.runCatching {
-                                    client.downloadIgnoreException(
-                                        url = url,
-                                        range = offset until minOf(offset + blockSize, length)
-                                    )
-                                }.also {
-                                    channel.receive()
-                                }.getOrThrow()
-                            }
-                        }.awaitAll().reduce { acc, bytes -> acc + bytes }
+                    urlChannel.send("$url \t| $index")
+                    client.runCatching {
+                        downloadRange(
+                            url = url,
+                            length = getSizeIgnoreException(url = url)
+                        )
                     }.let { result ->
+                        urlChannel.receive()
                         block(index, url, result)
                     }
                 }
