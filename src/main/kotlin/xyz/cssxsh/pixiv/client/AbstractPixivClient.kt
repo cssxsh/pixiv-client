@@ -5,6 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.GrantType
 import xyz.cssxsh.pixiv.api.OauthApi
+import xyz.cssxsh.pixiv.client.PixivAccessToken.Companion.PixivAuthMark
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
 import java.security.MessageDigest
@@ -41,6 +42,7 @@ abstract class AbstractPixivClient : PixivClient {
 
     suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = httpClient().use { client ->
         client.post<AuthResult>(url) {
+            attributes.put(PixivAuthMark, Unit)
             OffsetDateTime.now().format(JapanDateTimeSerializer.dateFormat).let { time ->
                 header("X-Client-Hash", (time + config.client.hashSecret).encodeToByteArray().let { data ->
                     MessageDigest.getInstance("md5").digest(data).asUByteArray().joinToString("") {

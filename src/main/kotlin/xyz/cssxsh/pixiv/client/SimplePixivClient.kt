@@ -9,7 +9,6 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
@@ -99,20 +98,6 @@ open class SimplePixivClient(
 
         engine {
             config {
-                addInterceptor { chain ->
-                    chain.request().newBuilder().apply {
-                        config.headers.forEach(::header)
-                        if ("X-Client-Hash" !in build().headers.names()) {
-                            runBlocking {
-                                runCatching {
-                                    header("Authorization", "Bearer ${getAuthInfo().accessToken}")
-                                }
-                            }
-                        }
-                    }.build().let {
-                        chain.proceed(it)
-                    }
-                }
 
                 Tool.getProxyByUrl(config.proxy)?.let { proxy ->
                     proxySelector(object : ProxySelector() {
