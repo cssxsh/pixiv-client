@@ -4,17 +4,12 @@ import io.ktor.client.features.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 
-class OtherClientException(response: HttpResponse, val jsonElement: JsonElement): ResponseException(response) {
-    constructor(response: HttpResponse, json: String) : this(
-        response,
-        Json.parseToJsonElement(json)
-    )
+class OtherClientException(response: HttpResponse, content: String) : ResponseException(response, content) {
 
-    override val message: String = jsonElement.toString()
+    val json = Json.parseToJsonElement(content)
 
     override fun toString(): String = response.run {
-        "OtherException(url: ${call.request.url}, invalid: ${status}, headers: ${request.headers.toMap()}, json: ${jsonElement})"
+        "OtherException(url: ${call.request.url}, invalid: ${status}, headers: ${request.headers.toMap()}, json: ${json})"
     }
 }

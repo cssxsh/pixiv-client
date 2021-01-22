@@ -7,12 +7,10 @@ import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okio.ByteString.Companion.toByteString
 import xyz.cssxsh.pixiv.client.exception.ApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import xyz.cssxsh.pixiv.client.exception.OtherClientException
@@ -27,39 +25,37 @@ import kotlin.coroutines.EmptyCoroutineContext
 open class SimplePixivClient(
     parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
     coroutineName: String = "SimplePixivClient",
-    override val config: PixivConfig
+    override val config: PixivConfig,
 ) : PixivClient, AbstractPixivClient() {
 
     constructor(
         parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
         coroutineName: String = "SimplePixivClient",
-        block: PixivConfig.() -> Unit
+        block: PixivConfig.() -> Unit,
     ) : this(parentCoroutineContext, coroutineName, PixivConfig().apply(block))
 
     override val coroutineContext: CoroutineContext by lazy {
         parentCoroutineContext + CoroutineName(coroutineName)
     }
 
-    private fun autoAuthBlock() = runBlocking { autoAuth() }
-
     override suspend fun getAuthInfo(): AuthResult.AuthInfo = synchronized(expiresTime) {
         if (expiresTime <= OffsetDateTime.now()) authInfo = null
-        authInfo ?: autoAuthBlock()
-    }
+        authInfo
+    } ?: autoAuth()
 
     private val cookiesStorage = AcceptAllCookiesStorage()
 
     private val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
 
     override fun httpClient(): HttpClient = HttpClient(OkHttp) {
-        install(JsonFeature) {
+        Json {
             serializer = KotlinxSerializer()
         }
         install(HttpTimeout) {
             // TODO: Set by Config
             socketTimeoutMillis = 15_000
             connectTimeoutMillis = 15_000
-            requestTimeoutMillis = 20_000
+            requestTimeoutMillis = 15_000
         }
         install(HttpCookies) {
             storage = cookiesStorage
@@ -69,43 +65,38 @@ open class SimplePixivClient(
             deflate()
             identity()
         }
-        expectSuccess = false
         HttpResponseValidator {
-            validateResponse { response ->
-                val statusCode = response.status.value
-                when (statusCode) {
-                    in 300..399 -> throw RedirectResponseException(response)
-                    in 400..499 -> response.run {
-                            val content = content.toByteArray().toByteString().string(charset() ?: Charsets.UTF_8)
+            handleResponseException { cause ->
+                if (cause is ClientRequestException) {
+                    cause.response.readText().let { content ->
+                        runCatching {
+                            ApiException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
 
-                            runCatching {
-                                ApiException(response, content)
-                            }.onSuccess {
-                                throw it
-                            }
+                        runCatching {
+                            AuthException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
 
-                            runCatching {
-                                AuthException(response, content)
-                            }.onSuccess {
-                                throw it
-                            }
-
-                            runCatching {
-                                OtherClientException(response, content)
-                            }.onSuccess {
-                                throw it
-                            }
-
-                            throw ClientRequestException(response)
+                        runCatching {
+                            OtherClientException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
                     }
-                    in 500..599 -> throw ServerResponseException(response)
-                }
-
-                if (statusCode >= 600) {
-                    throw ResponseException(response)
                 }
             }
         }
+
+        install(PixivAccessToken) {
+            taken = {
+                getAuthInfo().accessToken
+            }
+        }
+
         engine {
             config {
                 addInterceptor { chain ->
@@ -126,8 +117,9 @@ open class SimplePixivClient(
                 Tool.getProxyByUrl(config.proxy)?.let { proxy ->
                     proxySelector(object : ProxySelector() {
                         override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
-                            if ( uri?.host !in config.cname) add(proxy)
+                            if (uri?.host !in config.cname) add(proxy)
                         }
+
                         override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
                             println("connectFailed； $uri")
                         }
