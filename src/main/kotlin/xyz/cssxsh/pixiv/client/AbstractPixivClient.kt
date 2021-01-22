@@ -66,8 +66,10 @@ abstract class AbstractPixivClient : PixivClient {
             })
         }.info
     }.also {
-        expiresTime = OffsetDateTime.now().withNano(0) + Duration.ofSeconds(it.expiresIn - 10)
-        authInfo = it
+        synchronized(expiresTime) {
+            expiresTime = OffsetDateTime.now().withNano(0) + Duration.ofSeconds(it.expiresIn - 10)
+            authInfo = it
+        }
         config {
             refreshToken = it.refreshToken
         }
