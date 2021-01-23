@@ -136,14 +136,14 @@ suspend fun PixivClient.illustRanking(
 }
 
 suspend fun PixivClient.illustRanking(
-    date: LocalDate,
+    date: LocalDate?,
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
     url: String = AppApi.ILLUST_RANKING,
     ignore: suspend (Throwable) -> Boolean = { _ -> false },
 ): IllustData = illustRanking(
-    date = date.format(DateTimeFormatter.ISO_DATE),
+    date = date?.format(DateTimeFormatter.ISO_DATE),
     mode = mode,
     filter = filter,
     offset = offset,
