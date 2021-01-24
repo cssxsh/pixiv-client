@@ -68,7 +68,7 @@ data class IllustInfo(
     fun getImageUrls(): List<FileUrls> =
         if (pageCount == 1) listOf(metaSinglePage + imageUrls) else metaPages.map { it.imageUrls }
 
-    fun getOriginUrl(): List<String> = getImageUrls().map { urls ->
+    fun getOriginImageUrls(): List<String> = getImageUrls().map { urls ->
         urls.filter { "origin" in it.key }.values.first()
     }.sorted()
 }
