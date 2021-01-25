@@ -42,6 +42,7 @@ kotlin {
             languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
             languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
             languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
+            languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
         }
     }
 }
