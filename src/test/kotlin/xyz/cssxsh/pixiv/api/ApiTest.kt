@@ -5,7 +5,7 @@ import xyz.cssxsh.pixiv.client.SimplePixivClient
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class ApiTest {
-    val pixivClient = SimplePixivClient {
+    val client = SimplePixivClient {
         RubySSLFactory = true
         refreshToken = "dmQyznswcjxsZp4oTTMTluQZNtLtX4HPaWSFGiQrAOY"
     }

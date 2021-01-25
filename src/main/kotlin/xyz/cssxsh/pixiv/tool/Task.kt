@@ -8,12 +8,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.PublicityType
-import xyz.cssxsh.pixiv.api.app.illustFollow
-import xyz.cssxsh.pixiv.api.app.illustMyPixiv
-import xyz.cssxsh.pixiv.api.app.illustNew
-import xyz.cssxsh.pixiv.api.app.userIllusts
+import xyz.cssxsh.pixiv.api.apps.illustFollow
+import xyz.cssxsh.pixiv.api.apps.illustMyPixiv
+import xyz.cssxsh.pixiv.api.apps.illustNew
+import xyz.cssxsh.pixiv.api.apps.userIllusts
 import xyz.cssxsh.pixiv.client.PixivClient
-import xyz.cssxsh.pixiv.data.app.IllustInfo
+import xyz.cssxsh.pixiv.data.apps.IllustInfo
 import java.time.OffsetDateTime
 import kotlin.time.ExperimentalTime
 
