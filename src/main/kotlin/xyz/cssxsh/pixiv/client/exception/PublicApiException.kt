@@ -4,13 +4,13 @@ import io.ktor.client.features.*
 import io.ktor.client.statement.*
 import io.ktor.util.*
 import kotlinx.serialization.json.Json
-import xyz.cssxsh.pixiv.data.ApiError
+import xyz.cssxsh.pixiv.data.PublicError
 
-class ApiException(response: HttpResponse, content: String) : ResponseException(response, content) {
+class PublicApiException(response: HttpResponse, content: String) : ResponseException(response, content) {
 
-    val json: ApiError = Json.decodeFromString(ApiError.serializer(), content)
+    val json: PublicError = Json.decodeFromString(PublicError.serializer(), content)
 
-    override val message: String = json.error.message
+    override val message: String = json.errors.toString()
 
     override fun toString(): String = response.run {
         "ApiException(url: ${call.request.url}, invalid: ${status}, header: ${request.headers.toMap()}, error: ${json})"

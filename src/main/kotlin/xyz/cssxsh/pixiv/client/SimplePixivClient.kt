@@ -10,9 +10,10 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineName
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import xyz.cssxsh.pixiv.client.exception.ApiException
+import xyz.cssxsh.pixiv.client.exception.AppApiException
 import xyz.cssxsh.pixiv.client.exception.AuthException
 import xyz.cssxsh.pixiv.client.exception.OtherClientException
+import xyz.cssxsh.pixiv.client.exception.PublicApiException
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.tool.LocalDns
 import java.io.IOException
@@ -69,7 +70,13 @@ open class SimplePixivClient(
                 if (cause is ClientRequestException) {
                     cause.response.readText().let { content ->
                         runCatching {
-                            ApiException(cause.response, content)
+                            AppApiException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
+
+                        runCatching {
+                            PublicApiException(cause.response, content)
                         }.onSuccess {
                             throw it
                         }

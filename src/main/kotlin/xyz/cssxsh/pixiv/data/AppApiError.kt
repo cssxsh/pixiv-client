@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ApiError(
+data class AppApiError(
     @SerialName("error")
     val error: ErrorInfo
 ) {
