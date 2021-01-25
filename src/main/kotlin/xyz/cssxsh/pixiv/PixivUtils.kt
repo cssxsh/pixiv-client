@@ -49,19 +49,23 @@ open class PixivEnumSerializer<T>(
         valueOf(decoder.decodeString().toUpperCase())
 }
 
-@Serializable
-enum class GrantType : ParamEnum {
+open class PixivTypeSerializer<T>(
+    with: KClass<T>,
+    private val get: (index: Int) -> T,
+) : KSerializer<T> where T : PixivParam, T : Enum<T> {
+
+    override val descriptor: SerialDescriptor = buildSerialDescriptor(with.qualifiedName!!, SerialKind.ENUM)
+
+    override fun serialize(encoder: Encoder, value: T) =
+        encoder.encodeString(value.value())
+
+    override fun deserialize(decoder: Decoder): T =
+        get(decoder.decodeInt())
+}
+
+enum class GrantType : PixivParam {
     PASSWORD,
     REFRESH_TOKEN;
-
-    @Serializer(forClass = GrantType::class)
-    companion object : ParamEnumSerializer<GrantType>, KSerializer<GrantType> {
-
-        override val serialName: String = "ParamEnumSerializer<${GrantType::class}>"
-
-        override fun deserialize(decoder: Decoder): GrantType =
-            valueOf(decoder.decodeString().toUpperCase())
-    }
 }
 
 @Serializable(with = SearchMode.Companion::class)
@@ -196,6 +200,37 @@ enum class RankMode : PixivParam {
 
     companion object : PixivEnumSerializer<RankMode>(
         with = RankMode::class,
+        valueOf = ::enumValueOf
+    )
+}
+
+@Serializable(with = SanityLevel.Companion::class)
+enum class SanityLevel(val level: Int) : PixivParam {
+    UNCHECKED(0),
+    WHITE(2),
+    SEMI_BLACK(4),
+    BLACK(6);
+
+    companion object : PixivEnumSerializer<SanityLevel>(
+        with = SanityLevel::class,
+        valueOf = ::enumValueOf
+    )
+}
+
+@Serializable(with = AgeLimit.Companion::class)
+enum class AgeLimit : PixivParam {
+    ALL {
+        override fun value() = "all-age"
+    },
+    R18 {
+        override fun value() = "r18"
+    },
+    R18G {
+        override fun value() = "r18g"
+    };
+
+    companion object : PixivEnumSerializer<AgeLimit>(
+        with = AgeLimit::class,
         valueOf = ::enumValueOf
     )
 }
