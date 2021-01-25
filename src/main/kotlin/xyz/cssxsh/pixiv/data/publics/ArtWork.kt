@@ -1,18 +1,17 @@
-package xyz.cssxsh.pixiv.data.public
+package xyz.cssxsh.pixiv.data.publics
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.JsonElement
-import xyz.cssxsh.pixiv.PublicityType
-import xyz.cssxsh.pixiv.FileUrls
-import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
+import xyz.cssxsh.pixiv.*
+import xyz.cssxsh.pixiv.data.JapanLocalDateTimeSerializer
 import xyz.cssxsh.pixiv.data.Metadata
 import java.time.OffsetDateTime
 
 @Serializable
 data class ArtWork(
     @SerialName("age_limit")
-    val ageLimit: String,
+    val ageLimit: AgeLimit,
     @SerialName("book_style")
     val bookStyle: String,
     @SerialName("caption")
@@ -20,7 +19,7 @@ data class ArtWork(
     @SerialName("content_type")
     val contentType: JsonElement,
     @SerialName("created_time")
-    @Serializable(with = JapanDateTimeSerializer::class)
+    @Serializable(with = JapanLocalDateTimeSerializer::class)
     val createdTime: OffsetDateTime,
     @SerialName("favorite_id")
     val favoriteId: Long?,
@@ -39,12 +38,13 @@ data class ArtWork(
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("publicity")
+    @Serializable(with = PublicityTypeSerializer::class)
     val publicity: PublicityType,
     @SerialName("reuploaded_time")
-    @Serializable(with = JapanDateTimeSerializer::class)
+    @Serializable(with = JapanLocalDateTimeSerializer::class)
     val reUploadedTime: OffsetDateTime,
     @SerialName("sanity_level")
-    val sanityLevel: String,
+    val sanityLevel: SanityLevel,
     @SerialName("stats")
     val stats: ArtStats?,
     @SerialName("tags")
@@ -60,6 +60,18 @@ data class ArtWork(
     @SerialName("width")
     val width: Int
 ) {
+    companion object {
+        object PublicityTypeSerializer : PixivTypeSerializer<PublicityType>(
+            with = PublicityType::class,
+            get = { PublicityType.values()[it] }
+        )
+/*
+        object SanityLevelSerializer : PixivTypeSerializer<SanityLevel>(
+            with = SanityLevel::class,
+            get = { level -> SanityLevel.values().first { it.level == level } }
+        )*/
+    }
+
     @Serializable
     data class ArtStats(
         @SerialName("commented_count")
@@ -79,7 +91,7 @@ data class ArtWork(
         @SerialName("account")
         val account: String,
         @SerialName("id")
-        val uid: Int,
+        val uid: Long,
         @SerialName("is_follower")
         val isFollower: Boolean?,
         @SerialName("is_following")
