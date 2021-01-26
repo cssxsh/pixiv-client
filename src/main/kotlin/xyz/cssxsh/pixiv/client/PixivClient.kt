@@ -10,7 +10,9 @@ import xyz.cssxsh.pixiv.data.AuthResult
  */
 interface PixivClient : CoroutineScope {
 
-    fun httpClient(): HttpClient
+    suspend fun <R> useHttpClient(
+        block: suspend PixivClient.(HttpClient) -> R,
+    ): R
 
     val config: PixivConfig
 

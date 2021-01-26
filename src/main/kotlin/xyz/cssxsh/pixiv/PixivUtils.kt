@@ -2,29 +2,11 @@
 
 package xyz.cssxsh.pixiv
 
-import io.ktor.client.*
-import io.ktor.utils.io.core.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.Encoder
-import xyz.cssxsh.pixiv.client.PixivClient
 import kotlin.reflect.KClass
-
-suspend fun <R> PixivClient.useHttpClient(
-    ignore: suspend (Throwable) -> Boolean,
-    block: suspend PixivClient.(HttpClient) -> R,
-): R = httpClient().use { client ->
-    runCatching {
-        block(client)
-    }.getOrElse { throwable ->
-        if (ignore(throwable)) {
-            useHttpClient(ignore = ignore, block = block)
-        } else {
-            throw throwable
-        }
-    }
-}
 
 typealias HeadersMap = Map<String, String>
 

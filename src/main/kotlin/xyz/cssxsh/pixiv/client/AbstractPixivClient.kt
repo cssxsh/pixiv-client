@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.client
 
+import io.ktor.client.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -17,6 +18,28 @@ abstract class AbstractPixivClient : PixivClient {
     protected open var authInfo: AuthResult.AuthInfo? = null
 
     protected open var expiresTime: OffsetDateTime = OffsetDateTime.now().withNano(0)
+
+    protected abstract val apiIgnore: suspend (Throwable) -> Boolean
+
+    protected abstract fun httpClient(): HttpClient
+
+    protected open suspend fun <R> useHttpClient(
+        ignore: suspend (Throwable) -> Boolean,
+        block: suspend PixivClient.(HttpClient) -> R,
+    ): R = httpClient().use { client ->
+        runCatching {
+            block(client)
+        }.getOrElse { throwable ->
+            if (ignore(throwable)) {
+                useHttpClient(ignore = ignore, block = block)
+            } else {
+                throw throwable
+            }
+        }
+    }
+
+    override suspend fun <R> useHttpClient(block: suspend PixivClient.(HttpClient) -> R): R =
+        useHttpClient(ignore = apiIgnore, block)
 
     override suspend fun autoAuth(): AuthResult.AuthInfo = config.run {
         refreshToken?.let { token ->
@@ -40,7 +63,7 @@ abstract class AbstractPixivClient : PixivClient {
 
     override suspend fun auth(grantType: GrantType, config: PixivConfig) = auth(grantType, config, OauthApi.OAUTH_URL)
 
-    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = httpClient().use { client ->
+    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = useHttpClient { client ->
         client.post<AuthResult>(url) {
             attributes.put(PixivAuthMark, Unit)
             OffsetDateTime.now().format(JapanDateTimeSerializer.dateFormat).let { time ->

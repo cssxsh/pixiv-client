@@ -13,8 +13,7 @@ suspend fun PixivClient.getSearchWorks(
     period: PeriodType = PeriodType.ALL,
     config: PublicApiConfig,
     url: String = PublicApi.SEARCH_WORKS,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): ListArtData = useHttpClient(ignore) { client ->
+): ListArtData = useHttpClient { client ->
     client.get(url) {
         init(config)
 

@@ -11,8 +11,7 @@ suspend fun PixivClient.addFavoriteWorks(
     pid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     url: String = PublicApi.ME_FAVORITE_WORKS,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): FavoriteWorkData = useHttpClient(ignore) { client ->
+): FavoriteWorkData = useHttpClient { client ->
     client.post(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -24,8 +23,7 @@ suspend fun PixivClient.addFavoriteWorks(
 suspend fun PixivClient.deleteFavoriteWorks(
     pids: List<Long>,
     url: String = PublicApi.ME_FAVORITE_WORKS,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): FavoriteWorkData = useHttpClient(ignore) { client ->
+): FavoriteWorkData = useHttpClient { client ->
     client.delete(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -36,8 +34,7 @@ suspend fun PixivClient.addFavoriteUsers(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     url: String = PublicApi.ME_FAVORITE_USERS,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): FavoriteUserData = useHttpClient(ignore) { client ->
+): FavoriteUserData = useHttpClient { client ->
     client.post(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 
@@ -49,8 +46,7 @@ suspend fun PixivClient.addFavoriteUsers(
 suspend fun PixivClient.deleteFavoriteUsers(
     uids: List<Long>,
     url: String = PublicApi.ME_FAVORITE_USERS,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): FavoriteUserData = useHttpClient(ignore) { client ->
+): FavoriteUserData = useHttpClient { client ->
     client.delete(url) {
         header(HttpHeaders.Referrer, PublicApi.REFERER)
 

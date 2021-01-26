@@ -47,6 +47,8 @@ open class SimplePixivClient(
 
     private val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
 
+    override val apiIgnore: suspend (Throwable) -> Boolean = { true }
+
     override fun httpClient(): HttpClient = HttpClient(OkHttp) {
         Json {
             serializer = KotlinxSerializer()

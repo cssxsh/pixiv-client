@@ -8,8 +8,7 @@ import xyz.cssxsh.pixiv.*
 suspend fun PixivClient.ugoiraMetadata(
     pid: Long,
     url: String = AppApi.UGOIRA_METADATA,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): UgoiraMetadata = useHttpClient(ignore) { client ->
+): UgoiraMetadata = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid)
     }

@@ -10,8 +10,7 @@ suspend fun PixivClient.getUsersFavoriteWorks(
     publicity: PublicityType = PublicityType.PUBLIC,
     includeWork: Boolean = true,
     config: PublicApiConfig,
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): ListArtData = useHttpClient(ignore) { client ->
+): ListArtData = useHttpClient { client ->
     client.get(PublicApi.USERS_FAVORITE_WORKS(uid)) {
         init(config)
 
@@ -26,8 +25,7 @@ suspend fun PixivClient.getUserWorks(
     publicity: PublicityType = PublicityType.PUBLIC,
     config: PublicApiConfig,
     url: String = PublicApi.USERS_WORKS(uid),
-    ignore: suspend (Throwable) -> Boolean = { _ -> false },
-): ListArtData = useHttpClient(ignore) { client ->
+): ListArtData = useHttpClient { client ->
     client.get(url) {
         init(config)
 
