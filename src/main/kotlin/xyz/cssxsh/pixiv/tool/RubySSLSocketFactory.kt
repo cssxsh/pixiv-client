@@ -1,4 +1,4 @@
-package xyz.cssxsh.pixiv.client
+package xyz.cssxsh.pixiv.tool
 
 import java.net.InetAddress
 import java.net.Socket
@@ -6,7 +6,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
-object RubySSLSocketFactory : SSLSocketFactory() {
+internal object RubySSLSocketFactory : SSLSocketFactory() {
 
     private fun Socket.setServerNames(): Socket = when(this) {
         is SSLSocket -> apply {
@@ -22,7 +22,6 @@ object RubySSLSocketFactory : SSLSocketFactory() {
     }
 
     private val socketFactory: SSLSocketFactory = SSLContext.getDefault().socketFactory
-
 
     override fun createSocket(socket: Socket?, host: String?, port: Int, autoClose: Boolean): Socket? =
         socketFactory.createSocket(socket, host, port, autoClose)?.setServerNames()

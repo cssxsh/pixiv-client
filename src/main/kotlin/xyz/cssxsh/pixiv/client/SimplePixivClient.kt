@@ -16,6 +16,8 @@ import xyz.cssxsh.pixiv.client.exception.OtherClientException
 import xyz.cssxsh.pixiv.client.exception.PublicApiException
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.tool.LocalDns
+import xyz.cssxsh.pixiv.tool.RubySSLSocketFactory
+import xyz.cssxsh.pixiv.tool.RubyX509TrustManager
 import java.io.IOException
 import java.net.*
 import java.time.OffsetDateTime
