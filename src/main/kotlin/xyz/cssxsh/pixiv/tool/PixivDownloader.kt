@@ -12,26 +12,57 @@ import io.ktor.http.HttpHeaders.Range
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import xyz.cssxsh.pixiv.client.Tool
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import java.net.InetAddress
+import java.io.IOException
+import java.net.*
 
 open class PixivDownloader(
-    maxUrlAsyncNum: Int = 16,
-    var blockSize: Int = 256 * 1024,
-    var socketTimeout: Long = 15_000,
-    var connectTimeout: Long = 15_000,
-    var requestTimeout: Long = 15_000,
-    var proxyUrl: String? = null,
-    var dnsUrl: String = "https://public.dns.iij.jp/dns-query",
-    var cname: Map<String, String> = emptyMap(),
-    host: Map<String, List<String>> = emptyMap(),
-    var ignore: (String, Throwable, String) -> Boolean = { _, _, _ -> false },
+    private val maxUrlAsyncNum: Int,
+    private val blockSize: Int,
+    private val socketTimeout: Long,
+    private val connectTimeout: Long,
+    private val requestTimeout: Long,
+    private val proxySelector: ProxySelector?,
+    private val dns: LocalDns,
+    private val ignore: (String, Throwable, String) -> Boolean,
 ) {
 
-    private val host: MutableMap<String, List<InetAddress>> = host.mapValues { (_, ips) ->
-        ips.map { InetAddress.getByName(it) }
-    }.toMutableMap()
+    private val urlChannel = Channel<String>(maxUrlAsyncNum)
+
+    constructor(
+        maxUrlAsyncNum: Int = 32,
+        blockSize: Int = 256 * 1024,
+        socketTimeout: Long = 10_000,
+        connectTimeout: Long = 10_000,
+        requestTimeout: Long = 10_000,
+        proxyUrl: String? = null,
+        dns: String = "https://public.dns.iij.jp/dns-query",
+        initHost: Map<String, List<String>> = emptyMap(),
+        cname: Map<String, String> = emptyMap(),
+        ignore: (String, Throwable, String) -> Boolean = { _, _, _ -> false },
+    ) : this(
+        maxUrlAsyncNum = maxUrlAsyncNum,
+        blockSize = blockSize,
+        socketTimeout = socketTimeout,
+        connectTimeout = connectTimeout,
+        requestTimeout = requestTimeout,
+        proxySelector = proxyUrl?.toProxyConfig()?.let { proxy ->
+            object : ProxySelector() {
+                override fun select(uri: URI?) = mutableListOf<Proxy>().apply {
+                    if (uri?.host !in cname) add(proxy)
+                }
+
+                override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
+                    println("connectFailed； $uri")
+                }
+            }
+        },
+        dns = LocalDns(
+            dns = dns,
+            initHost = initHost,
+            cname = cname
+        ),
+        ignore = ignore,
+    )
 
     private fun httpClient(): HttpClient = HttpClient(OkHttp) {
         ContentEncoding {
@@ -42,20 +73,26 @@ open class PixivDownloader(
         install(HttpTimeout) {
             socketTimeoutMillis = socketTimeout
             connectTimeoutMillis = connectTimeout
-            connectTimeoutMillis = requestTimeout
+            requestTimeoutMillis = requestTimeout
         }
         engine {
             config {
-                Tool.getProxyByUrl(proxyUrl)?.let {
-                    proxy(it)
+                proxySelector?.let {
+                    proxySelector(it)
                 }
-                dns(LocalDns(
-                    dnsUrl = dnsUrl.toHttpUrlOrNull(),
-                    host = host,
-                    cname = cname
-                ))
+                dns(dns)
             }
         }
+    }
+
+    private suspend fun <T, R> Iterable<T>.asyncMapIndexed(
+        transform: suspend (Int, T) -> R,
+    ): List<R> = withContext(Dispatchers.IO) {
+        mapIndexed { index, value ->
+            async {
+                transform(index, value)
+            }
+        }.awaitAll()
     }
 
     private suspend fun HttpClient.getSizeIgnoreException(url: String): Int = runCatching {
@@ -70,58 +107,55 @@ open class PixivDownloader(
 
     private fun IntRange.getLength() = (last - first + 1)
 
+    private fun IntRange.getHeader() = "bytes=${first}-${last}"
+
     private suspend fun HttpClient.downloadIgnoreException(
         url: String,
         range: IntRange,
     ): ByteArray = runCatching {
-        get<HttpResponse>(url) {
+        get<ByteArray>(url) {
             header(Referrer, url)
-            header(Range, "bytes=${range.first}-${range.last}")
-        }.readBytes(range.getLength())
+            header(Range, range.getHeader())
+        }.also {
+            check(it.size == range.getLength()) { "Expected ${range.getLength()}, actual ${it.size}" }
+        }
     }.getOrElse { throwable ->
-        if (ignore(url, throwable, "bytes=${range.first}-${range.last}")) {
-            // delay((0..999L).random())
+        if (isActive && ignore(url, throwable, range.getHeader())) {
             downloadIgnoreException(url = url, range = range)
         } else {
             throw throwable
         }
     }
 
-    private val urlChannel = Channel<String>(maxUrlAsyncNum)
-
     private suspend fun HttpClient.downloadRange(
         url: String,
-        length: Int
-    ): ByteArray = withContext(Dispatchers.IO) {
-        (0 until length step blockSize).map { offset ->
-            async {
-                downloadIgnoreException(
-                    url = url,
-                    range = offset until minOf(offset + blockSize, length)
-                )
-            }
-        }.awaitAll().reduce { acc, bytes -> acc + bytes }
-    }
+        length: Int,
+    ): ByteArray = (0 until length step blockSize).asyncMapIndexed { _, offset ->
+        downloadIgnoreException(
+            url = url,
+            range = offset until minOf(offset + blockSize, length)
+        )
+    }.reduce { accumulator, bytes -> accumulator + bytes }
+
+    private suspend fun HttpClient.download(
+        url: String,
+    ): ByteArray = downloadRange(
+        url = url,
+        length = getSizeIgnoreException(url = url)
+    )
 
     suspend fun <R> downloadImageUrls(
         urls: List<String>,
-        block: (index: Int, url: String, result: Result<ByteArray>) -> R,
-    ): List<R> = withContext(Dispatchers.IO) {
-        urls.mapIndexed { index, url ->
-            async {
-                httpClient().use { client ->
-                    urlChannel.send("$url \t| $index")
-                    client.runCatching {
-                        downloadRange(
-                            url = url,
-                            length = getSizeIgnoreException(url = url)
-                        )
-                    }.let { result ->
-                        urlChannel.receive()
-                        block(index, url, result)
-                    }
-                }
+        block: (url: String, result: Result<ByteArray>) -> R,
+    ): List<R> = urls.asyncMapIndexed { _, url ->
+        urlChannel.send(url)
+        httpClient().use { client ->
+            client.runCatching {
+                download(url = url)
             }
-        }.awaitAll()
+        }.let { result ->
+            urlChannel.receive()
+            block(url, result)
+        }
     }
 }

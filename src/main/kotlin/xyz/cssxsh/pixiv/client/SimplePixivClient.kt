@@ -18,6 +18,7 @@ import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.tool.LocalDns
 import xyz.cssxsh.pixiv.tool.RubySSLSocketFactory
 import xyz.cssxsh.pixiv.tool.RubyX509TrustManager
+import xyz.cssxsh.pixiv.tool.toProxyConfig
 import java.io.IOException
 import java.net.*
 import java.time.OffsetDateTime
@@ -109,8 +110,7 @@ open class SimplePixivClient(
 
         engine {
             config {
-
-                Tool.getProxyByUrl(config.proxy)?.let { proxy ->
+                config.proxy?.toProxyConfig()?.let { proxy ->
                     proxySelector(object : ProxySelector() {
                         override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
                             if (uri?.host !in config.cname) add(proxy)

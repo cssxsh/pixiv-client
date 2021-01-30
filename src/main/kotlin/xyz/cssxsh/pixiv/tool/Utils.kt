@@ -2,6 +2,8 @@
 
 package xyz.cssxsh.pixiv.tool
 
+import io.ktor.client.engine.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -13,6 +15,7 @@ import xyz.cssxsh.pixiv.api.apps.illustMyPixiv
 import xyz.cssxsh.pixiv.api.apps.illustNew
 import xyz.cssxsh.pixiv.api.apps.userIllusts
 import xyz.cssxsh.pixiv.client.PixivClient
+import xyz.cssxsh.pixiv.client.exception.ProxyException
 import xyz.cssxsh.pixiv.data.apps.IllustInfo
 import java.time.OffsetDateTime
 import kotlin.time.ExperimentalTime
@@ -104,4 +107,12 @@ suspend fun PixivClient.addIllustFollowListener(
     }.onEach {
         launch { block(it) }
     }.lastOrNull()?.createDate ?: start
+}
+
+internal fun String.toProxyConfig(): ProxyConfig = Url(this).let { url ->
+    when (url.protocol.name) {
+        "http" -> ProxyBuilder.http(url)
+        "socks", "socks4", "socks5" -> ProxyBuilder.socks(url.host, url.port)
+        else -> throw ProxyException(this)
+    }
 }
