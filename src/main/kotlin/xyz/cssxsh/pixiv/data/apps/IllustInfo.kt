@@ -13,7 +13,7 @@ data class IllustInfo(
     val caption: String,
     @SerialName("create_date")
     @Serializable(with = JapanDateTimeSerializer::class)
-    val createDate: OffsetDateTime,
+    val createAt: OffsetDateTime,
     @SerialName("height")
     val height: Int,
     @SerialName("id")

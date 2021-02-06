@@ -52,10 +52,10 @@ fun PixivClient.addUserListener(
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "UserListener($uid)", delay = delay, origin = start) {
     userIllusts(uid = uid, type = type).illusts.filter {
-        it.createDate > start
+        it.createAt > start
     }.onEach {
         launch { block(it) }
-    }.lastOrNull()?.createDate ?: start
+    }.lastOrNull()?.createAt ?: start
 }
 
 /**
@@ -69,10 +69,10 @@ suspend fun PixivClient.addIllustNewListener(
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustNewListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
     illustNew(workContentType = workContentType, restrict = restrict).illusts.filter {
-        it.createDate > start
+        it.createAt > start
     }.onEach {
         launch { block(it) }
-    }.lastOrNull()?.createDate ?: start
+    }.lastOrNull()?.createAt ?: start
 }
 
 /**
@@ -86,10 +86,10 @@ suspend fun PixivClient.addIllustMyPixivListener(
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustMyPixivListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
     illustMyPixiv(workContentType = workContentType, restrict = restrict).illusts.filter {
-        it.createDate > start
+        it.createAt > start
     }.onEach {
         launch { block(it) }
-    }.lastOrNull()?.createDate ?: start
+    }.lastOrNull()?.createAt ?: start
 }
 
 /**
@@ -103,10 +103,10 @@ suspend fun PixivClient.addIllustFollowListener(
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustFollowListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
     illustFollow(workContentType = workContentType, restrict = restrict).illusts.filter {
-        it.createDate > start
+        it.createAt > start
     }.onEach {
         launch { block(it) }
-    }.lastOrNull()?.createDate ?: start
+    }.lastOrNull()?.createAt ?: start
 }
 
 internal fun String.toProxyConfig(): ProxyConfig = Url(this).let { url ->
