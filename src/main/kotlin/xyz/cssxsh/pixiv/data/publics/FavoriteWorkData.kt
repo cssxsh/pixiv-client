@@ -2,6 +2,7 @@ package xyz.cssxsh.pixiv.data.publics
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import xyz.cssxsh.pixiv.PublicityType
 
 @Serializable
 data class FavoriteWorkData(
@@ -10,7 +11,7 @@ data class FavoriteWorkData(
     @SerialName("response")
     val results: List<FavoriteWorkInfo>,
     @SerialName("count")
-    val count: Int
+    val count: Int,
 ) {
     @Serializable
     data class FavoriteWorkInfo(
@@ -23,12 +24,12 @@ data class FavoriteWorkData(
         @SerialName("tags")
         val tags: List<String>,
         @SerialName("publicity")
-        val publicity: String
+        val publicity: PublicityType,
     ) {
         @Serializable
         data class WorkInfo(
             @SerialName("id")
-            val pid: Long
+            val pid: Long,
         )
     }
 }

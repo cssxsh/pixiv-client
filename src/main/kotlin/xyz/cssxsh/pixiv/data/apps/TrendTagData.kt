@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TrendTagData(
     @SerialName("trend_tags")
-    val trendTags: List<TrendTag>
+    val trendTags: List<TrendTag>,
 )

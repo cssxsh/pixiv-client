@@ -12,5 +12,5 @@ data class UserPreview(
     @SerialName("novels")
     val novels: List<NovelInfo>,
     @SerialName("is_muted")
-    val isMuted: Boolean
+    val isMuted: Boolean,
 )

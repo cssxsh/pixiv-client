@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.data.apps
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.cssxsh.pixiv.FileUrls
+import xyz.cssxsh.pixiv.PublicityType
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
 import java.time.OffsetDateTime
 
@@ -30,7 +31,8 @@ data class NovelInfo(
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("restrict")
-    val restrict: Int,
+    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+    val restrict: PublicityType,
     @SerialName("series")
     val series: SeriesInfo?,
     @SerialName("tags")
@@ -50,5 +52,6 @@ data class NovelInfo(
     @SerialName("visible")
     val visible: Boolean,
     @SerialName("x_restrict")
-    val xRestrict: Int
+    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+    val xRestrict: PublicityType,
 )

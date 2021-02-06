@@ -17,5 +17,5 @@ data class UserInfo(
     @SerialName("name")
     val name: String,
     @SerialName("profile_image_urls")
-    val profileImageUrls: FileUrls
+    val profileImageUrls: FileUrls,
 )

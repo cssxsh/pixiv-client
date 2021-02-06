@@ -3,13 +3,14 @@ package xyz.cssxsh.pixiv.data
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.cssxsh.pixiv.FileUrls
+import xyz.cssxsh.pixiv.PublicityType
 
 @Serializable
 data class AuthResult(
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("device_token")
-    val deviceToken: String? = "",
+    val deviceToken: String? = null,
     @SerialName("expires_in")
     val expiresIn: Int,
     @SerialName("refresh_token")
@@ -21,14 +22,14 @@ data class AuthResult(
     @SerialName("user")
     val user: User,
     @SerialName("response")
-    val info: AuthInfo
+    val info: AuthInfo,
 ) {
     @Serializable
     data class AuthInfo(
         @SerialName("access_token")
         val accessToken: String,
         @SerialName("device_token")
-        val deviceToken: String? = "",
+        val deviceToken: String? = null,
         @SerialName("expires_in")
         val expiresIn: Long,
         @SerialName("refresh_token")
@@ -38,8 +39,9 @@ data class AuthResult(
         @SerialName("token_type")
         val tokenType: String,
         @SerialName("user")
-        val user: User
+        val user: User,
     )
+
     @Serializable
     data class User(
         @SerialName("account")
@@ -57,6 +59,7 @@ data class AuthResult(
         @SerialName("profile_image_urls")
         val profileFileUrls: FileUrls,
         @SerialName("x_restrict")
-        val xRestrict: Int
+        @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+        val publicity: PublicityType,
     )
 }

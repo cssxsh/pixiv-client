@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BookmarkDetailSingle(
     @SerialName("bookmark_detail")
-    val bookmarkDetail: BookmarkDetail
+    val bookmarkDetail: BookmarkDetail,
 )

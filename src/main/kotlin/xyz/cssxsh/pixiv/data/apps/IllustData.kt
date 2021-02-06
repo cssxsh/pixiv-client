@@ -10,5 +10,5 @@ data class IllustData(
     @SerialName("next_url")
     val nextUrl: String?,
     @SerialName("search_span_limit")
-    val searchSpanLimit: Long? = null
+    val searchSpanLimit: Long? = null,
 )

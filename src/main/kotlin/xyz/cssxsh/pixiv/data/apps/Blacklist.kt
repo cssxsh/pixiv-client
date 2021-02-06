@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Blacklist(
     @SerialName("users")
-    val users: List<UserInfo>
+    val users: List<UserInfo>,
 )

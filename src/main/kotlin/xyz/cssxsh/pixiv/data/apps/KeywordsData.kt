@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class KeywordsData(
     @SerialName("search_auto_complete_keywords")
-    val keywords: List<String>
+    val keywords: List<String>,
 )

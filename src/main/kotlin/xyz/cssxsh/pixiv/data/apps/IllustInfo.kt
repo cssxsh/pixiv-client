@@ -4,6 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.cssxsh.pixiv.WorkContentType
 import xyz.cssxsh.pixiv.FileUrls
+import xyz.cssxsh.pixiv.PublicityType
+import xyz.cssxsh.pixiv.SanityLevel
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
 import java.time.OffsetDateTime
 
@@ -31,9 +33,11 @@ data class IllustInfo(
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("restrict")
-    val restrict: Int,
+    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+    val restrict: PublicityType,
     @SerialName("sanity_level")
-    val sanityLevel: Int,
+    @Serializable(with = SanityLevel.Companion.TypeSerializer::class)
+    val sanityLevel: SanityLevel,
     @SerialName("series")
     val series: SeriesInfo?,
     @SerialName("tags")
@@ -57,12 +61,13 @@ data class IllustInfo(
     @SerialName("width")
     val width: Int,
     @SerialName("x_restrict")
-    val xRestrict: Int
+    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+    val xRestrict: PublicityType,
 ) {
     @Serializable
     data class MetaPageData(
         @SerialName("image_urls")
-        val imageUrls: FileUrls
+        val imageUrls: FileUrls,
     )
 
     fun getImageUrls(): List<FileUrls> =

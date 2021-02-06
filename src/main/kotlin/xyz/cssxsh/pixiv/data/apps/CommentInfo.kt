@@ -17,5 +17,5 @@ data class CommentInfo(
     @SerialName("id")
     val id: Long,
     @SerialName("user")
-    val user: UserInfo
+    val user: UserInfo,
 )

@@ -12,5 +12,5 @@ data class ListArtData(
     @SerialName("count")
     val count: Int,
     @SerialName("pagination")
-    val pagination: Pagination? = null
+    val pagination: Pagination? = null,
 )

@@ -8,5 +8,5 @@ data class CommentData(
     @SerialName("comments")
     val comments: List<CommentInfo>,
     @SerialName("next_url")
-    val nextUrl: String?
+    val nextUrl: String?,
 )

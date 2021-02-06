@@ -14,7 +14,7 @@ data class UserDetail(
     @SerialName("user")
     val user: UserInfo,
     @SerialName("workspace")
-    val workspace: Workspace
+    val workspace: Workspace,
 ) {
     @Serializable
     data class Profile(
@@ -65,7 +65,7 @@ data class UserDetail(
         @SerialName("twitter_url")
         val twitterUrl: String?,
         @SerialName("webpage")
-        val webpage: String?
+        val webpage: String?,
     )
 
     @Serializable
@@ -81,7 +81,7 @@ data class UserDetail(
         @SerialName("pawoo")
         val pawoo: Boolean,
         @SerialName("region")
-        val region: PublicityType
+        val region: PublicityType,
     )
 
     @Serializable
@@ -111,6 +111,6 @@ data class UserDetail(
         @SerialName("tool")
         val tool: String,
         @SerialName("workspace_image_url")
-        val workspaceImageUrl: String?
+        val workspaceImageUrl: String?,
     )
 }

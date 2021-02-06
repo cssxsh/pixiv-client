@@ -14,7 +14,7 @@ data class RankingData(
     @SerialName("count")
     val count: Int,
     @SerialName("pagination")
-    val pagination: Pagination
+    val pagination: Pagination,
 ) {
     @Serializable
     data class RankingInfo(
@@ -26,7 +26,7 @@ data class RankingData(
         @SerialName("mode")
         val mode: String,
         @SerialName("works")
-        val works: List<RankingWork>
+        val works: List<RankingWork>,
     ) {
         @Serializable
         data class RankingWork(
@@ -35,7 +35,7 @@ data class RankingData(
             @SerialName("rank")
             val rank: Int,
             @SerialName("work")
-            val work: ArtWork
+            val work: ArtWork,
         )
     }
 }

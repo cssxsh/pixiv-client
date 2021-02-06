@@ -12,14 +12,14 @@ data class FavoriteUserData(
     @SerialName("response")
     val results: List<FavoriteUserInfo>,
     @SerialName("count")
-    val count: Int
+    val count: Int,
 ) {
     @Serializable
     data class FavoriteUserInfo(
         @SerialName("id")
         val id: String,
         @SerialName("target_user")
-        val targetUser: User
+        val targetUser: User,
     ) {
         @Serializable
         data class User(
@@ -30,7 +30,7 @@ data class FavoriteUserData(
             @SerialName("name")
             val name: String,
             @SerialName("status")
-            val status: String
+            val status: String,
         )
     }
 }

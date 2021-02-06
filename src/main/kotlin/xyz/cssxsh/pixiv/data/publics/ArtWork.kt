@@ -38,7 +38,7 @@ data class ArtWork(
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("publicity")
-    @Serializable(with = PublicityTypeSerializer::class)
+    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
     val publicity: PublicityType,
     @SerialName("reuploaded_time")
     @Serializable(with = JapanLocalDateTimeSerializer::class)
@@ -58,19 +58,8 @@ data class ArtWork(
     @SerialName("user")
     val author: ArtAuthor,
     @SerialName("width")
-    val width: Int
+    val width: Int,
 ) {
-    companion object {
-        object PublicityTypeSerializer : PixivTypeSerializer<PublicityType>(
-            with = PublicityType::class,
-            get = { PublicityType.values()[it] }
-        )
-/*
-        object SanityLevelSerializer : PixivTypeSerializer<SanityLevel>(
-            with = SanityLevel::class,
-            get = { level -> SanityLevel.values().first { it.level == level } }
-        )*/
-    }
 
     @Serializable
     data class ArtStats(
@@ -83,7 +72,7 @@ data class ArtWork(
         @SerialName("scored_count")
         val scoredCount: Long,
         @SerialName("views_count")
-        val viewsCount: Long
+        val viewsCount: Long,
     )
 
     @Serializable
@@ -107,6 +96,6 @@ data class ArtWork(
         @SerialName("profile_image_urls")
         val profileImageUrls: FileUrls,
         @SerialName("stats")
-        val stats: ArtStats?
+        val stats: ArtStats?,
     )
 }

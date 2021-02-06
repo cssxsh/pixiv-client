@@ -10,13 +10,13 @@ data class AuthError(
     @SerialName("error")
     val error: String,
     @SerialName("errors")
-    val errors: Map<String, ErrorInfo>
+    val errors: Map<String, ErrorInfo>,
 ) {
     @Serializable
     data class ErrorInfo(
         @SerialName("message")
         val message: String,
         @SerialName("code")
-        val code: Int
+        val code: Int,
     )
 }

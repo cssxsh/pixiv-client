@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppApiError(
     @SerialName("error")
-    val error: ErrorInfo
+    val error: ErrorInfo,
 ) {
     @Serializable
     data class ErrorInfo(
@@ -17,6 +17,6 @@ data class AppApiError(
         @SerialName("reason")
         val reason: String,
         @SerialName("user_message_details")
-        val userMessageDetails: Map<String, String>
+        val userMessageDetails: Map<String, String>,
     )
 }

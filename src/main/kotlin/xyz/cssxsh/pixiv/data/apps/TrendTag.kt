@@ -10,5 +10,5 @@ data class TrendTag(
     @SerialName("tag")
     val tag: String,
     @SerialName("illust")
-    val illust: IllustInfo
+    val illust: IllustInfo,
 )

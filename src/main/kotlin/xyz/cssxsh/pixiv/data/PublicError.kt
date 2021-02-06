@@ -11,7 +11,7 @@ data class PublicError(
     @SerialName("has_error")
     val hasError: Boolean,
     @SerialName("status")
-    val status: String
+    val status: String,
 ) {
 
     @Serializable
@@ -19,6 +19,6 @@ data class PublicError(
         @SerialName("code")
         val code: Int,
         @SerialName("message")
-        val message: String
+        val message: String,
     )
 }

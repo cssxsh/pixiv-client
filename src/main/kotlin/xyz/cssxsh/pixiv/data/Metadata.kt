@@ -9,13 +9,13 @@ data class Metadata(
     @SerialName("frames")
     val frames: List<Frame>,
     @SerialName("zip_urls")
-    val zipUrls: FileUrls
+    val zipUrls: FileUrls,
 ) {
     @Serializable
     data class Frame(
         @SerialName("delay")
         val delay: Int,
         @SerialName("file")
-        val file: String
+        val file: String,
     )
 }

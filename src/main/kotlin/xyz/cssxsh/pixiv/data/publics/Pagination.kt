@@ -16,5 +16,5 @@ data class Pagination(
     @SerialName("previous")
     val previous: Int?,
     @SerialName("total")
-    val total: Int
+    val total: Int,
 )

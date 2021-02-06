@@ -8,5 +8,5 @@ data class SeriesInfo(
     @SerialName("id")
     val id: Long? = null,
     @SerialName("title")
-    val title: String? = null
+    val title: String? = null,
 )

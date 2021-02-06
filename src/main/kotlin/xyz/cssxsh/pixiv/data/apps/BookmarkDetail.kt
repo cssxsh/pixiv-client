@@ -11,5 +11,5 @@ data class BookmarkDetail(
     @SerialName("tags")
     val tags: List<TagInfo>,
     @SerialName("restrict")
-    val restrict: PublicityType
+    val restrict: PublicityType,
 )

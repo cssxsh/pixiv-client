@@ -14,5 +14,5 @@ data class RecommendedData(
     @SerialName("privacy_policy")
     val privacyPolicy: Map<String, String>,
     @SerialName("next_url")
-    val nextUrl: String?
+    val nextUrl: String?,
 )
