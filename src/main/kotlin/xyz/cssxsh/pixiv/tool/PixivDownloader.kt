@@ -5,7 +5,6 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.*
 import io.ktor.client.features.compression.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders.Referrer
 import io.ktor.http.HttpHeaders.Range
@@ -29,11 +28,11 @@ open class PixivDownloader(
     private val urlChannel = Channel<String>(maxUrlAsyncNum)
 
     constructor(
-        maxUrlAsyncNum: Int = 32,
+        maxUrlAsyncNum: Int = 64,
         blockSize: Int = 256 * 1024,
-        socketTimeout: Long = 10_000,
-        connectTimeout: Long = 10_000,
-        requestTimeout: Long = 10_000,
+        socketTimeout: Long = 30_000,
+        connectTimeout: Long = 30_000,
+        requestTimeout: Long = 30_000,
         proxyUrl: String? = null,
         dns: String = "https://public.dns.iij.jp/dns-query",
         initHost: Map<String, List<String>> = emptyMap(),
@@ -52,7 +51,7 @@ open class PixivDownloader(
                 }
 
                 override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-                    println("connectFailed； $uri")
+                    // println("connectFailed； $uri")
                 }
             }
         },
@@ -77,6 +76,8 @@ open class PixivDownloader(
         }
         engine {
             config {
+                sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                hostnameVerifier { _, _ -> true }
                 proxySelector?.let {
                     proxySelector(it)
                 }
@@ -95,51 +96,81 @@ open class PixivDownloader(
         }.awaitAll()
     }
 
-    private suspend fun HttpClient.getSizeIgnoreException(url: String): Int = runCatching {
-        head<HttpResponse>(url) { headers[Referrer] = url }.contentLength()!!.toInt()
-    }.getOrElse { throwable ->
-        if (ignore(url, throwable, "get_size")) {
-            getSizeIgnoreException(url)
-        } else {
-            throw throwable
+    private suspend fun HttpClient.getSizeIgnoreException(url: String): Int {
+        var size: Int? = null
+        while (isActive && size == null) {
+            size = runCatching {
+                head<HttpMessage>(url) { headers[Referrer] = url }.contentLength()
+            }.onFailure { throwable ->
+                if ((isActive && ignore(url, throwable, "GET_SIZE"))) {
+                    //
+                } else {
+                    throw throwable
+                }
+            }.getOrNull()?.toInt()
         }
+        return size!!
     }
 
     private fun IntRange.getLength() = (last - first + 1)
 
     private fun IntRange.getHeader() = "bytes=${first}-${last}"
 
-    private suspend fun HttpClient.downloadIgnoreException(
-        url: String,
-        range: IntRange,
-    ): ByteArray = runCatching {
-        get<ByteArray>(url) {
-            header(Referrer, url)
-            header(Range, range.getHeader())
-        }.also {
-            check(it.size == range.getLength()) { "Expected ${range.getLength()}, actual ${it.size}" }
+    private suspend fun HttpClient.downloadRangeIgnoreException(url: String, range: IntRange): ByteArray {
+        var bytes: ByteArray? = null
+        while (isActive && bytes == null) {
+            bytes = runCatching {
+                get<ByteArray>(url) {
+                    header(Referrer, url)
+                    header(Range, range.getHeader())
+                }.also {
+                    check(it.size == range.getLength()) {
+                        "Expected ${range.getLength()}, actual ${it.size}"
+                    }
+                }
+            }.onFailure { throwable ->
+                if (isActive && ignore(url, throwable, range.getHeader())) {
+                    //
+                } else {
+                    throw throwable
+                }
+            }.getOrNull()
         }
-    }.getOrElse { throwable ->
-        if (isActive && ignore(url, throwable, range.getHeader())) {
-            downloadIgnoreException(url = url, range = range)
+        return bytes!!
+    }
+
+    private suspend fun HttpClient.downloadAllIgnoreException(url: String): ByteArray {
+        var bytes: ByteArray? = null
+        while (isActive && bytes == null) {
+            bytes = runCatching {
+                get<ByteArray>(url) {
+                    header(Referrer, url)
+                }
+            }.onFailure { throwable ->
+                if (isActive && ignore(url, throwable, "ALL")) {
+                    //
+                } else {
+                    throw throwable
+                }
+            }.getOrNull()
+        }
+        return bytes!!
+    }
+
+    private suspend fun HttpClient.downloadRangesOrAll(url: String, length: Int): ByteArray {
+        return if (length < blockSize) {
+            downloadAllIgnoreException(url = url)
         } else {
-            throw throwable
+            (0 until length step blockSize).asyncMapIndexed { _, offset ->
+                downloadRangeIgnoreException(
+                    url = url,
+                    range = offset until (offset + blockSize).coerceAtMost(length)
+                )
+            }.reduce { accumulator, bytes -> accumulator + bytes }
         }
     }
 
-    private suspend fun HttpClient.downloadRange(
-        url: String,
-        length: Int,
-    ): ByteArray = (0 until length step blockSize).asyncMapIndexed { _, offset ->
-        downloadIgnoreException(
-            url = url,
-            range = offset until minOf(offset + blockSize, length)
-        )
-    }.reduce { accumulator, bytes -> accumulator + bytes }
-
-    private suspend fun HttpClient.download(
-        url: String,
-    ): ByteArray = downloadRange(
+    private suspend fun HttpClient.download(url: String): ByteArray = downloadRangesOrAll(
         url = url,
         length = getSizeIgnoreException(url = url)
     )
