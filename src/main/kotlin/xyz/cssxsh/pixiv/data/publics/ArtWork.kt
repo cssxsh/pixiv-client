@@ -34,7 +34,7 @@ data class ArtWork(
     @SerialName("is_manga")
     val isManga: Boolean?,
     @SerialName("metadata")
-    val metadata: Metadata?,
+    val metadata: JsonElement,
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("publicity")

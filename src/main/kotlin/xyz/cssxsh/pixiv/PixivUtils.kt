@@ -227,5 +227,8 @@ enum class AgeLimit : PixivParam {
     companion object : PixivEnumSerializer<AgeLimit>(
         with = AgeLimit::class,
         valueOf = ::enumValueOf
-    )
+    ) {
+        override fun deserialize(decoder: Decoder): AgeLimit =
+            valueOf(decoder.decodeString().replace("""-age""".toRegex(), "").toUpperCase())
+    }
 }
