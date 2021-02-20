@@ -31,7 +31,8 @@ dependencies {
     }
     implementation(okhttp3("okhttp", Versions.okhttp))
     implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = Versions.junit)
+    testImplementation(junit("api", Versions.junit))
+    testRuntimeOnly(junit("engine", Versions.junit))
 }
 
 kotlin {
