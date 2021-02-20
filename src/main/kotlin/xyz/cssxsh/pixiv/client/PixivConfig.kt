@@ -23,7 +23,7 @@ data class PixivConfig(
         "public.pixiv.net" to "api.fanbox.cc"
     ),
     @SerialName("ruby_ssl_factory")
-    var RubySSLFactory: Boolean = true,
+    var useRubySSLFactory: Boolean = true,
     @SerialName("account")
     var account: Account? = null,
     @SerialName("refresh_token")

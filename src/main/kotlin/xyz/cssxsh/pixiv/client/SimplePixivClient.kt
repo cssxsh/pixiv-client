@@ -10,15 +10,9 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineName
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import xyz.cssxsh.pixiv.client.exception.AppApiException
-import xyz.cssxsh.pixiv.client.exception.AuthException
-import xyz.cssxsh.pixiv.client.exception.OtherClientException
-import xyz.cssxsh.pixiv.client.exception.PublicApiException
+import xyz.cssxsh.pixiv.client.exception.*
 import xyz.cssxsh.pixiv.data.AuthResult
-import xyz.cssxsh.pixiv.tool.LocalDns
-import xyz.cssxsh.pixiv.tool.RubySSLSocketFactory
-import xyz.cssxsh.pixiv.tool.RubyX509TrustManager
-import xyz.cssxsh.pixiv.tool.toProxyConfig
+import xyz.cssxsh.pixiv.tool.*
 import java.io.IOException
 import java.net.*
 import java.time.OffsetDateTime
@@ -122,7 +116,7 @@ open class SimplePixivClient(
                     })
                 }
 
-                if (config.RubySSLFactory) {
+                if (config.useRubySSLFactory) {
                     sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                     hostnameVerifier { _, _ -> true }
                 }
