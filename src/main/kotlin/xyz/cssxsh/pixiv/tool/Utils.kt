@@ -8,22 +8,18 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import xyz.cssxsh.pixiv.WorkContentType
-import xyz.cssxsh.pixiv.PublicityType
-import xyz.cssxsh.pixiv.api.apps.illustFollow
-import xyz.cssxsh.pixiv.api.apps.illustMyPixiv
-import xyz.cssxsh.pixiv.api.apps.illustNew
-import xyz.cssxsh.pixiv.api.apps.userIllusts
+import xyz.cssxsh.pixiv.*
+import xyz.cssxsh.pixiv.api.apps.*
 import xyz.cssxsh.pixiv.client.PixivClient
-import xyz.cssxsh.pixiv.client.exception.ProxyException
-import xyz.cssxsh.pixiv.data.apps.IllustInfo
+import xyz.cssxsh.pixiv.client.exception.*
+import xyz.cssxsh.pixiv.data.apps.*
 import java.time.OffsetDateTime
 import kotlin.time.ExperimentalTime
 
 fun PixivClient.task(
     name: String,
     block: suspend PixivClient.() -> Unit,
-) = launch(CoroutineName("${this::class.qualifiedName}#task: $name")) {
+) = launch(CoroutineName("${this::class.qualifiedName}#Task: $name")) {
     block()
 }
 
@@ -33,7 +29,7 @@ inline fun <reified T> PixivClient.timerTask(
     delay: Long,
     origin: T,
     crossinline block: suspend PixivClient.(prev: T) -> T,
-) = launch(CoroutineName("${this::class.qualifiedName}#timerTask: $name")) {
+) = launch(CoroutineName("${this::class.qualifiedName}#TimerTask: $name")) {
     var prev: T = origin
     while (isActive) {
         delay(delay)
