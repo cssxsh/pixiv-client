@@ -5,7 +5,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.JsonElement
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.data.JapanLocalDateTimeSerializer
-import xyz.cssxsh.pixiv.data.Metadata
 import java.time.OffsetDateTime
 
 @Serializable
@@ -44,7 +43,7 @@ data class ArtWork(
     @Serializable(with = JapanLocalDateTimeSerializer::class)
     val reUploadedTime: OffsetDateTime,
     @SerialName("sanity_level")
-    val sanityLevel: SanityLevel,
+    val sanityLevel: SanityLevel?,
     @SerialName("stats")
     val stats: ArtStats?,
     @SerialName("tags")

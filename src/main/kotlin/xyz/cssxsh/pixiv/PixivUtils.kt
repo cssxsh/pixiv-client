@@ -199,7 +199,8 @@ enum class SanityLevel : PixivParam {
     TEMP3,
     SEMI_BLACK,
     TEMP5,
-    BLACK;
+    BLACK,
+    TEMP7;
 
     companion object : PixivEnumSerializer<SanityLevel>(
         with = SanityLevel::class,
