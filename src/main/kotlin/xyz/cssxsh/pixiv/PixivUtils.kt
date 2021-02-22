@@ -32,7 +32,7 @@ open class PixivEnumSerializer<T>(
 }
 
 open class PixivTypeSerializer<T>(
-    with: KClass<T>,
+    val with: KClass<T>,
     private val values: () -> Array<T>,
 ) : KSerializer<T> where T : PixivParam, T : Enum<T> {
 
@@ -42,7 +42,7 @@ open class PixivTypeSerializer<T>(
         encoder.encodeInt(value.ordinal)
 
     override fun deserialize(decoder: Decoder): T =
-        values()[decoder.decodeInt()]
+        requireNotNull(values().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in $with" }
 }
 
 enum class GrantType : PixivParam {
