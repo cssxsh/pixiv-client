@@ -11,6 +11,8 @@ import io.ktor.http.HttpHeaders.Range
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import xyz.cssxsh.pixiv.JAPAN_DNS
+import xyz.cssxsh.pixiv.toProxy
 import java.io.IOException
 import java.net.*
 
@@ -34,7 +36,7 @@ open class PixivDownloader(
         connectTimeout: Long = 30_000,
         requestTimeout: Long = 30_000,
         proxyUrl: String? = null,
-        dns: String = "https://public.dns.iij.jp/dns-query",
+        dns: String = JAPAN_DNS,
         initHost: Map<String, List<String>> = emptyMap(),
         cname: Map<String, String> = emptyMap(),
         ignore: (String, Throwable, String) -> Boolean = { _, _, _ -> false },
@@ -44,7 +46,7 @@ open class PixivDownloader(
         socketTimeout = socketTimeout,
         connectTimeout = connectTimeout,
         requestTimeout = requestTimeout,
-        proxySelector = proxyUrl?.toProxyConfig()?.let { proxy ->
+        proxySelector = proxyUrl?.toProxy()?.let { proxy ->
             object : ProxySelector() {
                 override fun select(uri: URI?) = mutableListOf<Proxy>().apply {
                     if (uri?.host !in cname) add(proxy)

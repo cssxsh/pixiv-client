@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineName
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import xyz.cssxsh.pixiv.client.exception.*
 import xyz.cssxsh.pixiv.data.AuthResult
+import xyz.cssxsh.pixiv.toProxy
 import xyz.cssxsh.pixiv.tool.*
 import java.io.IOException
 import java.net.*
@@ -104,7 +105,7 @@ open class SimplePixivClient(
 
         engine {
             config {
-                config.proxy?.toProxyConfig()?.let { proxy ->
+                config.proxy?.toProxy()?.let { proxy ->
                     proxySelector(object : ProxySelector() {
                         override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
                             if (uri?.host !in config.cname) add(proxy)

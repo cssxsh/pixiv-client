@@ -2,15 +2,52 @@
 
 package xyz.cssxsh.pixiv
 
+import io.ktor.client.engine.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.Encoder
+import xyz.cssxsh.pixiv.client.exception.ProxyException
+import java.net.InetSocketAddress
+import java.net.Proxy
+import java.net.URL
 import kotlin.reflect.KClass
 
 typealias HeadersMap = Map<String, String>
 
 typealias FileUrls = Map<String, String>
+
+const val CLIENT_ID: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
+
+const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
+
+const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
+
+val IOS_HEADERS: HeadersMap = mapOf(
+    "Accept-Language" to "zh_CN",
+    "User-Agent" to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
+    "App-OS-Version" to "9.0.2",
+    "App-OS" to "ios",
+    "App-Version" to "6.0.4"
+)
+
+val ANDROID_HEADERS: HeadersMap = mapOf(
+    "Accept-Language" to "zh_CN",
+    "User-Agent" to "PixivAndroidApp/5.0.64 (Android 6.0)",
+    "App-OS-Version" to "6.0",
+    "App-OS" to "android",
+    "App-Version" to "5.0.64"
+)
+
+const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
+
+internal fun String.toProxy(): ProxyConfig = URL(this).let { proxy ->
+    when (proxy.protocol) {
+        "http" -> Proxy(Proxy.Type.HTTP, InetSocketAddress(proxy.host, proxy.port))
+        "socks", "socks4", "socks5" -> Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxy.host, proxy.port))
+        else -> throw ProxyException(this)
+    }
+}
 
 interface PixivParam {
     val name: String
