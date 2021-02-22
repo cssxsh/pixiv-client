@@ -3,10 +3,8 @@ package xyz.cssxsh.pixiv.api.apps
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.TestInstance
 import xyz.cssxsh.pixiv.api.ApiTest
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SearchKtTest : ApiTest() {
 
     @Test
