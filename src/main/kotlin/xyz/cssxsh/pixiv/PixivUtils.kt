@@ -118,7 +118,6 @@ enum class PeriodType : PixivParam {
     WEEK,
     MONTH;
 
-    @Serializer(forClass = PeriodType::class)
     companion object : PixivEnumSerializer<PeriodType>(
         with = PeriodType::class,
         valueOf = ::enumValueOf
@@ -237,7 +236,7 @@ enum class SanityLevel : PixivParam {
     SEMI_BLACK,
     TEMP5,
     BLACK,
-    TEMP7;
+    NONE;
 
     companion object : PixivEnumSerializer<SanityLevel>(
         with = SanityLevel::class,
@@ -267,6 +266,6 @@ enum class AgeLimit : PixivParam {
         valueOf = ::enumValueOf
     ) {
         override fun deserialize(decoder: Decoder): AgeLimit =
-            valueOf(decoder.decodeString().replace("""-age""".toRegex(), "").toUpperCase())
+            valueOf(decoder.decodeString().removeSuffix("""-age""").toUpperCase())
     }
 }

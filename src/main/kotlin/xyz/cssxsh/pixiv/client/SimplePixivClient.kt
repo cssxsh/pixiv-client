@@ -112,7 +112,7 @@ open class SimplePixivClient(
                         }
 
                         override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-                            println("connectFailed； $uri")
+                            // println("connectFailed； $uri")
                         }
                     })
                 }
