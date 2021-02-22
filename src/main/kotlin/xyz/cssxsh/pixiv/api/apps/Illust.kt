@@ -69,27 +69,27 @@ suspend fun PixivClient.illustDetail(
 }
 
 suspend fun PixivClient.illustFollow(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0,
     url: String = AppApi.ILLUST_FOLLOW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
-        parameter("content_type", workContentType.value())
+        parameter("content_type", type.value())
         parameter("restrict", restrict.value())
         parameter("offset", offset)
     }
 }
 
 suspend fun PixivClient.illustMyPixiv(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
     url: String = AppApi.ILLUST_MYPIXIV,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
-        parameter("content_type", workContentType.value())
+        parameter("content_type", type.value())
         parameter("restrict", restrict.value())
         parameter("filter", filter)
         parameter("offset", offset)
@@ -97,14 +97,14 @@ suspend fun PixivClient.illustMyPixiv(
 }
 
 suspend fun PixivClient.illustNew(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
     url: String = AppApi.ILLUST_NEW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
-        parameter("content_type", workContentType.value())
+        parameter("content_type", type.value())
         parameter("restrict", restrict.value())
         parameter("filter", filter)
         parameter("offset", offset)
@@ -141,7 +141,7 @@ suspend fun PixivClient.illustRanking(
 )
 
 suspend fun PixivClient.illustRecommended(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     filter: String = "for_ios",
     includeRankingLabel: Boolean = true,
     includePrivacyPolicy: Boolean = true,
@@ -150,7 +150,7 @@ suspend fun PixivClient.illustRecommended(
     url: String = AppApi.ILLUST_RECOMMENDED,
 ): RecommendedData = useHttpClient { client ->
     client.get(url) {
-        parameter("content_type", workContentType.value())
+        parameter("content_type", type.value())
         parameter("filter", filter)
         parameter("include_ranking_label", includeRankingLabel)
         parameter("include_privacy_policy", includePrivacyPolicy)

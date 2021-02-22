@@ -7,7 +7,7 @@ import xyz.cssxsh.pixiv.data.apps.*
 
 suspend fun PixivClient.searchIllust(
     word: String,
-    searchTarget: SearchTarget = SearchTarget.EXACT_MATCH_FOR_TAGS,
+    target: SearchTarget = SearchTarget.EXACT_MATCH_FOR_TAGS,
     sort: SortType = SortType.DATE_DESC,
     duration: DurationType? = null,
     filter: String = "for_ios",
@@ -16,7 +16,7 @@ suspend fun PixivClient.searchIllust(
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)
-        parameter("search_target", searchTarget.value())
+        parameter("search_target", target.value())
         parameter("sort", sort.value())
         parameter("duration", duration?.value())
         parameter("filter", filter)
@@ -26,7 +26,7 @@ suspend fun PixivClient.searchIllust(
 
 suspend fun PixivClient.searchNovel(
     word: String,
-    searchTarget: SearchTarget = SearchTarget.EXACT_MATCH_FOR_TAGS,
+    target: SearchTarget = SearchTarget.EXACT_MATCH_FOR_TAGS,
     sort: SortType = SortType.DATE_DESC,
     duration: DurationType? = null,
     filter: String = "for_ios",
@@ -35,7 +35,7 @@ suspend fun PixivClient.searchNovel(
 ): NovelData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)
-        parameter("search_target", searchTarget.value())
+        parameter("search_target", target.value())
         parameter("sort", sort.value())
         parameter("duration", duration?.value())
         parameter("filter", filter)

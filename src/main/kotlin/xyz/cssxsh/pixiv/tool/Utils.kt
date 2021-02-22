@@ -58,13 +58,13 @@ fun PixivClient.addUserListener(
  * 只会检查前30个新作品
  */
 suspend fun PixivClient.addIllustNewListener(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustNewListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
-    illustNew(workContentType = workContentType, restrict = restrict).illusts.filter {
+    illustNew(type = type, restrict = restrict).illusts.filter {
         it.createAt > start
     }.onEach {
         launch { block(it) }
@@ -75,13 +75,13 @@ suspend fun PixivClient.addIllustNewListener(
  * 只会检查前30个新作品
  */
 suspend fun PixivClient.addIllustMyPixivListener(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustMyPixivListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
-    illustMyPixiv(workContentType = workContentType, restrict = restrict).illusts.filter {
+    illustMyPixiv(type = type, restrict = restrict).illusts.filter {
         it.createAt > start
     }.onEach {
         launch { block(it) }
@@ -92,13 +92,13 @@ suspend fun PixivClient.addIllustMyPixivListener(
  * 只会检查前30个新作品
  */
 suspend fun PixivClient.addIllustFollowListener(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
+    type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     start: OffsetDateTime = OffsetDateTime.now(),
     delay: Long,
     block: suspend PixivClient.(IllustInfo) -> Unit,
 ) = timerTask(name = "IllustFollowListener(${getAuthInfo().user.uid})", delay = delay, origin = start) {
-    illustFollow(workContentType = workContentType, restrict = restrict).illusts.filter {
+    illustFollow(type = type, restrict = restrict).illusts.filter {
         it.createAt > start
     }.onEach {
         launch { block(it) }

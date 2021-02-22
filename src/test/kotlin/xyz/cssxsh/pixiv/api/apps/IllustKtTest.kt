@@ -50,7 +50,7 @@ internal class IllustKtTest : ApiTest() {
     fun illustMyPixiv(): Unit = runBlocking {
         val illust = client.illustMyPixiv()
         assertTrue(illust.illusts.isEmpty())
-        val manga = client.illustMyPixiv(workContentType = WorkContentType.MANGA)
+        val manga = client.illustMyPixiv(type = WorkContentType.MANGA)
         assertTrue(manga.illusts.isNotEmpty())
     }
 
