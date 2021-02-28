@@ -10,7 +10,7 @@ data class UserDetail(
     @SerialName("profile")
     val profile: Profile,
     @SerialName("profile_publicity")
-    val profilePublicity: ProfilePublicity,
+    val publicity: ProfilePublicity,
     @SerialName("user")
     val user: UserInfo,
     @SerialName("workspace")
