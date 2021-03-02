@@ -161,7 +161,8 @@ enum class DurationType : PixivParam {
 @Serializable(with = PublicityType.Companion::class)
 enum class PublicityType : PixivParam {
     PUBLIC,
-    PRIVATE;
+    PRIVATE,
+    TEMP;
 
     companion object : PixivEnumSerializer<PublicityType>(
         with = PublicityType::class,
