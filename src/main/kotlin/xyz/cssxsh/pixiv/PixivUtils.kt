@@ -198,7 +198,7 @@ enum class WorkContentType : PixivParam {
     )
 }
 
-@Serializable(with = WorkContentType.Companion::class)
+@Serializable(with = RankMode.Companion::class)
 enum class RankMode : PixivParam {
     // MONTH
     MONTH,
