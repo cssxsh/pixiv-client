@@ -41,6 +41,14 @@ val ANDROID_HEADERS: HeadersMap = mapOf(
 
 const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
 
+val PIXIV_CNAME = mapOf(
+    "oauth.secure.pixiv.net" to "api.fanbox.cc",
+    "app-api.pixiv.net" to "api.fanbox.cc",
+    "public.pixiv.net" to "api.fanbox.cc",
+    "www.pixiv.net" to "api.fanbox.cc",
+    "pixiv.me" to "api.fanbox.cc"
+)
+
 internal fun String.toProxy(): ProxyConfig = URL(this).let { proxy ->
     when (proxy.protocol) {
         "http" -> Proxy(Proxy.Type.HTTP, InetSocketAddress(proxy.host, proxy.port))

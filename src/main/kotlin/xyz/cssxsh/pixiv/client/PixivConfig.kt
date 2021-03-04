@@ -17,15 +17,9 @@ data class PixivConfig(
     @SerialName("dns")
     var dns: String = JAPAN_DNS,
     @SerialName("host")
-    var host: Map<String, List<String>> = mapOf(),
+    var host: Map<String, List<String>> = emptyMap(),
     @SerialName("cname")
-    var cname: Map<String, String> = mapOf(
-        "oauth.secure.pixiv.net" to "api.fanbox.cc",
-        "app-api.pixiv.net" to "api.fanbox.cc",
-        "public.pixiv.net" to "api.fanbox.cc",
-        "www.pixiv.net" to "api.fanbox.cc",
-        "pixiv.me" to "api.fanbox.cc"
-    ),
+    var cname: Map<String, String> = PIXIV_CNAME,
     @SerialName("ruby_ssl_factory")
     var useRubySSLFactory: Boolean = true,
     @SerialName("account")
