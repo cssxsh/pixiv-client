@@ -20,12 +20,15 @@ class LocalDns(
         cname: Map<String, String> = mapOf(),
     ): this(
         dnsUrl = dns.toHttpUrlOrNull(),
-        host = initHost.mapValues { (_, ips) -> ips.map { InetAddress.getByName(it) } }.toMutableMap(),
+        host = initHost.mapValues { (_, ips) -> ips.map { tran(ipv4 = it) } }.toMutableMap(),
         cname = cname
     )
 
     companion object {
         private val HttpClient = OkHttpClient()
+
+        private fun tran(ipv4: String): InetAddress =
+            InetAddress.getByAddress(ipv4.split('.').map { it.toUByte() }.toUByteArray().toByteArray())
     }
 
     private val dns: Dns = dnsUrl?.let { url ->
