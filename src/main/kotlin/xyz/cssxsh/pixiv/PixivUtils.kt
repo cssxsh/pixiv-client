@@ -44,6 +44,7 @@ const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
 val PIXIV_CNAME = mapOf(
     "oauth.secure.pixiv.net" to "api.fanbox.cc",
     "app-api.pixiv.net" to "api.fanbox.cc",
+    "public-api.secure.pixiv.net" to "api.fanbox.cc",
     "public.pixiv.net" to "api.fanbox.cc",
     "www.pixiv.net" to "api.fanbox.cc",
     "pixiv.me" to "api.fanbox.cc"
