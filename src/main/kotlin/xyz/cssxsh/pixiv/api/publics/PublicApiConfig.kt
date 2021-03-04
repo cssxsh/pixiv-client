@@ -17,6 +17,4 @@ data class PublicApiConfig(
     val imageSizes: List<String> = listOf(),
     @SerialName("profileImageSizes")
     val profileImageSizes: List<String> = listOf(),
-) {
-    fun PublicApiConfig(block: PublicApiConfig.() -> Unit): PublicApiConfig = PublicApiConfig().apply(block)
-}
+)
