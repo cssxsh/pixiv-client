@@ -9,7 +9,6 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineName
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import xyz.cssxsh.pixiv.client.exception.*
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.toProxy
@@ -43,7 +42,11 @@ open class SimplePixivClient(
 
     private val cookiesStorage = AcceptAllCookiesStorage()
 
-    private val host: MutableMap<String, List<InetAddress>> = mutableMapOf()
+    private fun getLocalDns(): LocalDns = LocalDns(
+        dns = config.dns,
+        initHost = config.host,
+        cname = config.cname
+    )
 
     override val apiIgnore: suspend (Throwable) -> Boolean = { true }
 
@@ -122,11 +125,7 @@ open class SimplePixivClient(
                     hostnameVerifier { _, _ -> true }
                 }
 
-                dns(LocalDns(
-                    dnsUrl = config.dns.toHttpUrlOrNull(),
-                    host = host,
-                    cname = config.cname
-                ))
+                dns(getLocalDns())
             }
         }
     }

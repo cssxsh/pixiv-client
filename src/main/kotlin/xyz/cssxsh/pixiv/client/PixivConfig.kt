@@ -16,6 +16,8 @@ data class PixivConfig(
     var proxy: String? = null,
     @SerialName("dns")
     var dns: String = JAPAN_DNS,
+    @SerialName("host")
+    var host: Map<String, List<String>> = mapOf(),
     @SerialName("cname")
     var cname: Map<String, String> = mapOf(
         "oauth.secure.pixiv.net" to "api.fanbox.cc",
