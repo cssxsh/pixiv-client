@@ -24,27 +24,33 @@ class LocalDns(
         cname = cname
     )
 
-    private val dns = dnsUrl?.let { url ->
+    companion object {
+        private val HttpClient = OkHttpClient()
+    }
+
+    private val dns: Dns = dnsUrl?.let { url ->
         DnsOverHttps.Builder().apply {
-            client(OkHttpClient())
+            client(HttpClient)
             includeIPv6(false)
             url(url)
             post(true)
-            resolvePrivateAddresses(true)
+            resolvePrivateAddresses(false)
             resolvePublicAddresses(true)
         }.build()
     } ?: Dns.SYSTEM
 
-    override fun lookup(hostname: String): List<InetAddress> = host.getOrPut(hostname) {
-        if (hostIsIp(hostname)) {
-            InetAddress.getAllByName(hostname).toList()
-        } else {
-            cname[hostname]?.let { dns.lookup(it) } ?: dns.lookup(hostname)
+    override fun lookup(hostname: String): List<InetAddress> {
+        return host.getOrPut(hostname) {
+            if (hostIsIp(hostname)) {
+                InetAddress.getAllByName(hostname).toList()
+            } else {
+                cname[hostname]?.let { dns.lookup(it) } ?: dns.lookup(hostname)
+            }
+        }.toMutableList().apply {
+            if (isEmpty()) {
+                addAll(InetAddress.getAllByName(hostname))
+            }
+            shuffle()
         }
-    }.toMutableList().apply {
-        if (isEmpty()) {
-            addAll(InetAddress.getAllByName(hostname))
-        }
-        shuffle()
     }
 }
