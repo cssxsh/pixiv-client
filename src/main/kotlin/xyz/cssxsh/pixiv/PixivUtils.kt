@@ -268,14 +268,15 @@ enum class AgeLimit : PixivParam {
         override fun value() = "r18"
     },
     R18G {
-        override fun value() = "r18g"
+        override fun value() = "r18-g"
     };
 
     companion object : PixivEnumSerializer<AgeLimit>(
         with = AgeLimit::class,
         valueOf = ::enumValueOf
     ) {
-        override fun deserialize(decoder: Decoder): AgeLimit =
-            valueOf(decoder.decodeString().removeSuffix("""-age""").toUpperCase())
+        override fun deserialize(decoder: Decoder): AgeLimit = decoder.decodeString().let { value ->
+            requireNotNull(values().find { it.value() == value }) { "$value not in ${values().toList()}" }
+        }
     }
 }
