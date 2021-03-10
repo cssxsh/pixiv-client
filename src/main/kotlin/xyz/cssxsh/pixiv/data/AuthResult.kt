@@ -12,7 +12,7 @@ data class AuthResult(
     @SerialName("device_token")
     val deviceToken: String? = null,
     @SerialName("expires_in")
-    val expiresIn: Int,
+    val expiresIn: Long,
     @SerialName("refresh_token")
     val refreshToken: String,
     @SerialName("scope")
@@ -22,7 +22,7 @@ data class AuthResult(
     @SerialName("user")
     val user: User,
     @SerialName("response")
-    val info: AuthInfo,
+    private val info: AuthInfo,
 ) {
     @Serializable
     data class AuthInfo(

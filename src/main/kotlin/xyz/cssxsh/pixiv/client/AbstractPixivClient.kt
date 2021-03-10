@@ -1,27 +1,124 @@
 package xyz.cssxsh.pixiv.client
 
 import io.ktor.client.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import xyz.cssxsh.pixiv.GrantType
-import xyz.cssxsh.pixiv.api.OauthApi
-import xyz.cssxsh.pixiv.client.PixivAccessToken.Companion.PixivAuthMark
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.features.*
+import io.ktor.client.features.compression.*
+import io.ktor.client.features.cookies.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.sync.Mutex
+import xyz.cssxsh.pixiv.client.exception.AppApiException
+import xyz.cssxsh.pixiv.client.exception.AuthException
+import xyz.cssxsh.pixiv.client.exception.OtherClientException
+import xyz.cssxsh.pixiv.client.exception.PublicApiException
 import xyz.cssxsh.pixiv.data.AuthResult
-import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
-import java.security.MessageDigest
+import xyz.cssxsh.pixiv.toProxy
+import xyz.cssxsh.pixiv.tool.LocalDns
+import xyz.cssxsh.pixiv.tool.RubySSLSocketFactory
+import xyz.cssxsh.pixiv.tool.RubyX509TrustManager
+import java.io.IOException
+import java.net.Proxy
+import java.net.ProxySelector
+import java.net.SocketAddress
+import java.net.URI
 import java.time.OffsetDateTime
-import java.time.Duration
 
 abstract class AbstractPixivClient : PixivClient {
 
-    protected open var authInfo: AuthResult.AuthInfo? = null
+    protected open var authInfo: AuthResult? = null
 
     protected open var expiresTime: OffsetDateTime = OffsetDateTime.now().withNano(0)
 
     protected abstract val apiIgnore: suspend (Throwable) -> Boolean
 
-    protected abstract fun httpClient(): HttpClient
+    private val cookiesStorage = AcceptAllCookiesStorage()
+
+    private fun getLocalDns(): LocalDns = LocalDns(
+        dns = config.dns,
+        initHost = config.host,
+        cname = config.cname
+    )
+
+    protected open fun httpClient(): HttpClient = HttpClient(OkHttp) {
+        Json {
+            serializer = KotlinxSerializer()
+        }
+        install(HttpTimeout) {
+            socketTimeoutMillis = 15_000
+            connectTimeoutMillis = 15_000
+            requestTimeoutMillis = 15_000
+        }
+        install(HttpCookies) {
+            storage = cookiesStorage
+        }
+        ContentEncoding {
+            gzip()
+            deflate()
+            identity()
+        }
+        HttpResponseValidator {
+            handleResponseException { cause ->
+                if (cause is ClientRequestException) {
+                    cause.response.readText().let { content ->
+                        runCatching {
+                            AppApiException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
+
+                        runCatching {
+                            PublicApiException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
+
+                        runCatching {
+                            AuthException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
+
+                        runCatching {
+                            OtherClientException(cause.response, content)
+                        }.onSuccess {
+                            throw it
+                        }
+                    }
+                }
+            }
+        }
+
+        install(PixivAccessToken) {
+            taken = {
+                getAuthInfo().accessToken
+            }
+        }
+
+        engine {
+            config {
+                config.proxy?.toProxy()?.let { proxy ->
+                    proxySelector(object : ProxySelector() {
+                        override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
+                            if (uri?.host !in config.cname) add(proxy)
+                        }
+
+                        override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
+                            // println("connectFailed； $uri")
+                        }
+                    })
+                }
+
+                if (config.useRubySSLFactory) {
+                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                    hostnameVerifier { _, _ -> true }
+                }
+
+                dns(getLocalDns())
+            }
+        }
+    }
 
     protected open suspend fun <R> useHttpClient(
         ignore: suspend (Throwable) -> Boolean,
@@ -38,65 +135,8 @@ abstract class AbstractPixivClient : PixivClient {
         }
     }
 
+    protected open val mutex = Mutex()
+
     override suspend fun <R> useHttpClient(block: suspend PixivClient.(HttpClient) -> R): R =
-        useHttpClient(ignore = apiIgnore, block)
-
-    override suspend fun autoAuth(): AuthResult.AuthInfo = config.run {
-        refreshToken?.let { token ->
-            refresh(token)
-        } ?: account?.let { account ->
-            login(account.mailOrUID, account.password)
-        } ?: throw IllegalArgumentException("没有登陆参数")
-    }
-
-    override suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo = auth(GrantType.PASSWORD, config {
-        account = PixivConfig.Account(mailOrPixivID, password)
-    })
-
-    open suspend fun login(): AuthResult.AuthInfo = auth(GrantType.PASSWORD, config)
-
-    override suspend fun refresh(token: String): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config {
-        refreshToken = token
-    })
-
-    open suspend fun refresh(): AuthResult.AuthInfo = auth(GrantType.REFRESH_TOKEN, config)
-
-    override suspend fun auth(grantType: GrantType, config: PixivConfig) = auth(grantType, config, OauthApi.OAUTH_URL)
-
-    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult.AuthInfo = useHttpClient { client ->
-        client.post<AuthResult>(url) {
-            attributes.put(PixivAuthMark, Unit)
-            OffsetDateTime.now().format(JapanDateTimeSerializer.dateFormat).let { time ->
-                header("X-Client-Hash", (time + config.client.hashSecret).encodeToByteArray().let { data ->
-                    MessageDigest.getInstance("md5").digest(data).asUByteArray().joinToString("") {
-                        """%02x""".format(it.toInt())
-                    }
-                })
-                header("X-Client-Time", time)
-            }
-            body = FormDataContent(Parameters.build {
-                append("get_secure_url", "1")
-                append("client_id", config.client.id)
-                append("client_secret", config.client.secret)
-                append("grant_type", grantType.value())
-                when (grantType) {
-                    GrantType.PASSWORD -> requireNotNull(config.account) { "账户为空" }.let { account ->
-                        append("username", account.mailOrUID)
-                        append("password", account.password)
-                    }
-                    GrantType.REFRESH_TOKEN -> requireNotNull(config.refreshToken) { "Token为空" }.let { taken ->
-                        append("refresh_token", taken)
-                    }
-                }
-            })
-        }.info
-    }.also {
-        synchronized(expiresTime) {
-            expiresTime = OffsetDateTime.now().withNano(0) + Duration.ofSeconds(it.expiresIn - 10)
-            authInfo = it
-        }
-        config {
-            refreshToken = it.refreshToken
-        }
-    }
+        useHttpClient(apiIgnore, block)
 }

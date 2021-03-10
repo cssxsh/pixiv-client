@@ -18,13 +18,13 @@ interface PixivClient : CoroutineScope {
 
     fun config(block: PixivConfig.() -> Unit) = config.apply(block)
 
-    suspend fun login(mailOrPixivID: String, password: String): AuthResult.AuthInfo
+    suspend fun login(mailOrPixivID: String, password: String): AuthResult
 
-    suspend fun refresh(token: String): AuthResult.AuthInfo
+    suspend fun refresh(token: String): AuthResult
 
-    suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult.AuthInfo
+    suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult
 
-    suspend fun autoAuth(): AuthResult.AuthInfo
+    suspend fun autoAuth(): AuthResult
 
-    suspend fun getAuthInfo(): AuthResult.AuthInfo
+    suspend fun getAuthInfo(): AuthResult
 }
