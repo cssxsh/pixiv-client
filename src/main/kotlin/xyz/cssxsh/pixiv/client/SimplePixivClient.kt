@@ -32,35 +32,36 @@ open class SimplePixivClient(
 
     override val apiIgnore: suspend (Throwable) -> Boolean = { true }
 
-    override suspend fun autoAuth(): AuthResult = config.run {
-        refreshToken?.let { token ->
-            refresh(token)
-        } ?: account?.let { account ->
-            login(account.mailOrUID, account.password)
+    protected open suspend fun auto() = config.run {
+        refreshToken?.let {
+            auth(GrantType.REFRESH_TOKEN, config, OauthApi.OAUTH_URL)
+        } ?: account?.let {
+            auth(GrantType.PASSWORD, config, OauthApi.OAUTH_URL)
         } ?: throw IllegalArgumentException("没有登陆参数")
     }
 
+    override suspend fun autoAuth(): AuthResult = mutex.withLock {
+        auto()
+    }
+
     override suspend fun getAuthInfo(): AuthResult = mutex.withLock {
-        authInfo?.takeIf { expiresTime > OffsetDateTime.now() } ?: autoAuth()
+        authInfo?.takeIf { expiresTime > OffsetDateTime.now() } ?: auto()
     }
 
     override suspend fun login(mailOrPixivID: String, password: String): AuthResult = auth(GrantType.PASSWORD, config {
         account = PixivConfig.Account(mailOrPixivID, password)
     })
 
-    open suspend fun login(): AuthResult = auth(GrantType.PASSWORD, config)
-
     override suspend fun refresh(token: String): AuthResult = auth(GrantType.REFRESH_TOKEN, config {
         refreshToken = token
     })
 
-    open suspend fun refresh(): AuthResult = auth(GrantType.REFRESH_TOKEN, config)
+    override suspend fun auth(grantType: GrantType, config: PixivConfig) = mutex.withLock {
+        auth(grantType, config, OauthApi.OAUTH_URL)
+    }
 
-    override suspend fun auth(grantType: GrantType, config: PixivConfig) = auth(grantType, config, OauthApi.OAUTH_URL)
-
-    @Suppress("unused")
-    suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult = mutex.withLock {
-        useHttpClient { client ->
+    protected open suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult {
+        return useHttpClient { client ->
             client.post<AuthResult>(url) {
                 attributes.put(PixivAccessToken.PixivAuthMark, Unit)
                 OffsetDateTime.now().format(JapanDateTimeSerializer.dateFormat).let { time ->
