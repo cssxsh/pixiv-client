@@ -22,7 +22,6 @@ repositories {
 
 dependencies {
     implementation(kotlinx("coroutines-core", Versions.coroutines))
-    implementation(kotlinx("serialization-runtime", Versions.serialization))
     implementation(ktor("client-core", Versions.ktor))
     implementation(ktor("client-serialization", Versions.ktor))
     implementation(ktor("client-encoding", Versions.ktor))
@@ -45,6 +44,7 @@ kotlin {
             languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
             languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
             languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
+            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }
