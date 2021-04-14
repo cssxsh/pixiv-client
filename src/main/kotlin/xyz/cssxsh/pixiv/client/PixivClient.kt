@@ -22,8 +22,6 @@ interface PixivClient : CoroutineScope {
 
     suspend fun refresh(token: String): AuthResult
 
-    suspend fun auth(grantType: GrantType, config: PixivConfig): AuthResult
-
     suspend fun autoAuth(): AuthResult
 
     suspend fun getAuthInfo(): AuthResult

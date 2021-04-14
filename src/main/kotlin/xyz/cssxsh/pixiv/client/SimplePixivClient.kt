@@ -34,9 +34,9 @@ open class SimplePixivClient(
 
     protected open suspend fun auto() = config.run {
         refreshToken?.let {
-            auth(GrantType.REFRESH_TOKEN, config, OauthApi.OAUTH_URL)
+            auth(grantType = GrantType.REFRESH_TOKEN, config = this, time = OffsetDateTime.now())
         } ?: account?.let {
-            auth(GrantType.PASSWORD, config, OauthApi.OAUTH_URL)
+            auth(grantType = GrantType.PASSWORD, config = this, time = OffsetDateTime.now())
         } ?: throw IllegalArgumentException("没有登陆参数")
     }
 
@@ -50,21 +50,17 @@ open class SimplePixivClient(
 
     override suspend fun login(mailOrPixivID: String, password: String): AuthResult = auth(GrantType.PASSWORD, config {
         account = PixivConfig.Account(mailOrPixivID, password)
-    })
+    }, OffsetDateTime.now())
 
     override suspend fun refresh(token: String): AuthResult = auth(GrantType.REFRESH_TOKEN, config {
         refreshToken = token
-    })
+    }, OffsetDateTime.now())
 
-    override suspend fun auth(grantType: GrantType, config: PixivConfig) = mutex.withLock {
-        auth(grantType, config, OauthApi.OAUTH_URL)
-    }
-
-    protected open suspend fun auth(grantType: GrantType, config: PixivConfig, url: String): AuthResult {
+    protected open suspend fun auth(grantType: GrantType, config: PixivConfig, time: OffsetDateTime): AuthResult {
         return useHttpClient { client ->
-            client.post<AuthResult>(url) {
+            client.post<AuthResult>(OauthApi.OAUTH_URL) {
                 attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-                OffsetDateTime.now().format(JapanDateTimeSerializer.dateFormat).let { time ->
+                time.format(JapanDateTimeSerializer.dateFormat).let { time ->
                     header("X-Client-Hash", (time + config.client.hashSecret).encode().md5())
                     header("X-Client-Time", time)
                 }
@@ -85,7 +81,7 @@ open class SimplePixivClient(
                 })
             }
         }.also {
-            expiresTime = OffsetDateTime.now().withNano(0).plusSeconds(it.expiresIn)
+            expiresTime = time.withNano(0).plusSeconds(it.expiresIn)
             authInfo = it
             config {
                 refreshToken = it.refreshToken
