@@ -10,10 +10,10 @@ suspend fun PixivClient.getFeeds(
     type: String = "touch_nottext",
     relation: String = "all",
     showR18: Boolean = false,
-    url: String = PublicApi.ME_FEEDS,
+    url: String = ME_FEEDS,
 ): JsonElement = useHttpClient { client ->
     client.get(url) {
-        header(HttpHeaders.Referrer, PublicApi.REFERER)
+        header(HttpHeaders.Referrer, REFERER)
 
         parameter("type", type)
         parameter("relation", relation)

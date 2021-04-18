@@ -15,7 +15,7 @@ suspend fun PixivClient.illustBookmarkAdd(
     pid: Long,
     tags: List<String>,
     restrict: PublicityType = PublicityType.PUBLIC,
-    url: String = AppApi.ILLUST_BOOKMARK_ADD,
+    url: String = ILLUST_BOOKMARK_ADD,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
@@ -28,7 +28,7 @@ suspend fun PixivClient.illustBookmarkAdd(
 
 suspend fun PixivClient.illustBookmarkDelete(
     pid: Long,
-    url: String = AppApi.ILLUST_BOOKMARK_DELETE,
+    url: String = ILLUST_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
@@ -39,7 +39,7 @@ suspend fun PixivClient.illustBookmarkDelete(
 
 suspend fun PixivClient.illustBookmarkDetail(
     pid: Long,
-    url: String = AppApi.ILLUST_BOOKMARK_DETAIL,
+    url: String = ILLUST_BOOKMARK_DETAIL,
 ): BookmarkDetailSingle = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid)
@@ -50,7 +50,7 @@ suspend fun PixivClient.illustComments(
     pid: Long,
     offset: Long = 0,
     includeTotalComments: Boolean? = null,
-    url: String = AppApi.ILLUST_COMMENTS,
+    url: String = ILLUST_COMMENTS,
 ): CommentData = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid.toString())
@@ -61,7 +61,7 @@ suspend fun PixivClient.illustComments(
 
 suspend fun PixivClient.illustDetail(
     pid: Long,
-    url: String = AppApi.ILLUST_DETAIL,
+    url: String = ILLUST_DETAIL,
 ): IllustSingle = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid.toString())
@@ -72,7 +72,7 @@ suspend fun PixivClient.illustFollow(
     type: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0,
-    url: String = AppApi.ILLUST_FOLLOW,
+    url: String = ILLUST_FOLLOW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", type.value())
@@ -86,7 +86,7 @@ suspend fun PixivClient.illustMyPixiv(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_MYPIXIV,
+    url: String = ILLUST_MYPIXIV,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", type.value())
@@ -101,7 +101,7 @@ suspend fun PixivClient.illustNew(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_NEW,
+    url: String = ILLUST_NEW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", type.value())
@@ -116,7 +116,7 @@ suspend fun PixivClient.illustRanking(
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_RANKING,
+    url: String = ILLUST_RANKING,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("date", date)
@@ -131,7 +131,7 @@ suspend fun PixivClient.illustRanking(
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_RANKING,
+    url: String = ILLUST_RANKING,
 ): IllustData = illustRanking(
     date = date?.format(DateTimeFormatter.ISO_DATE),
     mode = mode,
@@ -147,7 +147,7 @@ suspend fun PixivClient.illustRecommended(
     includePrivacyPolicy: Boolean = true,
     minBookmarkIdForRecentIllust: Long? = null,
     maxBookmarkIdForRecommend: Long? = null,
-    url: String = AppApi.ILLUST_RECOMMENDED,
+    url: String = ILLUST_RECOMMENDED,
 ): RecommendedData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", type.value())
@@ -164,7 +164,7 @@ suspend fun PixivClient.illustRelated(
     seedIllustIds: List<Long> = emptyList(),
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.ILLUST_RELATED,
+    url: String = ILLUST_RELATED,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid)

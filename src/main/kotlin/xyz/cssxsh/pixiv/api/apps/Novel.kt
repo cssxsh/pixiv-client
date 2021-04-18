@@ -15,7 +15,7 @@ suspend fun PixivClient.novelBookmarkAdd(
     pid: Long,
     tags: List<String>,
     restrict: PublicityType = PublicityType.PUBLIC,
-    url: String = AppApi.NOVEL_BOOKMARK_ADD,
+    url: String = NOVEL_BOOKMARK_ADD,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
@@ -28,7 +28,7 @@ suspend fun PixivClient.novelBookmarkAdd(
 
 suspend fun PixivClient.novelBookmarkDelete(
     pid: Long,
-    url: String = AppApi.NOVEL_BOOKMARK_DELETE,
+    url: String = NOVEL_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
         body = FormDataContent(Parameters.build {
@@ -39,7 +39,7 @@ suspend fun PixivClient.novelBookmarkDelete(
 
 suspend fun PixivClient.novelBookmarkDetail(
     pid: Long,
-    url: String = AppApi.NOVEL_BOOKMARK_DETAIL,
+    url: String = NOVEL_BOOKMARK_DETAIL,
 ): BookmarkDetailSingle = useHttpClient { client ->
     client.get(url) {
         parameter("novel_id", pid)
@@ -51,7 +51,7 @@ suspend fun PixivClient.novelComments(
     pid: Long,
     offset: Long = 0,
     includeTotalComments: Boolean? = null,
-    url: String = AppApi.NOVEL_COMMENTS,
+    url: String = NOVEL_COMMENTS,
 ): CommentData = useHttpClient { client ->
     client.get(url) {
         parameter("novel_id", pid.toString())
@@ -62,7 +62,7 @@ suspend fun PixivClient.novelComments(
 
 suspend fun PixivClient.novelDetail(
     pid: Long,
-    url: String = AppApi.NOVEL_DETAIL,
+    url: String = NOVEL_DETAIL,
 ): IllustSingle = useHttpClient { client ->
     client.get(url) {
         parameter("novel_id", pid.toString())
@@ -73,7 +73,7 @@ suspend fun PixivClient.novelFollow(
     workContentType: WorkContentType = WorkContentType.ILLUST,
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0,
-    url: String = AppApi.NOVEL_FOLLOW,
+    url: String = NOVEL_FOLLOW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
@@ -87,7 +87,7 @@ suspend fun PixivClient.novelMyPixiv(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.NOVEL_MYPIXIV,
+    url: String = NOVEL_MYPIXIV,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
@@ -102,7 +102,7 @@ suspend fun PixivClient.novelNew(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.NOVEL_NEW,
+    url: String = NOVEL_NEW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())
@@ -117,7 +117,7 @@ suspend fun PixivClient.novelRanking(
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.NOVEL_RANKING,
+    url: String = NOVEL_RANKING,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("date", date)
@@ -132,7 +132,7 @@ suspend fun PixivClient.novelRanking(
     mode: RankMode? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.NOVEL_RANKING,
+    url: String = NOVEL_RANKING,
 ): IllustData = illustRanking(
     date = date.format(DateTimeFormatter.ISO_DATE),
     mode = mode,
@@ -148,7 +148,7 @@ suspend fun PixivClient.novelRecommended(
     includePrivacyPolicy: Boolean = true,
     minBookmarkIdForRecentIllust: Long? = null,
     maxBookmarkIdForRecommend: Long? = null,
-    url: String = AppApi.NOVEL_RECOMMENDED,
+    url: String = NOVEL_RECOMMENDED,
 ): RecommendedData = useHttpClient { client ->
     client.get(url) {
         parameter("content_type", workContentType.value())

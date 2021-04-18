@@ -12,7 +12,7 @@ suspend fun PixivClient.getSearchWorks(
     order: OrderType = OrderType.DESC,
     period: PeriodType = PeriodType.ALL,
     config: PublicApiConfig,
-    url: String = PublicApi.SEARCH_WORKS,
+    url: String = SEARCH_WORKS,
 ): ListArtData = useHttpClient { client ->
     client.get(url) {
         init(config)

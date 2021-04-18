@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.sync.withLock
 import okio.ByteString.Companion.encode
 import xyz.cssxsh.pixiv.GrantType
-import xyz.cssxsh.pixiv.api.OauthApi
+import xyz.cssxsh.pixiv.api.OAUTH_URL
 import xyz.cssxsh.pixiv.data.AuthResult
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
 import java.time.OffsetDateTime
@@ -58,7 +58,7 @@ open class SimplePixivClient(
 
     protected open suspend fun auth(grantType: GrantType, config: PixivConfig, time: OffsetDateTime): AuthResult {
         return useHttpClient { client ->
-            client.post<AuthResult>(OauthApi.OAUTH_URL) {
+            client.post<AuthResult>(OAUTH_URL) {
                 attributes.put(PixivAccessToken.PixivAuthMark, Unit)
                 time.format(JapanDateTimeSerializer.dateFormat).let { time ->
                     header("X-Client-Hash", (time + config.client.hashSecret).encode().md5())

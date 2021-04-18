@@ -12,7 +12,7 @@ suspend fun PixivClient.searchIllust(
     duration: DurationType? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.SEARCH_ILLUST,
+    url: String = SEARCH_ILLUST,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)
@@ -31,7 +31,7 @@ suspend fun PixivClient.searchNovel(
     duration: DurationType? = null,
     filter: String = "for_ios",
     offset: Long = 0,
-    url: String = AppApi.SEARCH_NOVEL,
+    url: String = SEARCH_NOVEL,
 ): NovelData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)
@@ -45,7 +45,7 @@ suspend fun PixivClient.searchNovel(
 
 suspend fun PixivClient.searchAutoComplete(
     word: String,
-    url: String = AppApi.SEARCH_AUTO_COMPLETE,
+    url: String = SEARCH_AUTO_COMPLETE,
 ): KeywordsData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)

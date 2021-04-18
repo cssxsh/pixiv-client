@@ -6,7 +6,7 @@ import xyz.cssxsh.pixiv.data.publics.ListArtData
 
 suspend fun PixivClient.getFriendsWorks(
     config: PublicApiConfig,
-    url: String = PublicApi.ME_FRIENDS_WORKS,
+    url: String = ME_FRIENDS_WORKS,
 ): ListArtData = useHttpClient { client ->
     client.get(url) {
         init(config)

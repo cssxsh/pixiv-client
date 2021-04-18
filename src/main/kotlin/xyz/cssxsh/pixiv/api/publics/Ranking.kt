@@ -5,11 +5,11 @@ import xyz.cssxsh.pixiv.client.PixivClient
 import xyz.cssxsh.pixiv.data.publics.RankingData
 
 suspend fun PixivClient.getRankingWorks(
-    type: PublicApi.RankingType,
+    type: RankingType,
     mode: String,
     date: String? = null,
     config: PublicApiConfig,
-    url: String = PublicApi.RANKING(type),
+    url: String = RANKING(type),
 ): RankingData = useHttpClient { client ->
     client.get(url) {
         init(config)

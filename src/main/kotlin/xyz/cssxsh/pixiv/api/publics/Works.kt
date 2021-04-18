@@ -6,7 +6,7 @@ import xyz.cssxsh.pixiv.data.publics.ListArtData
 
 suspend fun PixivClient.getWorks(
     config: PublicApiConfig = PublicApiConfig(),
-    url: String = PublicApi.WORKS,
+    url: String = WORKS,
 ): ListArtData = useHttpClient { client ->
     client.get(url) {
         init(config)
@@ -18,5 +18,5 @@ suspend fun PixivClient.getWork(
     config: PublicApiConfig = PublicApiConfig(),
 ): ListArtData = getWorks(
     config = config,
-    url = PublicApi.WORKS_BY_PID(pid),
+    url = WORKS_BY_PID(pid),
 )
