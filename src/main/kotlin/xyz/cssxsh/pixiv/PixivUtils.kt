@@ -17,6 +17,8 @@ typealias HeadersMap = Map<String, String>
 
 typealias FileUrls = Map<String, String>
 
+const val HTTP_KILO = 1022
+
 const val CLIENT_ID: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
 
 const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
