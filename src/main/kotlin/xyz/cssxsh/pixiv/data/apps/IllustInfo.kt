@@ -2,10 +2,7 @@ package xyz.cssxsh.pixiv.data.apps
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.cssxsh.pixiv.WorkContentType
-import xyz.cssxsh.pixiv.FileUrls
-import xyz.cssxsh.pixiv.PublicityType
-import xyz.cssxsh.pixiv.SanityLevel
+import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
 import java.time.OffsetDateTime
 
@@ -61,8 +58,8 @@ data class IllustInfo(
     @SerialName("width")
     val width: Int,
     @SerialName("x_restrict")
-    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
-    val xRestrict: PublicityType,
+    @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
+    val age: AgeLimit,
 ) {
     @Serializable
     data class MetaPageData(

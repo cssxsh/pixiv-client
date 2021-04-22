@@ -2,8 +2,7 @@ package xyz.cssxsh.pixiv.data.apps
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.cssxsh.pixiv.FileUrls
-import xyz.cssxsh.pixiv.PublicityType
+import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.data.JapanDateTimeSerializer
 import java.time.OffsetDateTime
 
@@ -52,6 +51,6 @@ data class NovelInfo(
     @SerialName("visible")
     val visible: Boolean,
     @SerialName("x_restrict")
-    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
-    val xRestrict: PublicityType,
+    @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
+    val age: AgeLimit,
 )
