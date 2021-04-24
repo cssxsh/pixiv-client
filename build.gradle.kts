@@ -30,6 +30,7 @@ dependencies {
     }
     implementation(okhttp3("okhttp", Versions.okhttp))
     implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
+    implementation(jsoup(Versions.jsoup))
     testImplementation(kotlin("test-junit5"))
     testImplementation(junit("api", Versions.junit))
     testRuntimeOnly(junit("engine", Versions.junit))

@@ -132,24 +132,24 @@ open class PixivDownloader(
 
     private fun IntRange.getHeader() = "bytes=${first}-${last}"
 
-    private suspend fun getSize(url: String): Int = withHttpClient {
+    private suspend fun getSize(url: Url): Int = withHttpClient {
         get<HttpMessage>(url) {
-            header(HttpHeaders.Host, this.url.host)
+            header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, (0..0).getHeader())
         }.headers[HttpHeaders.ContentRange]!!.substringAfterLast("/").toInt()
     }
 
-    private suspend fun headSize(url: String): Int = withHttpClient {
+    private suspend fun headSize(url: Url): Int = withHttpClient {
         head<HttpMessage>(url) {
-            header(HttpHeaders.Host, this.url.host)
+            header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
         }.headers[HttpHeaders.ContentLength]!!.toInt()
     }
 
-    private suspend fun downloadRange(url: String, range: IntRange): ByteArray = withHttpClient {
+    private suspend fun downloadRange(url: Url, range: IntRange): ByteArray = withHttpClient {
         get<ByteArray>(url) {
-            header(HttpHeaders.Host, this.url.host)
+            header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, range.getHeader())
         }.also {
@@ -159,14 +159,14 @@ open class PixivDownloader(
         }
     }
 
-    private suspend fun downloadAll(url: String): ByteArray = withHttpClient {
+    private suspend fun downloadAll(url: Url): ByteArray = withHttpClient {
         get(url) {
-            header(HttpHeaders.Host, this.url.host)
+            header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
         }
     }
 
-    private suspend fun downloadRangesOrAll(url: String, length: Int): ByteArray {
+    private suspend fun downloadRangesOrAll(url: Url, length: Int): ByteArray {
         return if (length < blockSize) {
             downloadAll(url = url)
         } else {
@@ -179,14 +179,14 @@ open class PixivDownloader(
         }
     }
 
-    private suspend fun download(url: String): ByteArray = downloadRangesOrAll(
+    private suspend fun download(url: Url): ByteArray = downloadRangesOrAll(
         url = url,
         length = if (head) headSize(url = url) else getSize(url = url)
     )
 
     suspend fun <R> downloadImageUrls(
-        urls: List<String>,
-        block: (url: String, result: Result<ByteArray>) -> R,
+        urls: List<Url>,
+        block: (url: Url, result: Result<ByteArray>) -> R,
     ): List<R> = urls.asyncMapIndexed { _, url ->
         runCatching {
             download(url = url)

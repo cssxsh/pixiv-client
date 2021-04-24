@@ -3,11 +3,12 @@
 package xyz.cssxsh.pixiv
 
 import io.ktor.client.engine.*
+import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.Encoder
-import xyz.cssxsh.pixiv.client.exception.ProxyException
+import xyz.cssxsh.pixiv.exception.ProxyException
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.URL
@@ -26,16 +27,16 @@ const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
 const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
 
 val IOS_HEADERS: HeadersMap = mapOf(
-    "Accept-Language" to "zh_CN",
-    "User-Agent" to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
+    HttpHeaders.AcceptLanguage to "zh_CN",
+    HttpHeaders.UserAgent to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
     "App-OS-Version" to "9.0.2",
     "App-OS" to "ios",
     "App-Version" to "6.0.4"
 )
 
 val ANDROID_HEADERS: HeadersMap = mapOf(
-    "Accept-Language" to "zh_CN",
-    "User-Agent" to "PixivAndroidApp/5.0.64 (Android 6.0)",
+    HttpHeaders.AcceptLanguage to "zh_CN",
+    HttpHeaders.UserAgent to "PixivAndroidApp/5.0.64 (Android 6.0)",
     "App-OS-Version" to "6.0",
     "App-OS" to "android",
     "App-Version" to "5.0.64"
@@ -93,11 +94,6 @@ open class PixivTypeSerializer<T>(
         requireNotNull(values().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in $with" }
 }
 
-enum class GrantType : PixivParam {
-    PASSWORD,
-    REFRESH_TOKEN;
-}
-
 @Serializable(with = SearchMode.Companion::class)
 enum class SearchMode : PixivParam {
     TEXT,
@@ -146,34 +142,61 @@ enum class SortMode : PixivParam {
     )
 }
 
-@Serializable(with = SortType.Companion::class)
-enum class SortType : PixivParam {
+@Serializable(with = SearchSort.Companion::class)
+enum class SearchSort : PixivParam {
     DATE_DESC,
-    DATE_ASC;
+    DATE_ASC,
 
-    companion object : PixivEnumSerializer<SortType>(
-        with = SortType::class,
+    // 高级会员选项
+    POPULAR_DESC,
+    POPULAR_MALE_DESC,
+    POPULAR_FEMALE_DESC;
+
+    companion object : PixivEnumSerializer<SearchSort>(
+        with = SearchSort::class,
         valueOf = ::enumValueOf
     )
 }
 
-@Serializable(with = DurationType.Companion::class)
-enum class DurationType : PixivParam {
+@Serializable(with = SearchDuration.Companion::class)
+enum class SearchDuration : PixivParam {
+    CUSTOM_DURATION,
+    ALL,
     WITHIN_LAST_DAY,
     WITHIN_LAST_WEEK,
-    WITHIN_LAST_MONTH;
+    WITHIN_LAST_MONTH,
+    WITHIN_HALF_YEAR,
+    WITHIN_YEAR,
+    SELECT;
 
-    companion object : PixivEnumSerializer<DurationType>(
-        with = DurationType::class,
+    companion object : PixivEnumSerializer<SearchDuration>(
+        with = SearchDuration::class,
         valueOf = ::enumValueOf
     )
+}
+
+enum class SearchSize : PixivParam {
+    MINIMUM,
+    MEDIUM,
+    LARGE;
+}
+
+enum class SearchIllustTool : PixivParam {
+    PHOTOSHOP,
+    ILLUSTRATOR,
+    FIREWORKS;
+}
+
+enum class SearchAspectRatio : PixivParam {
+    PORTRAIT,
+    LANDSCAPE,
+    SQUARE;
 }
 
 @Serializable(with = PublicityType.Companion::class)
 enum class PublicityType : PixivParam {
     PUBLIC,
-    PRIVATE,
-    TEMP;
+    PRIVATE;
 
     companion object : PixivEnumSerializer<PublicityType>(
         with = PublicityType::class,
@@ -190,7 +213,9 @@ enum class PublicityType : PixivParam {
 enum class SearchTarget : PixivParam {
     PARTIAL_MATCH_FOR_TAGS,
     EXACT_MATCH_FOR_TAGS,
-    TITLE_AND_CAPTION;
+    TITLE_AND_CAPTION,
+    TEST,
+    KEYWORD;
 
     companion object : PixivEnumSerializer<SearchTarget>(
         with = SearchTarget::class,
@@ -206,6 +231,17 @@ enum class WorkContentType : PixivParam {
 
     companion object : PixivEnumSerializer<WorkContentType>(
         with = WorkContentType::class,
+        valueOf = ::enumValueOf
+    )
+}
+
+@Serializable(with = WorkType.Companion::class)
+enum class WorkType : PixivParam {
+    ILLUST,
+    MANGA;
+
+    companion object : PixivEnumSerializer<WorkType>(
+        with = WorkType::class,
         valueOf = ::enumValueOf
     )
 }
@@ -286,4 +322,21 @@ enum class AgeLimit : PixivParam {
             values = ::enumValues
         )
     }
+}
+
+enum class FilterType : PixivParam {
+    FOR_ANDROID,
+    FOR_ISO;
+}
+
+@Serializable(with = CategoryType.Companion::class)
+enum class CategoryType : PixivParam {
+    ALL,
+    ILLUST,
+    MANGA;
+
+    companion object : PixivEnumSerializer<SanityLevel>(
+        with = SanityLevel::class,
+        valueOf = ::enumValueOf
+    )
 }
