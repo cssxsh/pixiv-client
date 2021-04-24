@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.http.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.cssxsh.pixiv.*
@@ -70,7 +71,7 @@ data class IllustInfo(
     fun getImageUrls(): List<FileUrls> =
         if (pageCount == 1) listOf(metaSinglePage + imageUrls) else metaPages.map { it.imageUrls }
 
-    fun getOriginImageUrls(): List<String> = getImageUrls().map { urls ->
-        urls.filter { "origin" in it.key }.values.first()
-    }.sorted()
+    fun getOriginImageUrls(): List<Url> = getImageUrls().mapNotNull { urls ->
+        urls.entries.find { "origin" in it.key }?.let { Url(it.value) }
+    }
 }
