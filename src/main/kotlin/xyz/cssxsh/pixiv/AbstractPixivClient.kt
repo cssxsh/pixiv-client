@@ -89,16 +89,8 @@ abstract class AbstractPixivClient : PixivClient {
 
         engine {
             config {
-                config.proxy?.toProxy()?.let { proxy ->
-                    proxySelector(object : ProxySelector() {
-                        override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
-                            if (uri?.host !in config.cname) add(proxy)
-                        }
-
-                        override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-                            // println("connectFailed； $uri")
-                        }
-                    })
+                config.proxy?.let { proxy ->
+                    proxySelector(ProxySelector(proxy = proxy, cname = config.cname))
                 }
 
                 if (config.useRubySSLFactory) {

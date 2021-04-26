@@ -10,10 +10,7 @@ import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import okhttp3.OkHttpClient
-import xyz.cssxsh.pixiv.HTTP_KILO
-import xyz.cssxsh.pixiv.JAPAN_DNS
-import xyz.cssxsh.pixiv.toProxy
-import java.io.IOException
+import xyz.cssxsh.pixiv.*
 import java.net.*
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -50,17 +47,7 @@ open class PixivDownloader(
         socketTimeout = timeout.toLongMilliseconds(),
         connectTimeout = timeout.toLongMilliseconds(),
         requestTimeout = timeout.toLongMilliseconds(),
-        proxySelector = proxyUrl?.toProxy()?.let { proxy ->
-            object : ProxySelector() {
-                override fun select(uri: URI?) = mutableListOf<Proxy>().apply {
-                    if (uri?.host !in cname) add(proxy)
-                }
-
-                override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-                    // println("connectFailed； $uri")
-                }
-            }
-        },
+        proxySelector = proxyUrl?.let { proxy -> ProxySelector(proxy = proxy, cname = cname) },
         dns = LocalDns(
             dns = dns,
             initHost = initHost,

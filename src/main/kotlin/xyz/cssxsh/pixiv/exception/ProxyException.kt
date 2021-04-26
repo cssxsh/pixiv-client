@@ -1,3 +1,5 @@
 package xyz.cssxsh.pixiv.exception
 
-class ProxyException(proxyUrl: String): IllegalArgumentException("Proxy: $proxyUrl Error!")
+import io.ktor.http.*
+
+class ProxyException(proxy: Url): IllegalArgumentException("Proxy: $proxy Error!")

@@ -9,9 +9,8 @@ import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.Encoder
 import xyz.cssxsh.pixiv.exception.ProxyException
-import java.net.InetSocketAddress
-import java.net.Proxy
-import java.net.URL
+import java.io.IOException
+import java.net.*
 import kotlin.reflect.KClass
 
 typealias HeadersMap = Map<String, String>
@@ -53,11 +52,19 @@ val PIXIV_CNAME = mapOf(
     "pixiv.me" to "api.fanbox.cc"
 )
 
-internal fun String.toProxy(): ProxyConfig = URL(this).let { proxy ->
-    when (proxy.protocol) {
-        "http" -> Proxy(Proxy.Type.HTTP, InetSocketAddress(proxy.host, proxy.port))
-        "socks", "socks4", "socks5" -> Proxy(Proxy.Type.SOCKS, InetSocketAddress(proxy.host, proxy.port))
-        else -> throw ProxyException(this)
+internal fun Url.toProxy(): ProxyConfig = when (protocol) {
+    URLProtocol.HTTP -> Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
+    URLProtocol.SOCKS -> Proxy(Proxy.Type.SOCKS, InetSocketAddress(host, port))
+    else -> throw ProxyException(this)
+}
+
+internal fun ProxySelector(proxy: String, cname: Map<String, String>) = object : ProxySelector() {
+    override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
+        if (uri?.host !in cname) add(Url(proxy).toProxy())
+    }
+
+    override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
+        // println("connectFailed； $uri")
     }
 }
 
@@ -66,10 +73,8 @@ interface PixivParam {
     fun value() = name.toLowerCase()
 }
 
-open class PixivEnumSerializer<T>(
-    with: KClass<T>,
-    private val valueOf: (name: String) -> T,
-) : KSerializer<T> where T : PixivParam, T : Enum<T> {
+open class PixivEnumSerializer<T>(with: KClass<T>, private val valueOf: (name: String) -> T) :
+    KSerializer<T> where T : PixivParam, T : Enum<T> {
 
     override val descriptor: SerialDescriptor = buildSerialDescriptor(with.qualifiedName!!, SerialKind.ENUM)
 
@@ -80,12 +85,10 @@ open class PixivEnumSerializer<T>(
         valueOf(decoder.decodeString().toUpperCase())
 }
 
-open class PixivTypeSerializer<T>(
-    val with: KClass<T>,
-    private val values: () -> Array<T>,
-) : KSerializer<T> where T : PixivParam, T : Enum<T> {
+open class PixivTypeSerializer<T>(val with: KClass<T>, private val values: () -> Array<T>) :
+    KSerializer<T> where T : PixivParam, T : Enum<T> {
 
-    override val descriptor: SerialDescriptor = buildSerialDescriptor(with.qualifiedName!!, SerialKind.ENUM)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor(with.qualifiedName!!, PrimitiveKind.INT)
 
     override fun serialize(encoder: Encoder, value: T) =
         encoder.encodeInt(value.ordinal)
@@ -196,7 +199,8 @@ enum class SearchAspectRatio : PixivParam {
 @Serializable(with = PublicityType.Companion::class)
 enum class PublicityType : PixivParam {
     PUBLIC,
-    PRIVATE;
+    PRIVATE,
+    TEMP;
 
     companion object : PixivEnumSerializer<PublicityType>(
         with = PublicityType::class,
