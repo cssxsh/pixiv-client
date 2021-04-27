@@ -133,16 +133,16 @@ open class PixivDownloader(
         }.headers[HttpHeaders.ContentLength]!!.toInt()
     }
 
+    private fun ByteArray.check(expected: Int) = also {
+        check(it.size == expected) { "Expected ${expected}, actual ${it.size}" }
+    }
+
     private suspend fun downloadRange(url: Url, range: IntRange): ByteArray = withHttpClient {
         get<ByteArray>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, range.getHeader())
-        }.also {
-            check(it.size == range.getLength()) {
-                "Expected ${range.getLength()}, actual ${it.size}"
-            }
-        }
+        }.check(range.getLength())
     }
 
     private suspend fun downloadAll(url: Url): ByteArray = withHttpClient {
@@ -162,7 +162,7 @@ open class PixivDownloader(
                     range = offset until (offset + blockSize).coerceAtMost(length)
                 )
             }.reduce { accumulator, bytes -> accumulator + bytes }
-        }
+        }.check(length)
     }
 
     private suspend fun download(url: Url): ByteArray = downloadRangesOrAll(
