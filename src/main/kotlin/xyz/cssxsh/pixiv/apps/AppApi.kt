@@ -4,6 +4,7 @@ package xyz.cssxsh.pixiv.apps
 const val ROOT_PATH = "https://app-api.pixiv.net"
 const val PAGE_SIZE = 30L
 const val ARTICLE_PAGE_SIZE = 10L
+const val ARTICLE_LIMIT = 5000L
 const val FOLLOW_LIMIT = 6000L
 const val RECOMMENDED_LIMIT = 5000L
 const val RELATED_LIMIT = 150L
