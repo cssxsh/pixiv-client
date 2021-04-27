@@ -61,35 +61,34 @@ open class PixivDownloader(
         Logger.getLogger(OkHttpClient::class.java.name).level = Level.OFF
     }
 
-    private val client
-        get() = HttpClient(OkHttp) {
-            ContentEncoding {
-                gzip()
-                deflate()
-                identity()
-            }
-            install(HttpTimeout) {
-                socketTimeoutMillis = socketTimeout
-                connectTimeoutMillis = connectTimeout
-                requestTimeoutMillis = requestTimeout
-            }
-            engine {
-                config {
-                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
-                    hostnameVerifier { _, _ -> true }
-                    proxySelector?.let {
-                        proxySelector(it)
-                    }
-                    dns(dns)
+    private fun client() = HttpClient(OkHttp) {
+        ContentEncoding {
+            gzip()
+            deflate()
+            identity()
+        }
+        install(HttpTimeout) {
+            socketTimeoutMillis = socketTimeout
+            connectTimeoutMillis = connectTimeout
+            requestTimeoutMillis = requestTimeout
+        }
+        engine {
+            config {
+                sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                hostnameVerifier { _, _ -> true }
+                proxySelector?.let {
+                    proxySelector(it)
                 }
+                dns(dns)
             }
         }
+    }
 
     private suspend fun <T> withHttpClient(block: suspend HttpClient.() -> T): T = withContext(Dispatchers.IO) {
         while (isActive) {
             channel.send(0)
             runCatching {
-                client.use { it.block() }
+                client().use { it.block() }
             }.also {
                 channel.receive()
             }.onSuccess {
@@ -102,7 +101,7 @@ open class PixivDownloader(
                 }
             }
         }
-        TODO()
+        throw CancellationException()
     }
 
     private suspend fun <T, R> Iterable<T>.asyncMapIndexed(

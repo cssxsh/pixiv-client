@@ -1,6 +1,7 @@
 package xyz.cssxsh.pixiv.tool
 
 import io.ktor.client.features.*
+import io.ktor.http.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.runBlocking
@@ -17,7 +18,7 @@ internal class PixivDownloaderTest {
 
     // 0 - 52
     private val urls = (0..7).map {
-        "https://i.pximg.net/img-original/img/2020/09/25/20/03/38/84603624_p$it.jpg"
+        Url("https://i.pximg.net/img-original/img/2020/09/25/20/03/38/84603624_p$it.jpg")
     }
 
     private val ignore: suspend (Throwable) -> Boolean = { throwable ->
@@ -43,11 +44,7 @@ internal class PixivDownloaderTest {
         }
     }
 
-    private val host = mapOf(
-        "i.pximg.net" to (134..147).map {
-            "210.140.92.${it}"
-        }
-    )
+    private val host = mapOf("i.pximg.net" to (134..147).map { "210.140.92.${it}" })
 
     private val sizes = listOf(
         32,
