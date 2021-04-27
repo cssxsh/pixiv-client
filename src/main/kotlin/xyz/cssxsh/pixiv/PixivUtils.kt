@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package xyz.cssxsh.pixiv
 
 import io.ktor.client.engine.*
@@ -11,6 +9,7 @@ import kotlinx.serialization.encoding.Encoder
 import xyz.cssxsh.pixiv.exception.ProxyException
 import java.io.IOException
 import java.net.*
+import java.util.*
 import kotlin.reflect.KClass
 
 typealias HeadersMap = Map<String, String>
@@ -26,7 +25,7 @@ const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
 const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
 
 val IOS_HEADERS: HeadersMap = mapOf(
-    HttpHeaders.AcceptLanguage to "zh_CN",
+    HttpHeaders.AcceptLanguage to Locale.CHINA.language,
     HttpHeaders.UserAgent to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
     "App-OS-Version" to "9.0.2",
     "App-OS" to "ios",
@@ -34,7 +33,7 @@ val IOS_HEADERS: HeadersMap = mapOf(
 )
 
 val ANDROID_HEADERS: HeadersMap = mapOf(
-    HttpHeaders.AcceptLanguage to "zh_CN",
+    HttpHeaders.AcceptLanguage to Locale.CHINA.language,
     HttpHeaders.UserAgent to "PixivAndroidApp/5.0.64 (Android 6.0)",
     "App-OS-Version" to "6.0",
     "App-OS" to "android",
