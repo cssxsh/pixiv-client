@@ -8,7 +8,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-suspend fun PixivClient.illustBookmarkAdd(
+suspend fun PixivAppClient.illustBookmarkAdd(
     pid: Long,
     tags: Set<String>,
     restrict: PublicityType = PublicityType.PUBLIC,
@@ -25,7 +25,7 @@ suspend fun PixivClient.illustBookmarkAdd(
     }
 }
 
-suspend fun PixivClient.illustBookmarkDelete(
+suspend fun PixivAppClient.illustBookmarkDelete(
     pid: Long,
     url: String = ILLUST_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
@@ -36,7 +36,7 @@ suspend fun PixivClient.illustBookmarkDelete(
     }
 }
 
-suspend fun PixivClient.illustBookmarkDetail(
+suspend fun PixivAppClient.illustBookmarkDetail(
     pid: Long,
     url: String = ILLUST_BOOKMARK_DETAIL,
 ): BookmarkDetailSingle = useHttpClient { client ->
@@ -45,7 +45,7 @@ suspend fun PixivClient.illustBookmarkDetail(
     }
 }
 
-suspend fun PixivClient.illustComments(
+suspend fun PixivAppClient.illustComments(
     pid: Long,
     offset: Long? = null,
     includeTotalComments: Boolean? = null,
@@ -58,7 +58,7 @@ suspend fun PixivClient.illustComments(
     }
 }
 
-suspend fun PixivClient.illustDetail(
+suspend fun PixivAppClient.illustDetail(
     pid: Long,
     url: String = ILLUST_DETAIL,
 ): IllustSingle = useHttpClient { client ->
@@ -67,7 +67,7 @@ suspend fun PixivClient.illustDetail(
     }
 }
 
-suspend fun PixivClient.illustFollow(
+suspend fun PixivAppClient.illustFollow(
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long? = null,
     url: String = ILLUST_FOLLOW,
@@ -78,7 +78,7 @@ suspend fun PixivClient.illustFollow(
     }
 }
 
-suspend fun PixivClient.illustMyPixiv(
+suspend fun PixivAppClient.illustMyPixiv(
     offset: Long? = null,
     url: String = ILLUST_MYPIXIV,
 ): IllustData = useHttpClient { client ->
@@ -87,7 +87,7 @@ suspend fun PixivClient.illustMyPixiv(
     }
 }
 
-suspend fun PixivClient.illustNew(
+suspend fun PixivAppClient.illustNew(
     type: WorkType? = null,
     max: Long? = null,
     url: String = ILLUST_NEW,
@@ -98,7 +98,7 @@ suspend fun PixivClient.illustNew(
     }
 }
 
-suspend fun PixivClient.illustRanking(
+suspend fun PixivAppClient.illustRanking(
     date: LocalDate? = null,
     mode: RankMode? = null,
     filter: FilterType? = null,
@@ -113,7 +113,7 @@ suspend fun PixivClient.illustRanking(
     }
 }
 
-suspend fun PixivClient.illustRecommended(
+suspend fun PixivAppClient.illustRecommended(
     filter: FilterType? = null,
     includeRankingLabel: Boolean? = null,
     includePrivacyPolicy: Boolean? = null,
@@ -132,7 +132,7 @@ suspend fun PixivClient.illustRecommended(
     }
 }
 
-suspend fun PixivClient.illustRelated(
+suspend fun PixivAppClient.illustRelated(
     pid: Long,
     seeds: Set<Long>? = null,
     filter: FilterType? = null,

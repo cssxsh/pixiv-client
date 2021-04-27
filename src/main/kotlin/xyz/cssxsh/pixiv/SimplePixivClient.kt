@@ -11,7 +11,7 @@ open class SimplePixivClient(
     parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
     coroutineName: String = "SimplePixivClient",
     override val config: PixivConfig,
-) : PixivClient, AbstractPixivClient() {
+) : AutoPixivClient(), PixivWebClient {
 
     constructor(
         parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
@@ -41,13 +41,17 @@ open class SimplePixivClient(
         authInfo?.takeIf { expiresTime > OffsetDateTime.now() } ?: auto()
     }
 
-    override suspend fun login(mailOrPixivID: String, password: String): AuthResult = auth(GrantType.PASSWORD, config {
-        account = Account(mailOrPixivID, password)
-    }, OffsetDateTime.now())
+    override suspend fun login(mailOrPixivID: String, password: String): AuthResult = auth(
+        grant = GrantType.PASSWORD,
+        config = config { account = Account(mailOrPixivID, password) },
+        time = OffsetDateTime.now()
+    )
 
-    override suspend fun refresh(token: String): AuthResult = auth(GrantType.REFRESH_TOKEN, config {
-        refreshToken = token
-    }, OffsetDateTime.now())
+    override suspend fun refresh(token: String): AuthResult = auth(
+        grant = GrantType.REFRESH_TOKEN,
+        config = config { refreshToken = token },
+        time = OffsetDateTime.now()
+    )
 
     protected open suspend fun auth(grant: GrantType, config: PixivConfig, time: OffsetDateTime): AuthResult {
         return oauth(

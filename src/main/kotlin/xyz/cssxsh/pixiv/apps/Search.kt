@@ -5,7 +5,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-suspend fun PixivClient.searchAutoComplete(
+suspend fun PixivAppClient.searchAutoComplete(
     word: String,
     url: String = SEARCH_AUTO_COMPLETE,
 ): KeywordsData = useHttpClient { client ->
@@ -14,7 +14,7 @@ suspend fun PixivClient.searchAutoComplete(
     }
 }
 
-suspend fun PixivClient.searchBookmarkRangesIllust(
+suspend fun PixivAppClient.searchBookmarkRangesIllust(
     word: String,
     target: SearchTarget? = null,
     start: LocalDate? = null,
@@ -37,7 +37,7 @@ suspend fun PixivClient.searchBookmarkRangesIllust(
     }
 }
 
-suspend fun PixivClient.searchIllust(
+suspend fun PixivAppClient.searchIllust(
     word: String,
     target: SearchTarget? = null,
     sort: SearchSort? = null,
@@ -68,7 +68,7 @@ suspend fun PixivClient.searchIllust(
     }
 }
 
-suspend fun PixivClient.searchUser(
+suspend fun PixivAppClient.searchUser(
     word: String,
     filter: FilterType? = null,
     offset: Long? = null,

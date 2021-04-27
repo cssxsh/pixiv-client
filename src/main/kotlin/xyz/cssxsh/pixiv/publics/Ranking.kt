@@ -1,9 +1,9 @@
 package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
-import xyz.cssxsh.pixiv.PixivClient
+import xyz.cssxsh.pixiv.PixivAppClient
 
-suspend fun PixivClient.getRankingWorks(
+suspend fun PixivAppClient.getRankingWorks(
     type: RankingType,
     mode: String,
     date: String? = null,

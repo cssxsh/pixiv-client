@@ -7,16 +7,16 @@ import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
-import io.ktor.client.statement.*
+import io.ktor.client.request.*
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.tool.*
-import java.io.IOException
-import java.net.*
 import java.time.OffsetDateTime
 
-abstract class AbstractPixivClient : PixivClient {
+abstract class AutoPixivClient : PixivAppClient {
 
     protected open var authInfo: AuthResult? = null
 
@@ -50,35 +50,10 @@ abstract class AbstractPixivClient : PixivClient {
             identity()
         }
         HttpResponseValidator {
-            handleResponseException { cause ->
-                if (cause is ClientRequestException) {
-                    cause.response.readText().let { content ->
-                        runCatching {
-                            AppApiException(cause.response, content)
-                        }.onSuccess {
-                            throw it
-                        }
-
-                        runCatching {
-                            PublicApiException(cause.response, content)
-                        }.onSuccess {
-                            throw it
-                        }
-
-                        runCatching {
-                            AuthException(cause.response, content)
-                        }.onSuccess {
-                            throw it
-                        }
-
-                        runCatching {
-                            OtherClientException(cause.response, content)
-                        }.onSuccess {
-                            throw it
-                        }
-                    }
-                }
-            }
+            handleResponseException(block = TransferExceptionHandler)
+        }
+        defaultRequest {
+            config.headers.forEach(::header)
         }
 
         install(PixivAccessToken) {
@@ -89,8 +64,8 @@ abstract class AbstractPixivClient : PixivClient {
 
         engine {
             config {
-                config.proxy?.let { proxy ->
-                    proxySelector(ProxySelector(proxy = proxy, cname = config.cname))
+                config.proxy?.let {
+                    proxySelector(ProxySelector(proxy = it, cname = config.cname))
                 }
 
                 if (config.useRubySSLFactory) {
@@ -110,7 +85,7 @@ abstract class AbstractPixivClient : PixivClient {
         runCatching {
             block(client)
         }.getOrElse { throwable ->
-            if (ignore(throwable)) {
+            if (currentCoroutineContext().isActive && ignore(throwable)) {
                 useHttpClient(ignore = ignore, block = block)
             } else {
                 throw throwable
@@ -120,6 +95,5 @@ abstract class AbstractPixivClient : PixivClient {
 
     protected open val mutex = Mutex()
 
-    override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R =
-        useHttpClient(apiIgnore, block)
+    override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = useHttpClient(apiIgnore, block)
 }

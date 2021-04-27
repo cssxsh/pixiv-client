@@ -6,11 +6,7 @@ import xyz.cssxsh.pixiv.auth.AuthResult
 /**
  * PixivClient，Multiplatform interface
  */
-interface PixivClient : UseHttpClient, CoroutineScope {
-
-    val config: PixivConfig
-
-    fun config(block: PixivConfig.() -> Unit) = config.apply(block)
+interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
 
     suspend fun login(mailOrPixivID: String, password: String): AuthResult
 

@@ -2,9 +2,9 @@ package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
-import xyz.cssxsh.pixiv.PixivClient
+import xyz.cssxsh.pixiv.PixivAppClient
 
-suspend fun PixivClient.getUsersFavoriteWorks(
+suspend fun PixivAppClient.getUsersFavoriteWorks(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     includeWork: Boolean = true,
@@ -19,7 +19,7 @@ suspend fun PixivClient.getUsersFavoriteWorks(
 }
 
 
-suspend fun PixivClient.getUserWorks(
+suspend fun PixivAppClient.getUserWorks(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     config: PublicApiConfig,

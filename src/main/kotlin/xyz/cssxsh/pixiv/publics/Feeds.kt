@@ -3,10 +3,10 @@ package xyz.cssxsh.pixiv.publics
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonElement
-import xyz.cssxsh.pixiv.PixivClient
+import xyz.cssxsh.pixiv.PixivAppClient
 
 
-suspend fun PixivClient.getFeeds(
+suspend fun PixivAppClient.getFeeds(
     type: String = "touch_nottext",
     relation: String = "all",
     showR18: Boolean = false,

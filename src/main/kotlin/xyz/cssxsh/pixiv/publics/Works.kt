@@ -1,9 +1,9 @@
 package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
-import xyz.cssxsh.pixiv.PixivClient
+import xyz.cssxsh.pixiv.PixivAppClient
 
-suspend fun PixivClient.getWorks(
+suspend fun PixivAppClient.getWorks(
     config: PublicApiConfig = PublicApiConfig(),
     url: String = WORKS,
 ): ListArtData = useHttpClient { client ->
@@ -12,7 +12,7 @@ suspend fun PixivClient.getWorks(
     }
 }
 
-suspend fun PixivClient.getWork(
+suspend fun PixivAppClient.getWork(
     pid: Long,
     config: PublicApiConfig = PublicApiConfig(),
 ): ListArtData = getWorks(

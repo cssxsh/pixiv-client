@@ -2,9 +2,9 @@ package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
-import xyz.cssxsh.pixiv.PixivClient
+import xyz.cssxsh.pixiv.PixivAppClient
 
-suspend fun PixivClient.getSearchWorks(
+suspend fun PixivAppClient.getSearchWorks(
     word: String,
     mode: SearchMode = SearchMode.EXACT_TAG,
     sort: SortMode = SortMode.DATE,

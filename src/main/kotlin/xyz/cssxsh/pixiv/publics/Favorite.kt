@@ -4,7 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 
-suspend fun PixivClient.addFavoriteWorks(
+suspend fun PixivAppClient.addFavoriteWorks(
     pid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     url: String = ME_FAVORITE_WORKS,
@@ -17,7 +17,7 @@ suspend fun PixivClient.addFavoriteWorks(
     }
 }
 
-suspend fun PixivClient.deleteFavoriteWorks(
+suspend fun PixivAppClient.deleteFavoriteWorks(
     pids: List<Long>,
     url: String = ME_FAVORITE_WORKS,
 ): FavoriteWorkData = useHttpClient { client ->
@@ -27,7 +27,7 @@ suspend fun PixivClient.deleteFavoriteWorks(
         parameter("ids", pids.joinToString(","))
     }
 }
-suspend fun PixivClient.addFavoriteUsers(
+suspend fun PixivAppClient.addFavoriteUsers(
     uid: Long,
     publicity: PublicityType = PublicityType.PUBLIC,
     url: String = ME_FAVORITE_USERS,
@@ -40,7 +40,7 @@ suspend fun PixivClient.addFavoriteUsers(
     }
 }
 
-suspend fun PixivClient.deleteFavoriteUsers(
+suspend fun PixivAppClient.deleteFavoriteUsers(
     uids: List<Long>,
     url: String = ME_FAVORITE_USERS,
 ): FavoriteUserData = useHttpClient { client ->
