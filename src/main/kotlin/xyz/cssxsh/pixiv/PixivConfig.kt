@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package xyz.cssxsh.pixiv
 
 import kotlinx.serialization.SerialName
@@ -11,7 +9,7 @@ data class PixivConfig(
     @SerialName("client")
     var client: ClientConfig = ClientConfig(),
     @SerialName("headers")
-    var headers: HeadersMap = IOS_HEADERS,
+    var headers: HeadersMap = ANDROID_HEADERS,
     @SerialName("proxy")
     var proxy: String? = null,
     @SerialName("dns")
