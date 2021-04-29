@@ -33,6 +33,7 @@ const val ILLUST_REPORT = "${ROOT_PATH}/v1/illust/report"
 const val ILLUST_SERIES = "${ROOT_PATH}/v1/illust/series?filter=for_android"
 const val ILLUST_SERIES_ILLUST = "${ROOT_PATH}/v1/illust-series/illust?filter=for_android"
 const val MANGA_RECOMMENDED = "${ROOT_PATH}/v1/manga/recommended?filter=for_android"
+const val WALK_THROUGH_ILLUSTS = "${ROOT_PATH}/v1/walkthrough/illusts"
 
 // Notification
 const val NOTIFICATION_NEW = "${ROOT_PATH}/v1/notification/new-from-following"
@@ -118,9 +119,6 @@ const val PREMIUM_ANDROID_PLANS = "${ROOT_PATH}/v1/premium/android/plans"
 const val PREMIUM_ANDROID_LANDING_PAGE = "${ROOT_PATH}/v1/premium/android/landing-page-url"
 const val PREMIUM_ANDROID_REGISTER = "${ROOT_PATH}/v1/premium/android/register"
 
-// Walkthrough
-const val WALKTHROUGH_ILLUSTS = "${ROOT_PATH}v1/walkthrough/illusts"
-
 // Ppoint
 const val PPOINT_ANDROID_ADD = "${ROOT_PATH}v1/ppoint/android/add"
 const val PPOINT_ANDROID_PLANS = "${ROOT_PATH}/v1/ppoint/android/plans"
@@ -147,7 +145,7 @@ const val EMOJI = "${ROOT_PATH}/v1/emoji"
 const val STAMPS = "${ROOT_PATH}/v1/stamps"
 const val IDP_URLS = "${ROOT_PATH}/idp-urls"
 // 指定されたエンドポイントは存在しません
-const val FEEDBACK = "${ROOT_PATH}/v1/feedback"
+// const val FEEDBACK = "${ROOT_PATH}/v1/feedback"
 const val LIVE_LIST = "${ROOT_PATH}/v1/live/list"
 const val MAIL_AUTHENTICATION_SEND = "${ROOT_PATH}/v1/mail-authentication/send"
 const val PRIVACY_POLICY_AGREEMENT = "${ROOT_PATH}/v1/privacy-policy/agreement"

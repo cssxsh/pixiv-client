@@ -148,3 +148,9 @@ suspend fun PixivAppClient.illustRelated(
         }
     }
 }
+
+suspend fun PixivAppClient.illustWalkThrough(
+    url: String = WALK_THROUGH_ILLUSTS,
+): IllustData = useHttpClient { client ->
+    client.get(url)
+}
