@@ -63,7 +63,8 @@ const val NOVEL_REPORT = "${ROOT_PATH}/v1/novel/report"
 const val NOVEL_SERIES = "${ROOT_PATH}/v2/novel/series"
 
 // Search
-const val SEARCH_AUTO_COMPLETE = "${ROOT_PATH}/v1/search/autocomplete"
+const val SEARCH_AUTO_COMPLETE_V1 = "${ROOT_PATH}/v1/search/autocomplete"
+const val SEARCH_AUTO_COMPLETE = "${ROOT_PATH}/v2/search/autocomplete"
 const val SEARCH_BOOKMARK_RANGES_ILLUST = "${ROOT_PATH}/v1/search/bookmark-ranges/illust"
 const val SEARCH_BOOKMARK_RANGES_NOVEL = "${ROOT_PATH}/v1/search/bookmark-ranges/novel"
 const val SEARCH_ILLUST = "${ROOT_PATH}/v1/search/illust"

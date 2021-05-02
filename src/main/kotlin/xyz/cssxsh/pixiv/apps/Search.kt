@@ -5,12 +5,23 @@ import xyz.cssxsh.pixiv.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-suspend fun PixivAppClient.searchAutoComplete(
+suspend fun PixivAppClient.searchAutoCompleteOld(
     word: String,
-    url: String = SEARCH_AUTO_COMPLETE,
+    url: String = SEARCH_AUTO_COMPLETE_V1,
 ): KeywordsData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)
+    }
+}
+
+suspend fun PixivAppClient.searchAutoComplete(
+    word: String,
+    merge: Boolean? = null,
+    url: String = SEARCH_AUTO_COMPLETE,
+): TagData = useHttpClient { client ->
+    client.get(url) {
+        parameter("word", word)
+        parameter("merge_plain_keyword_results", merge)
     }
 }
 
