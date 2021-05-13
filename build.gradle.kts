@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version Versions.kotlin
-    kotlin("plugin.serialization") version Versions.kotlin
+    kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 group = "xzy.cssxsh.pixiv"
 version = "0.7.0-dev-7"
