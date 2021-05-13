@@ -37,9 +37,9 @@ abstract class AutoPixivClient : PixivAppClient {
             serializer = KotlinxSerializer()
         }
         install(HttpTimeout) {
-            socketTimeoutMillis = 15_000
-            connectTimeoutMillis = 15_000
-            requestTimeoutMillis = 15_000
+            socketTimeoutMillis = 5_000
+            connectTimeoutMillis = 5_000
+            requestTimeoutMillis = 5_000
         }
         install(HttpCookies) {
             storage = cookiesStorage
