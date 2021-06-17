@@ -8,9 +8,11 @@ import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.tool.*
@@ -78,19 +80,31 @@ abstract class AutoPixivClient : PixivAppClient {
         }
     }
 
+    protected open var client0: HttpClient? = null
+
     protected open suspend fun <R> useHttpClient(
         ignore: suspend (Throwable) -> Boolean,
         block: suspend (HttpClient) -> R,
-    ): R = client().use { client ->
-        runCatching {
-            block(client)
-        }.getOrElse { throwable ->
-            if (currentCoroutineContext().isActive && ignore(throwable)) {
-                useHttpClient(ignore = ignore, block = block)
-            } else {
-                throw throwable
+    ): R = withContext(Dispatchers.IO + SupervisorJob()) {
+        var result: R? = null
+        while (isActive) {
+            try {
+                val client = synchronized(this@AutoPixivClient) {
+                    client0 ?: client().also { client0 = it }
+                }
+                result = client.use { block(it) }
+            } catch (e: Throwable) {
+                synchronized(this@AutoPixivClient) {
+                    client0 = null
+                }
+                if (isActive && ignore(e)) {
+                    useHttpClient(ignore = ignore, block = block)
+                } else {
+                    throw e
+                }
             }
         }
+        result!!
     }
 
     protected open val mutex = Mutex()
