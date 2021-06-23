@@ -69,7 +69,7 @@ internal fun ProxySelector(proxy: String, cname: Map<String, String>) = object :
 
 interface PixivParam {
     val name: String
-    fun value() = name.toLowerCase()
+    fun value() = name.lowercase()
 }
 
 open class PixivEnumSerializer<T>(with: KClass<T>, private val valueOf: (name: String) -> T) :
@@ -81,7 +81,7 @@ open class PixivEnumSerializer<T>(with: KClass<T>, private val valueOf: (name: S
         encoder.encodeString(value.value())
 
     override fun deserialize(decoder: Decoder): T =
-        valueOf(decoder.decodeString().toUpperCase())
+        valueOf(decoder.decodeString().uppercase())
 }
 
 open class PixivTypeSerializer<T>(val with: KClass<T>, private val values: () -> Array<T>) :

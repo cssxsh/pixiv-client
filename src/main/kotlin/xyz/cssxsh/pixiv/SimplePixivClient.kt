@@ -1,6 +1,7 @@
 package xyz.cssxsh.pixiv
 
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.sync.withLock
 import xyz.cssxsh.pixiv.auth.*
 import java.time.OffsetDateTime
@@ -20,7 +21,7 @@ open class SimplePixivClient(
     ) : this(parentCoroutineContext, coroutineName, PixivConfig().apply(block))
 
     override val coroutineContext: CoroutineContext by lazy {
-        parentCoroutineContext + CoroutineName(coroutineName)
+        parentCoroutineContext + CoroutineName(coroutineName) + SupervisorJob()
     }
 
     override val apiIgnore: suspend (Throwable) -> Boolean = { true }

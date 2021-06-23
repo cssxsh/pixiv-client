@@ -8,13 +8,10 @@ import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.withContext
-import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.auth.*
+import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
 import java.time.OffsetDateTime
 
@@ -28,7 +25,7 @@ abstract class AutoPixivClient : PixivAppClient {
 
     private val cookiesStorage = AcceptAllCookiesStorage()
 
-    private fun getLocalDns(): LocalDns = LocalDns(
+    private fun LocalDns(): LocalDns = LocalDns(
         dns = config.dns,
         initHost = config.host,
         cname = config.cname
@@ -75,7 +72,7 @@ abstract class AutoPixivClient : PixivAppClient {
                     hostnameVerifier { _, _ -> true }
                 }
 
-                dns(getLocalDns())
+                dns(LocalDns())
             }
         }
     }
@@ -85,26 +82,21 @@ abstract class AutoPixivClient : PixivAppClient {
     protected open suspend fun <R> useHttpClient(
         ignore: suspend (Throwable) -> Boolean,
         block: suspend (HttpClient) -> R,
-    ): R = withContext(Dispatchers.IO + SupervisorJob()) {
-        var result: R? = null
+    ): R = withContext(Dispatchers.IO) {
         while (isActive) {
             try {
-                val client = synchronized(this@AutoPixivClient) {
-                    client0 ?: client().also { client0 = it }
-                }
-                result = client.use { block(it) }
+                val client = synchronized(this@AutoPixivClient) { client0?.takeIf { isActive } ?: client().also { client0 = it } }
+                return@withContext block(client)
             } catch (e: Throwable) {
-                synchronized(this@AutoPixivClient) {
-                    client0 = null
-                }
-                if (isActive && ignore(e)) {
-                    useHttpClient(ignore = ignore, block = block)
+                if (ignore(e)) {
+                    // e.printStackTrace()
                 } else {
+                    synchronized(this@AutoPixivClient) { client0 = null }
                     throw e
                 }
             }
         }
-        result!!
+        throw CancellationException()
     }
 
     protected open val mutex = Mutex()

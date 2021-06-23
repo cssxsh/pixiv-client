@@ -14,8 +14,6 @@ import xyz.cssxsh.pixiv.*
 import java.net.*
 import java.util.logging.Level
 import java.util.logging.Logger
-import kotlin.time.Duration
-import kotlin.time.seconds
 
 open class PixivDownloader(
     private val async: Int,
@@ -34,7 +32,7 @@ open class PixivDownloader(
     constructor(
         async: Int = 32,
         kilobytes: Int = 512,
-        timeout: Duration = (10).seconds,
+        timeout: Long = 10 * 1000L,
         proxyUrl: String? = null,
         dns: String = JAPAN_DNS,
         initHost: Map<String, List<String>> = emptyMap(),
@@ -44,9 +42,9 @@ open class PixivDownloader(
     ) : this(
         async = async,
         blockSize = kilobytes * HTTP_KILO, // HTTP use 1022 no 1024
-        socketTimeout = timeout.toLongMilliseconds(),
-        connectTimeout = timeout.toLongMilliseconds(),
-        requestTimeout = timeout.toLongMilliseconds(),
+        socketTimeout = timeout,
+        connectTimeout = timeout,
+        requestTimeout = timeout,
         proxySelector = proxyUrl?.let { proxy -> ProxySelector(proxy = proxy, cname = cname) },
         dns = LocalDns(
             dns = dns,
@@ -174,10 +172,6 @@ open class PixivDownloader(
         urls: List<Url>,
         block: (url: Url, result: Result<ByteArray>) -> R,
     ): List<R> = urls.asyncMapIndexed { _, url ->
-        runCatching {
-            download(url = url)
-        }.let { result ->
-            block(url, result)
-        }
+        block(url, runCatching { download(url) })
     }
 }
