@@ -16,7 +16,7 @@ internal class SearchKtTest : ApiTest() {
 
     @Test
     fun searchAutoComplete(): Unit = runBlocking {
-        client.searchAutoComplete("ark").keywords.let {
+        client.searchAutoComplete("ark").tags.let {
             assertTrue(it.isNotEmpty())
         }
     }
