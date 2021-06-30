@@ -8,11 +8,11 @@ version = "0.7.0-dev-7"
 
 repositories {
     mavenLocal()
-    maven(url = "https://maven.aliyun.com/repository/central")
-    maven(url = "https://maven.aliyun.com/repository/jcenter")
-    maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
+    maven(url = "https://maven.aliyun.com/repository/releases")
+    maven(url = "https://maven.aliyun.com/repository/public")
     mavenCentral()
     jcenter()
+    maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
     gradlePluginPortal()
 }
 
