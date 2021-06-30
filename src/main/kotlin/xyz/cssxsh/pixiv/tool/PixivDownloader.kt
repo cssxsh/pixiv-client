@@ -10,6 +10,7 @@ import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import okhttp3.OkHttpClient
+import okio.IOException
 import xyz.cssxsh.pixiv.*
 import java.net.*
 import java.util.logging.Level
@@ -121,14 +122,15 @@ open class PixivDownloader(
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, (0..0).getHeader())
-        }.headers[HttpHeaders.ContentRange]!!.substringAfterLast("/").toInt()
+        }.headers[HttpHeaders.ContentRange]?.substringAfterLast("/")?.toInt()
+            ?: throw IOException("Not Match ContentRange")
     }
 
     private suspend fun headSize(url: Url): Int = withHttpClient {
         head<HttpMessage>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
-        }.headers[HttpHeaders.ContentLength]!!.toInt()
+        }.headers[HttpHeaders.ContentLength]?.toInt() ?: throw IOException("Not Match ContentLength")
     }
 
     private fun ByteArray.check(expected: Int) = also {
