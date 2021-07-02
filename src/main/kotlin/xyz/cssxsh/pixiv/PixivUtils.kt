@@ -6,6 +6,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import xyz.cssxsh.pixiv.exception.ProxyException
 import java.io.IOException
 import java.net.*
@@ -15,6 +16,13 @@ import kotlin.reflect.KClass
 typealias HeadersMap = Map<String, String>
 
 typealias FileUrls = Map<String, String>
+
+val PixivJson = Json {
+    isLenient = true
+    ignoreUnknownKeys = true
+    allowSpecialFloatingPointValues = true
+    useArrayPolymorphism = false
+}
 
 const val HTTP_KILO = 1022
 

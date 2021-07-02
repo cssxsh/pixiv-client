@@ -20,26 +20,11 @@ data class AuthResult(
     val tokenType: String,
     @SerialName("user")
     val user: User,
-    @SerialName("response")
-    private val info: AuthInfo,
+//    @SerialName("require_policy_agreement")
+//    val require: Boolean = false,
+//    @SerialName("response")
+//    private val info: AuthInfo,
 ) {
-    @Serializable
-    data class AuthInfo(
-        @SerialName("access_token")
-        val accessToken: String,
-        @SerialName("device_token")
-        val deviceToken: String? = null,
-        @SerialName("expires_in")
-        val expiresIn: Long,
-        @SerialName("refresh_token")
-        val refreshToken: String,
-        @SerialName("scope")
-        val scope: String,
-        @SerialName("token_type")
-        val tokenType: String,
-        @SerialName("user")
-        val user: User,
-    )
 
     @Serializable
     data class User(
