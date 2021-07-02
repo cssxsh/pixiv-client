@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv
 
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import xyz.cssxsh.pixiv.auth.AuthResult
 
@@ -8,11 +9,9 @@ import xyz.cssxsh.pixiv.auth.AuthResult
  */
 interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
 
-    suspend fun login(mailOrPixivID: String, password: String): AuthResult
+    suspend fun login(block: suspend (Url) -> String): AuthResult
 
     suspend fun refresh(token: String): AuthResult
 
-    suspend fun autoAuth(): AuthResult
-
-    suspend fun getAuthInfo(): AuthResult
+    suspend fun info(): AuthResult
 }

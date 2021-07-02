@@ -2,14 +2,11 @@ package xyz.cssxsh.pixiv
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import xyz.cssxsh.pixiv.auth.*
 
 @Serializable
 data class PixivConfig(
-    @SerialName("client")
-    var client: ClientConfig = ClientConfig(),
     @SerialName("headers")
-    var headers: HeadersMap = ANDROID_HEADERS,
+    var headers: HeadersMap = IOS_HEADERS,
     @SerialName("proxy")
     var proxy: String? = null,
     @SerialName("dns")
@@ -20,8 +17,6 @@ data class PixivConfig(
     var cname: Map<String, String> = PIXIV_CNAME,
     @SerialName("ruby_ssl_factory")
     var useRubySSLFactory: Boolean = true,
-    @SerialName("account")
-    var account: Account? = null,
     @SerialName("refresh_token")
     var refreshToken: String? = null,
 )

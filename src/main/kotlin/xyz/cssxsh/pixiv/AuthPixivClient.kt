@@ -8,22 +8,33 @@ import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
 import java.time.OffsetDateTime
+import kotlin.properties.ReadOnlyProperty
 
 abstract class AuthPixivClient : PixivAppClient {
 
     protected open var authInfo: AuthResult? = null
 
-    protected open var expiresTime: OffsetDateTime = OffsetDateTime.now().withNano(0)
+    protected open var expires: OffsetDateTime = OffsetDateTime.now().withNano(0)
 
-    protected abstract val apiIgnore: suspend (Throwable) -> Boolean
+    protected abstract val ignore: suspend (Throwable) -> Boolean
 
-    private val cookiesStorage = AcceptAllCookiesStorage()
+    private inline fun <reified T : Any, reified R> reflect() = ReadOnlyProperty<T, R> { thisRef, property ->
+        thisRef::class.java.getDeclaredField(property.name).apply { isAccessible = true }.get(thisRef) as R
+    }
+
+    protected val AcceptAllCookiesStorage.mutex: Mutex by reflect()
+
+    protected val AcceptAllCookiesStorage.container: MutableList<Cookie> by reflect()
+
+    protected val cookiesStorage = AcceptAllCookiesStorage()
 
     private fun LocalDns(): LocalDns = LocalDns(
         dns = config.dns,
@@ -33,12 +44,12 @@ abstract class AuthPixivClient : PixivAppClient {
 
     protected open fun client(): HttpClient = HttpClient(OkHttp) {
         Json {
-            serializer = KotlinxSerializer()
+            serializer = KotlinxSerializer(PixivJson)
         }
         install(HttpTimeout) {
-            socketTimeoutMillis = 5_000
-            connectTimeoutMillis = 5_000
-            requestTimeoutMillis = 5_000
+            socketTimeoutMillis = 30_000
+            connectTimeoutMillis = 30_000
+            requestTimeoutMillis = 30_000
         }
         install(HttpCookies) {
             storage = cookiesStorage
@@ -57,7 +68,7 @@ abstract class AuthPixivClient : PixivAppClient {
 
         install(PixivAccessToken) {
             taken = {
-                getAuthInfo().accessToken
+                info().accessToken
             }
         }
 
@@ -82,7 +93,7 @@ abstract class AuthPixivClient : PixivAppClient {
             try {
                 return@supervisorScope client().use { block(it) }
             } catch (e: Throwable) {
-                if (apiIgnore(e)) {
+                if (ignore(e)) {
                     // e.printStackTrace()
                 } else {
                     throw e
@@ -93,4 +104,31 @@ abstract class AuthPixivClient : PixivAppClient {
     }
 
     protected open val mutex = Mutex()
+
+    override suspend fun info(): AuthResult = mutex.withLock {
+        val start = OffsetDateTime.now()
+        val token = { requireNotNull(config.refreshToken) { "Not Found RefreshToken" } }
+        authInfo?.takeIf { expires > start } ?: (this as UseHttpClient).refresh(token = token()).save(start = start)
+    }
+
+    override suspend fun login(block: suspend (Url) -> String): AuthResult = mutex.withLock {
+        val start = OffsetDateTime.now()
+        val client = "pixiv-${config.headers["App-OS"]}"
+        val (verifier, url) = verifier(client = client, time = start)
+        val code = block(url)
+        authorize(code = code, verifier = verifier).save(start)
+    }
+
+    override suspend fun refresh(token: String): AuthResult = mutex.withLock {
+        val start = OffsetDateTime.now()
+        (this as UseHttpClient).refresh(token = token).save(start = start)
+    }
+
+    protected open suspend fun AuthResult.save(start: OffsetDateTime): AuthResult = also {
+        expires = start.withNano(0).plusSeconds(it.expiresIn)
+        authInfo = it
+        config {
+            refreshToken = it.refreshToken
+        }
+    }
 }

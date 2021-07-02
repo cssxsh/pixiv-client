@@ -27,17 +27,15 @@ const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829c
 val IOS_HEADERS: HeadersMap = mapOf(
     HttpHeaders.AcceptLanguage to Locale.CHINA.language,
     HttpHeaders.UserAgent to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
-    "App-OS-Version" to "9.0.2",
-    "App-OS" to "ios",
-    "App-Version" to "6.0.4"
+    "App-OS-Version" to "14.6",
+    "App-OS" to "ios"
 )
 
 val ANDROID_HEADERS: HeadersMap = mapOf(
     HttpHeaders.AcceptLanguage to Locale.CHINA.language,
     HttpHeaders.UserAgent to "PixivAndroidApp/5.0.64 (Android 6.0)",
     "App-OS-Version" to "6.0",
-    "App-OS" to "android",
-    "App-Version" to "5.0.64"
+    "App-OS" to "android"
 )
 
 const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
@@ -48,7 +46,9 @@ val PIXIV_CNAME = mapOf(
     "public-api.secure.pixiv.net" to "api.fanbox.cc",
     "public.pixiv.net" to "api.fanbox.cc",
     "www.pixiv.net" to "api.fanbox.cc",
-    "pixiv.me" to "api.fanbox.cc"
+    "pixiv.me" to "api.fanbox.cc",
+    "accounts.pixiv.net" to "api.fanbox.cc",
+    "g-client-proxy.pixiv.net" to "6837361.gigya-api.com"
 )
 
 internal fun Url.toProxy(): ProxyConfig = when (protocol) {
