@@ -8,12 +8,12 @@ import javax.net.ssl.SSLSocketFactory
 
 object RubySSLSocketFactory : SSLSocketFactory() {
 
+    private val regex = """(pixiv|pximg)""".toRegex()
+
     private fun Socket.setServerNames(): Socket = when(this) {
         is SSLSocket -> apply {
             sslParameters = sslParameters.apply {
-                cipherSuites = supportedCipherSuites
-                protocols = supportedProtocols
-                serverNames = emptyList()
+                serverNames = serverNames.filterNot { regex in it.encoded.decodeToString() }
             }
         }
         else -> this
