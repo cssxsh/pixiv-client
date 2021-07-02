@@ -15,7 +15,7 @@ import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
 import java.time.OffsetDateTime
 
-abstract class AutoPixivClient : PixivAppClient {
+abstract class AuthPixivClient : PixivAppClient {
 
     protected open var authInfo: AuthResult? = null
 
@@ -77,21 +77,14 @@ abstract class AutoPixivClient : PixivAppClient {
         }
     }
 
-    protected open var client0: HttpClient? = null
-
-    protected open suspend fun <R> useHttpClient(
-        ignore: suspend (Throwable) -> Boolean,
-        block: suspend (HttpClient) -> R,
-    ): R = withContext(Dispatchers.IO) {
+    override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
             try {
-                val client = synchronized(this@AutoPixivClient) { client0?.takeIf { isActive } ?: client().also { client0 = it } }
-                return@withContext block(client)
+                return@supervisorScope client().use { block(it) }
             } catch (e: Throwable) {
-                if (ignore(e)) {
+                if (apiIgnore(e)) {
                     // e.printStackTrace()
                 } else {
-                    synchronized(this@AutoPixivClient) { client0 = null }
                     throw e
                 }
             }
@@ -100,6 +93,4 @@ abstract class AutoPixivClient : PixivAppClient {
     }
 
     protected open val mutex = Mutex()
-
-    override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = useHttpClient(apiIgnore, block)
 }

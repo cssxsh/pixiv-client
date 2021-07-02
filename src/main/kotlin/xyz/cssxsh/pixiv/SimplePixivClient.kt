@@ -12,7 +12,7 @@ open class SimplePixivClient(
     parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
     coroutineName: String = "SimplePixivClient",
     override val config: PixivConfig,
-) : AutoPixivClient(), PixivWebClient {
+) : AuthPixivClient(), PixivWebClient {
 
     constructor(
         parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
