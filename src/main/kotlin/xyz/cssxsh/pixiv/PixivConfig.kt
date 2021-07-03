@@ -8,7 +8,7 @@ data class PixivConfig(
     @SerialName("headers")
     var headers: HeadersMap = IOS_HEADERS,
     @SerialName("proxy")
-    var proxy: String? = null,
+    var proxy: String = "",
     @SerialName("dns")
     var dns: String = JAPAN_DNS,
     @SerialName("host")

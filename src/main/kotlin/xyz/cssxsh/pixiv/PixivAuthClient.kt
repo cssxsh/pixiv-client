@@ -65,7 +65,7 @@ abstract class PixivAuthClient : PixivAppClient {
 
         engine {
             config {
-                config.proxy?.let {
+                config.proxy.takeIf { it.isNotBlank() }?.let {
                     proxySelector(ProxySelector(proxy = it, cname = config.cname))
                 }
 
