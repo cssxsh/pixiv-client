@@ -15,6 +15,8 @@ const val START_URL = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/start"
 
 const val REDIRECT_URL = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"
 
+const val REDIRECT_LOGIN_URL = "https://accounts.pixiv.net/login"
+
 const val REDIRECT_END_URL = "https://accounts.pixiv.net/post-redirect"
 
 enum class GrantType : PixivParam {

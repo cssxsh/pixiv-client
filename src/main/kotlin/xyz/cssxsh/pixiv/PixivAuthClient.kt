@@ -16,9 +16,8 @@ import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
 import java.time.OffsetDateTime
-import kotlin.properties.ReadOnlyProperty
 
-abstract class AuthPixivClient : PixivAppClient {
+abstract class PixivAuthClient : PixivAppClient {
 
     protected open var authInfo: AuthResult? = null
 
@@ -26,15 +25,7 @@ abstract class AuthPixivClient : PixivAppClient {
 
     protected abstract val ignore: suspend (Throwable) -> Boolean
 
-    private inline fun <reified T : Any, reified R> reflect() = ReadOnlyProperty<T, R> { thisRef, property ->
-        thisRef::class.java.getDeclaredField(property.name).apply { isAccessible = true }.get(thisRef) as R
-    }
-
-    protected val AcceptAllCookiesStorage.mutex: Mutex by reflect()
-
-    protected val AcceptAllCookiesStorage.container: MutableList<Cookie> by reflect()
-
-    protected val cookiesStorage = AcceptAllCookiesStorage()
+    open val cookiesStorage = AcceptAllCookiesStorage()
 
     private fun LocalDns(): LocalDns = LocalDns(
         dns = config.dns,

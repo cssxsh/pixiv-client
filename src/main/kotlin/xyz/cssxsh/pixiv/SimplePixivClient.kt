@@ -11,7 +11,7 @@ open class SimplePixivClient(
     parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
     coroutineName: String = "SimplePixivClient",
     override val config: PixivConfig,
-) : AuthPixivClient(), PixivWebClient {
+) : PixivAuthClient(), PixivWebClient {
 
     override val coroutineContext: CoroutineContext by lazy {
         parentCoroutineContext + CoroutineName(coroutineName) + SupervisorJob()
