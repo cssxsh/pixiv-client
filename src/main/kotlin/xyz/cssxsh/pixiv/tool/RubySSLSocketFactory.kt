@@ -2,21 +2,21 @@ package xyz.cssxsh.pixiv.tool
 
 import java.net.InetAddress
 import java.net.Socket
-import javax.net.ssl.SSLContext
-import javax.net.ssl.SSLSocket
-import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.*
 
 object RubySSLSocketFactory : SSLSocketFactory() {
 
     private val regex = """(pixiv|pximg)""".toRegex()
 
-    private fun Socket.setServerNames(): Socket = when(this) {
-        is SSLSocket -> apply {
-            sslParameters = sslParameters.apply {
-                serverNames = serverNames.filterNot { regex in it.encoded.decodeToString() }
+    private fun Socket.setServerNames(): Socket = apply {
+        if (this !is SSLSocket) return@apply
+
+        sslParameters = sslParameters.apply {
+            serverNames = serverNames.filterIsInstance<SNIHostName>().filterNot {
+                // println("${it.asciiName} -> $remoteSocketAddress")
+                regex in it.asciiName
             }
         }
-        else -> this
     }
 
     private val socketFactory: SSLSocketFactory = SSLContext.getDefault().socketFactory
