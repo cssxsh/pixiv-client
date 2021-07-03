@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "xzy.cssxsh.pixiv"
-version = "0.7.0-dev-7"
+version = "0.7.0-M-2"
 
 repositories {
     mavenLocal()
