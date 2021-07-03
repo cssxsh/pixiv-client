@@ -81,13 +81,15 @@ abstract class PixivAuthClient : PixivAppClient {
 
     override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
-            try {
-                return@supervisorScope client().use { block(it) }
-            } catch (e: Throwable) {
-                if (ignore(e)) {
+            runCatching {
+                client().use { block(it) }
+            }.onSuccess {
+                return@supervisorScope  it
+            }.onFailure {
+                if (isActive && ignore(it)) {
                     // e.printStackTrace()
                 } else {
-                    throw e
+                    throw it
                 }
             }
         }

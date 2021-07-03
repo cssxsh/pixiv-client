@@ -3,14 +3,10 @@ package xyz.cssxsh.pixiv
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
-import xyz.cssxsh.pixiv.auth.WeiboQrcode
-import xyz.cssxsh.pixiv.auth.WeiboQrcodeStatus
-import java.io.InputStream
+import xyz.cssxsh.pixiv.auth.*
 
 const val WEIBO_QRCODE_GENERATE = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
 
@@ -63,7 +59,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
 /**
  * 登录，通过新浪微博关联Pixiv
  */
-suspend fun PixivAuthClient.sina(show: suspend (Url, InputStream) -> Unit) = login { url ->
+suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
     // Pixiv Login Page
     val html1: String = useHttpClient {
         it.get(url) {
@@ -87,13 +83,8 @@ suspend fun PixivAuthClient.sina(show: suspend (Url, InputStream) -> Unit) = log
             attributes.put(PixivAccessToken.PixivAuthMark, Unit)
         })
     }
-    launch {
-        val image: InputStream = useHttpClient {
-            it.get(generate) {
-                attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-            }
-        }
-        show(Url(qrcode.url), image)
+    supervisorScope {
+        show(Url(qrcode.url))
     }
 
     lateinit var jump: String
