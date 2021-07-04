@@ -8,7 +8,6 @@ version = "0.7.0-M-2"
 
 repositories {
     mavenLocal()
-    maven(url = "https://maven.aliyun.com/repository/releases")
     maven(url = "https://maven.aliyun.com/repository/public")
     mavenCentral()
     jcenter()
@@ -21,9 +20,8 @@ dependencies {
     implementation(ktor("client-core", Versions.ktor))
     implementation(ktor("client-serialization", Versions.ktor))
     implementation(ktor("client-encoding", Versions.ktor))
-    implementation(ktor("client-okhttp", Versions.ktor)) {
-        exclude(group = "com.squareup.okhttp3")
-    }
+    implementation(ktor("client-auth", "1.6.1"))
+    implementation(ktor("client-okhttp", Versions.ktor))
     implementation(okhttp3("okhttp", Versions.okhttp))
     implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
     implementation(jsoup(Versions.jsoup))

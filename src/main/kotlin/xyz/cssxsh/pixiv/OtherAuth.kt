@@ -1,59 +1,88 @@
 package xyz.cssxsh.pixiv
 
+import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.auth.*
 
 const val WEIBO_QRCODE_GENERATE = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
 
 const val WEIBO_QRCODE_QUERY = "https://api.weibo.com/oauth2/qrcode_authorize/query"
 
+internal fun HttpMessage.location() = headers[HttpHeaders.Location]?.let { Url(it) }
+
+@Serializable
+internal data class HtmlAccount(
+    @SerialName("pixivAccount.continueWithCurrentAccountUrl")
+    val current: String = "",
+    @SerialName("pixivAccount.returnTo")
+    val returnTo: String,
+    @SerialName("pixivAccount.tt")
+    val tt: String,
+    @SerialName("pixivAccount.userId")
+    val uid: Long? = null,
+)
+
+private suspend fun HttpResponse.account(): HtmlAccount {
+    val html = receive<String>()
+    return PixivJson.decodeFromString(html.substringAfter("value='").substringBefore("'"))
+}
+
+/**
+ * link for [POST_REDIRECT_URL]
+ */
 private suspend fun PixivAuthClient.redirect(link: Url): String {
-    // Pixiv Login Page
-    val html: String = useHttpClient {
-        it.get(link) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-        }
-    }
+    val redirect: HttpResponse = useHttpClient { it.get(link) }
 
-    val account: JsonObject = PixivJson.decodeFromString(html.substringAfter("value='").substringBefore("'"))
+    check(redirect.request.url.toString().startsWith(POST_REDIRECT_URL)) { redirect.request.url.toString() }
 
-    checkNotNull(account.getValue("pixivAccount.userId").jsonPrimitive.longOrNull) { "未登录" }
+    val account = redirect.account()
 
-    val current = account.getValue("pixivAccount.returnTo").jsonPrimitive.content
+    checkNotNull(account.uid) { "未登录" }
 
+    val current = Url(account.returnTo)
+
+    // println(current)
+
+    /**
+     * current for [START_URL]
+     */
     val response: HttpResponse = useHttpClient {
-        it.config {
-            followRedirects = false
+        it.post(current) {
             expectSuccess = false
-        }.post(current) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
 
             header(HttpHeaders.Origin, "https://accounts.pixiv.net")
             header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
         }
     }
 
-    val authorize = requireNotNull(response.headers[HttpHeaders.Location])
+    val authorize = requireNotNull(response.location())
 
-    val end: HttpMessage = useHttpClient {
-        it.config {
-            followRedirects = false
+    // println(authorize)
+
+    /**
+     * authorize for [OAUTH_AUTHORIZE_URL]
+     */
+    val code: HttpResponse = useHttpClient {
+        it.get(authorize) {
             expectSuccess = false
-        }.get(authorize) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
 
             header(HttpHeaders.Origin, "https://accounts.pixiv.net")
             header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
         }
     }
 
-    // Code
-    return Url(end.headers[HttpHeaders.Location]!!).parameters["code"]!!
+    /**
+     * Code by Url pixiv://...
+      */
+    return Url(code.headers[HttpHeaders.Location]!!).parameters["code"]!!
 }
 
 /**
@@ -61,66 +90,78 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
  */
 suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
     // Pixiv Login Page
-    val html1: String = useHttpClient {
-        it.get(url) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-        }
-    }
+    val html: String = useHttpClient { it.get(url) }
 
-    val all = html1.let("""gigya-auth[^"]+""".toRegex()::findAll).map { it.value.replace("&amp;", "&") }
+    val all = html.let("""gigya-auth[^"]+""".toRegex()::findAll).map { it.value.replace("&amp;", "&") }
     val sina = Url("https://accounts.pixiv.net/${all.first { "sina" in it }}")
 
     // Jump to Sina Weibo
-    val temp: HttpResponse = useHttpClient {
-        it.head(sina) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-        }
-    }
+    val temp: HttpResponse = useHttpClient { it.head(sina) }
     // 为了直接继承参数 ↓
     val generate = Url(WEIBO_QRCODE_GENERATE).copy(parameters = temp.request.url.parameters)
-    val qrcode: WeiboQrcode = useHttpClient {
-        PixivJson.decodeFromString(it.get(generate) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-        })
-    }
+    val qrcode: WeiboQrcode = PixivJson.decodeFromString(useHttpClient { it.get(generate) })
+
     supervisorScope {
         show(Url(qrcode.url))
     }
 
     lateinit var jump: String
-    while (isActive) {
-        delay(3 * 1000L)
-        jump = useHttpClient {
-            PixivJson.decodeFromString<WeiboQrcodeStatus>(it.get(WEIBO_QRCODE_QUERY) {
-                attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-
-                parameter("vcode", qrcode.vcode)
+    withTimeout(10 * 60 * 1000L) {
+        while (isActive) {
+            delay(3 * 1000L)
+            val status = PixivJson.decodeFromString<WeiboQrcodeStatus>(useHttpClient {
+                it.get(WEIBO_QRCODE_QUERY) {
+                    parameter("vcode", qrcode.vcode)
+                }
             })
-        }.url ?: continue
-        break
+            jump = status.url ?: continue
+            break
+        }
     }
 
     // replace protocol and host for ssl
     val gigya: String = useHttpClient {
-        it.get(Url(jump).copy(protocol = URLProtocol.HTTPS, host = "d1ctzrip8l97jt.cloudfront.net")) {
-            attributes.put(PixivAccessToken.PixivAuthMark, Unit)
-
-            header(HttpHeaders.Host, "g-client-proxy.pixiv.net")
-        }
+        it.get(Url(jump).copy(protocol = URLProtocol.HTTPS, host = "d1ctzrip8l97jt.cloudfront.net"))
     }
 
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
     // transform Unicode
     val link = Url(PixivJson.decodeFromString<String>("\"${sign}\""))
 
-    redirect(link)
+    /**
+     * GiGya auto to [POST_REDIRECT_URL]
+     */
+    redirect(link = link)
 }
 
 /**
  * 登录，通过 Web Cookies
  */
-suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login {
+suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
     cookiesStorage.save(load())
+    // println(url)
+    val login: HttpResponse = useHttpClient { it.get(url) }
+    // check("" in login.request.url.parameters)
+    val account = login.account()
 
-    redirect(it)
+    /**
+     * for [POST_SELECTED_URL]
+     */
+    val response: HttpResponse = useHttpClient {
+        it.post(POST_SELECTED_URL) {
+            expectSuccess = false
+
+            header(HttpHeaders.Origin, "https://accounts.pixiv.net")
+            header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
+
+            body = FormDataContent(Parameters.build {
+                append("return_to", account.current)
+                append("tt", account.tt)
+            })
+        }
+    }
+
+    val link = requireNotNull(response.location())
+
+    redirect(link = link)
 }

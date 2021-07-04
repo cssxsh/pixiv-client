@@ -3,6 +3,8 @@ package xyz.cssxsh.pixiv
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.*
+import io.ktor.client.features.auth.*
+import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
@@ -50,16 +52,33 @@ abstract class PixivAuthClient : PixivAppClient {
             deflate()
             identity()
         }
+
         HttpResponseValidator {
             handleResponseException(block = TransferExceptionHandler)
         }
+
         defaultRequest {
             config.headers.forEach(::header)
         }
 
-        install(PixivAccessToken) {
-            taken = {
-                info().accessToken
+        Auth {
+            bearer {
+                sendWithoutRequest {
+                    it.url.host in listOf("app-api.pixiv.net", "public-api.secure.pixiv.net") &&
+                        it.url.encodedPath.startsWith("/web").not()
+                }
+
+                loadTokens {
+                    info().run {
+                        BearerTokens(accessToken, refreshToken)
+                    }
+                }
+
+                refreshTokens {
+                    info().run {
+                        BearerTokens(accessToken, refreshToken)
+                    }
+                }
             }
         }
 
@@ -106,8 +125,7 @@ abstract class PixivAuthClient : PixivAppClient {
 
     override suspend fun login(block: suspend (Url) -> String): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        val client = "pixiv-${config.headers["App-OS"]}"
-        val (verifier, url) = verifier(client = client, time = start)
+        val (verifier, url) = verifier(time = start)
         val code = block(url)
         authorize(code = code, verifier = verifier).save(start)
     }

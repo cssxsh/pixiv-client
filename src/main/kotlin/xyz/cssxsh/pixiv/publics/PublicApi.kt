@@ -2,7 +2,7 @@ package xyz.cssxsh.pixiv.publics
 
 
 const val ROOT_PATH = "https://public-api.secure.pixiv.net"
-const val REFERER = "http://spapi.pixiv-app.net/"
+const val REFERER = "https://spapi.pixiv-app.net/"
 
 // favorite
 const val ME_FAVORITE_WORKS = "${ROOT_PATH}/v1/me/favorite_works"

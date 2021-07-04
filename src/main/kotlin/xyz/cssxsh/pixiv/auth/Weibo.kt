@@ -14,7 +14,7 @@ data class WeiboQrcode(
 @Serializable
 data class WeiboQrcodeStatus(
     @SerialName("status")
-    val status: Int,
+    val code: Int,
     @SerialName("url")
     val url: String? = null
 )
