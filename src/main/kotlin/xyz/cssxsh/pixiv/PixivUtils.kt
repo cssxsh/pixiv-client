@@ -1,6 +1,5 @@
 package xyz.cssxsh.pixiv
 
-import io.ktor.client.engine.*
 import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
@@ -59,10 +58,13 @@ val PIXIV_CNAME = mapOf(
     "g-client-proxy.pixiv.net" to "6837361.gigya-api.com"
 )
 
-internal fun Url.toProxy(): ProxyConfig = when (protocol) {
-    URLProtocol.HTTP -> Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
-    URLProtocol.SOCKS -> Proxy(Proxy.Type.SOCKS, InetSocketAddress(host, port))
-    else -> throw ProxyException(this)
+internal fun Url.toProxy(): Proxy {
+    val type = when (protocol) {
+        URLProtocol.SOCKS -> Proxy.Type.SOCKS
+        URLProtocol.HTTP -> Proxy.Type.HTTP
+        else -> throw ProxyException(this)
+    }
+    return Proxy(type, InetSocketAddress(host, port))
 }
 
 internal fun ProxySelector(proxy: String, cname: Map<String, String>) = object : ProxySelector() {
