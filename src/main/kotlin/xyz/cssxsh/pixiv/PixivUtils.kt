@@ -94,6 +94,11 @@ open class PixivEnumSerializer<T>(with: KClass<T>, private val valueOf: (name: S
         valueOf(decoder.decodeString().uppercase())
 }
 
+@Suppress("FunctionName")
+inline fun <reified T> PixivEnumSerializer(): PixivEnumSerializer<T> where T : PixivParam, T : Enum<T> {
+    return object : PixivEnumSerializer<T>(with = T::class, valueOf = ::enumValueOf) {}
+}
+
 open class PixivTypeSerializer<T>(val with: KClass<T>, private val values: () -> Array<T>) :
     KSerializer<T> where T : PixivParam, T : Enum<T> {
 
@@ -106,6 +111,11 @@ open class PixivTypeSerializer<T>(val with: KClass<T>, private val values: () ->
         requireNotNull(values().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in $with" }
 }
 
+@Suppress("FunctionName")
+inline fun <reified T> PixivTypeSerializer(): PixivTypeSerializer<T> where T : PixivParam, T : Enum<T> {
+    return object : PixivTypeSerializer<T>(with = T::class, values = ::enumValues) {}
+}
+
 @Serializable(with = SearchMode.Companion::class)
 enum class SearchMode : PixivParam {
     TEXT,
@@ -113,10 +123,7 @@ enum class SearchMode : PixivParam {
     TAG,
     EXACT_TAG;
 
-    companion object : PixivEnumSerializer<SearchMode>(
-        with = SearchMode::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<SearchMode> by PixivEnumSerializer()
 }
 
 @Serializable(with = OrderType.Companion::class)
@@ -124,10 +131,7 @@ enum class OrderType : PixivParam {
     DESC,
     ASC;
 
-    companion object : PixivEnumSerializer<OrderType>(
-        with = OrderType::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<OrderType> by PixivEnumSerializer()
 }
 
 @Serializable(with = PeriodType.Companion::class)
@@ -137,10 +141,7 @@ enum class PeriodType : PixivParam {
     WEEK,
     MONTH;
 
-    companion object : PixivEnumSerializer<PeriodType>(
-        with = PeriodType::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<PeriodType> by PixivEnumSerializer()
 }
 
 @Serializable(with = SortMode.Companion::class)
@@ -148,10 +149,7 @@ enum class SortMode : PixivParam {
     DATE,
     POPULAR;
 
-    companion object : PixivEnumSerializer<SortMode>(
-        with = SortMode::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<SortMode> by PixivEnumSerializer()
 }
 
 @Serializable(with = SearchSort.Companion::class)
@@ -164,10 +162,7 @@ enum class SearchSort : PixivParam {
     POPULAR_MALE_DESC,
     POPULAR_FEMALE_DESC;
 
-    companion object : PixivEnumSerializer<SearchSort>(
-        with = SearchSort::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<SearchSort> by PixivEnumSerializer()
 }
 
 @Serializable(with = SearchDuration.Companion::class)
@@ -181,10 +176,7 @@ enum class SearchDuration : PixivParam {
     WITHIN_YEAR,
     SELECT;
 
-    companion object : PixivEnumSerializer<SearchDuration>(
-        with = SearchDuration::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<SearchDuration> by PixivEnumSerializer()
 }
 
 enum class SearchSize : PixivParam {
@@ -211,14 +203,8 @@ enum class PublicityType : PixivParam {
     PRIVATE,
     TEMP;
 
-    companion object : PixivEnumSerializer<PublicityType>(
-        with = PublicityType::class,
-        valueOf = ::enumValueOf
-    ) {
-        object TypeSerializer : PixivTypeSerializer<PublicityType>(
-            with = PublicityType::class,
-            values = ::enumValues
-        )
+    companion object : KSerializer<PublicityType> by PixivEnumSerializer() {
+        object TypeSerializer : KSerializer<PublicityType> by PixivTypeSerializer()
     }
 }
 
@@ -230,10 +216,7 @@ enum class SearchTarget : PixivParam {
     TEST,
     KEYWORD;
 
-    companion object : PixivEnumSerializer<SearchTarget>(
-        with = SearchTarget::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<SearchTarget> by PixivEnumSerializer()
 }
 
 @Serializable(with = WorkContentType.Companion::class)
@@ -242,10 +225,7 @@ enum class WorkContentType : PixivParam {
     UGOIRA,
     MANGA;
 
-    companion object : PixivEnumSerializer<WorkContentType>(
-        with = WorkContentType::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<WorkContentType> by PixivEnumSerializer()
 }
 
 @Serializable(with = WorkType.Companion::class)
@@ -253,10 +233,7 @@ enum class WorkType : PixivParam {
     ILLUST,
     MANGA;
 
-    companion object : PixivEnumSerializer<WorkType>(
-        with = WorkType::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<WorkType> by PixivEnumSerializer()
 }
 
 @Serializable(with = RankMode.Companion::class)
@@ -282,10 +259,7 @@ enum class RankMode : PixivParam {
     WEEK_R18,
     WEEK_R18G;
 
-    companion object : PixivEnumSerializer<RankMode>(
-        with = RankMode::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<RankMode> by PixivEnumSerializer()
 }
 
 @Serializable(with = SanityLevel.Companion::class)
@@ -299,14 +273,8 @@ enum class SanityLevel : PixivParam {
     BLACK,
     NONE;
 
-    companion object : PixivEnumSerializer<SanityLevel>(
-        with = SanityLevel::class,
-        valueOf = ::enumValueOf
-    ) {
-        object TypeSerializer : PixivTypeSerializer<SanityLevel>(
-            with = SanityLevel::class,
-            values = ::enumValues
-        )
+    companion object : KSerializer<SanityLevel> by PixivEnumSerializer() {
+        object TypeSerializer : KSerializer<SanityLevel> by PixivTypeSerializer()
     }
 }
 
@@ -322,18 +290,12 @@ enum class AgeLimit : PixivParam {
         override fun value() = "r18-g"
     };
 
-    companion object : PixivEnumSerializer<AgeLimit>(
-        with = AgeLimit::class,
-        valueOf = ::enumValueOf
-    ) {
+    companion object : KSerializer<AgeLimit> by PixivEnumSerializer() {
         override fun deserialize(decoder: Decoder): AgeLimit = decoder.decodeString().let { value ->
             requireNotNull(values().find { it.value() == value }) { "$value not in ${values().toList()}" }
         }
 
-        object TypeSerializer : PixivTypeSerializer<AgeLimit>(
-            with = AgeLimit::class,
-            values = ::enumValues
-        )
+        object TypeSerializer : KSerializer<AgeLimit> by PixivTypeSerializer()
     }
 }
 
@@ -348,8 +310,5 @@ enum class CategoryType : PixivParam {
     ILLUST,
     MANGA;
 
-    companion object : PixivEnumSerializer<SanityLevel>(
-        with = SanityLevel::class,
-        valueOf = ::enumValueOf
-    )
+    companion object : KSerializer<SanityLevel> by PixivEnumSerializer()
 }
