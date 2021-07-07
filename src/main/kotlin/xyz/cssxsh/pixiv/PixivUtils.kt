@@ -10,7 +10,6 @@ import xyz.cssxsh.pixiv.exception.ProxyException
 import java.io.IOException
 import java.net.*
 import java.util.*
-import kotlin.reflect.KClass
 
 typealias HeadersMap = Map<String, String>
 
@@ -82,38 +81,32 @@ interface PixivParam {
     fun value() = name.lowercase()
 }
 
-open class PixivEnumSerializer<T>(with: KClass<T>, private val valueOf: (name: String) -> T) :
-    KSerializer<T> where T : PixivParam, T : Enum<T> {
+@Suppress("FunctionName")
+inline fun <reified T> PixivEnumSerializer(): KSerializer<T> where T : PixivParam, T : Enum<T> {
+    return object : KSerializer<T> {
+        override val descriptor: SerialDescriptor =
+            buildSerialDescriptor(T::class.qualifiedName!!, SerialKind.ENUM)
 
-    override val descriptor: SerialDescriptor = buildSerialDescriptor(with.qualifiedName!!, SerialKind.ENUM)
+        override fun serialize(encoder: Encoder, value: T) =
+            encoder.encodeString(value.value())
 
-    override fun serialize(encoder: Encoder, value: T) =
-        encoder.encodeString(value.value())
-
-    override fun deserialize(decoder: Decoder): T =
-        valueOf(decoder.decodeString().uppercase())
+        override fun deserialize(decoder: Decoder): T =
+            enumValueOf(decoder.decodeString().uppercase())
+    }
 }
 
 @Suppress("FunctionName")
-inline fun <reified T> PixivEnumSerializer(): PixivEnumSerializer<T> where T : PixivParam, T : Enum<T> {
-    return object : PixivEnumSerializer<T>(with = T::class, valueOf = ::enumValueOf) {}
-}
+inline fun <reified T> PixivTypeSerializer(): KSerializer<T> where T : PixivParam, T : Enum<T> {
+    return object : KSerializer<T> {
+        override val descriptor: SerialDescriptor =
+            buildSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
 
-open class PixivTypeSerializer<T>(val with: KClass<T>, private val values: () -> Array<T>) :
-    KSerializer<T> where T : PixivParam, T : Enum<T> {
+        override fun serialize(encoder: Encoder, value: T) =
+            encoder.encodeInt(value.ordinal)
 
-    override val descriptor: SerialDescriptor = buildSerialDescriptor(with.qualifiedName!!, PrimitiveKind.INT)
-
-    override fun serialize(encoder: Encoder, value: T) =
-        encoder.encodeInt(value.ordinal)
-
-    override fun deserialize(decoder: Decoder): T =
-        requireNotNull(values().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in $with" }
-}
-
-@Suppress("FunctionName")
-inline fun <reified T> PixivTypeSerializer(): PixivTypeSerializer<T> where T : PixivParam, T : Enum<T> {
-    return object : PixivTypeSerializer<T>(with = T::class, values = ::enumValues) {}
+        override fun deserialize(decoder: Decoder): T =
+            requireNotNull(enumValues<T>().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in ${enumValues<T>()}" }
+    }
 }
 
 @Serializable(with = SearchMode.Companion::class)
