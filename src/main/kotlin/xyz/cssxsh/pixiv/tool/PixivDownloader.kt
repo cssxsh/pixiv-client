@@ -7,6 +7,7 @@ import io.ktor.client.features.compression.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders
+import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import okhttp3.OkHttpClient
@@ -91,10 +92,12 @@ open class PixivDownloader(
     private fun IntRange.getHeader() = "bytes=${first}-${last}"
 
     private suspend fun length(url: Url): Int = withHttpClient {
-        head<HttpMessage>(url) {
+        val message = head<HttpMessage>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
-        }.headers[HttpHeaders.ContentLength]?.toInt() ?: throw IOException("Not Match ContentLength")
+        }
+        message.headers[HttpHeaders.ContentLength]?.toInt()
+            ?: throw IOException("Not Match ContentLength ${message.headers.toMap()}")
     }
 
     private fun ByteArray.check(expected: Int) = also {
