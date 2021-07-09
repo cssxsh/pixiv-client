@@ -32,7 +32,7 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
             if (hostname.canParseAsIpAddress()) InetAddress.getAllByName(it).asList() else dns.lookup(it)
         }
         val result = mutableListOf<InetAddress>()
-        val other = hosts.flatMap { (host, list) -> if (host == hostname) list else emptyList() }
+        val other = hosts[hostname].orEmpty()
 
         other.forEach {
             runCatching {

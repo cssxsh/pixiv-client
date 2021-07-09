@@ -12,7 +12,7 @@ data class PixivConfig(
     @SerialName("dns")
     var dns: String = JAPAN_DNS,
     @SerialName("host")
-    var host: Map<String, List<String>> = PIXIV_HOSTS,
+    var host: Map<String, List<String>> = DEFAULT_PIXIV_HOST,
     @SerialName("sni")
     var sni: Boolean = true,
     @SerialName("refresh_token")

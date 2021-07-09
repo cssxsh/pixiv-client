@@ -22,7 +22,7 @@ open class PixivDownloader(
     private val timeout: Long = 10 * 1000L,
     private val proxy: Proxy? = null,
     private val doh: String = JAPAN_DNS,
-    private val host: Map<String, List<String>> = PIXIV_HOSTS,
+    private val host: Map<String, List<String>> = DEFAULT_PIXIV_HOST,
 ) {
 
     protected open val ignore: suspend (Throwable) -> Boolean = {
