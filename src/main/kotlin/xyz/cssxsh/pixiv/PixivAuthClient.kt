@@ -11,6 +11,7 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -19,7 +20,7 @@ import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
 import java.time.OffsetDateTime
 
-abstract class PixivAuthClient : PixivAppClient {
+abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open var authInfo: AuthResult? = null
 
@@ -27,25 +28,21 @@ abstract class PixivAuthClient : PixivAppClient {
 
     protected abstract val ignore: suspend (Throwable) -> Boolean
 
-    open val cookiesStorage = AcceptAllCookiesStorage()
+    open val storage = AcceptAllCookiesStorage()
 
-    private fun LocalDns(): LocalDns = LocalDns(
-        dns = config.dns,
-        initHost = config.host,
-        cname = config.cname
-    )
+    protected open val timeout = 30_000L
 
-    protected open fun client(): HttpClient = HttpClient(OkHttp) {
+    protected open val client = HttpClient(OkHttp) {
         Json {
             serializer = KotlinxSerializer(PixivJson)
         }
         install(HttpTimeout) {
-            socketTimeoutMillis = 30_000
-            connectTimeoutMillis = 30_000
-            requestTimeoutMillis = 30_000
+            socketTimeoutMillis = timeout
+            connectTimeoutMillis = timeout
+            requestTimeoutMillis = timeout
         }
         install(HttpCookies) {
-            storage = cookiesStorage
+            storage = this@PixivAuthClient.storage
         }
         ContentEncoding {
             gzip()
@@ -84,24 +81,24 @@ abstract class PixivAuthClient : PixivAppClient {
 
         engine {
             config {
-                config.proxy.takeIf { it.isNotBlank() }?.let {
-                    proxySelector(ProxySelector(proxy = it, cname = config.cname))
+                config.run {
+                    if (config.sni) {
+                        sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                        hostnameVerifier { _, _ -> true }
+                    }
+                    dns(RubyDns(dns, host))
+                    proxy(proxy.takeIf { it.isNotBlank() }?.let(::Url)?.toProxy())
                 }
-
-                if (config.useRubySSLFactory) {
-                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
-                    hostnameVerifier { _, _ -> true }
-                }
-
-                dns(LocalDns())
             }
         }
     }
 
+    override fun close() = client.close()
+
     override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
             runCatching {
-                client().use { block(it) }
+                block(client)
             }.onSuccess {
                 return@supervisorScope  it
             }.onFailure {

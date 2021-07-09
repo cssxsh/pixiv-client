@@ -138,7 +138,7 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
  * 登录，通过 Web Cookies
  */
 suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
-    cookiesStorage.save(load())
+    storage.save(load())
     // println(url)
     val login: HttpResponse = useHttpClient { it.get(url) }
     // check("" in login.request.url.parameters)

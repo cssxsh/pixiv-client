@@ -6,7 +6,7 @@ import javax.net.ssl.*
 
 object RubySSLSocketFactory : SSLSocketFactory() {
 
-    private val regex = """(pixiv|pximg)""".toRegex()
+    private val regex = """(pixiv|pximg|iij\.jp)""".toRegex()
 
     private fun Socket.setServerNames(): Socket = apply {
         if (this !is SSLSocket) return@apply

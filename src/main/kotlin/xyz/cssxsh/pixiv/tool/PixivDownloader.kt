@@ -17,81 +17,54 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 open class PixivDownloader(
-    private val async: Int,
-    private val blockSize: Int,
-    private val socketTimeout: Long,
-    private val connectTimeout: Long,
-    private val requestTimeout: Long,
-    private val proxySelector: ProxySelector?,
-    private val dns: LocalDns,
-    private val ignore: suspend (Throwable) -> Boolean,
-    private val head: Boolean,
+    async: Int = 32,
+    private val blockSize: Int = 512 * HTTP_KILO, // HTTP use 1022 no 1024,
+    private val timeout: Long = 10 * 1000L,
+    private val proxy: Proxy? = null,
+    private val doh: String = JAPAN_DNS,
+    private val host: Map<String, List<String>> = PIXIV_HOSTS,
 ) {
 
-    private val channel = Channel<Int>(async)
+    protected open val ignore: suspend (Throwable) -> Boolean = {
+        it is IOException || it is HttpRequestTimeoutException
+    }
 
-    constructor(
-        async: Int = 32,
-        kilobytes: Int = 512,
-        timeout: Long = 10 * 1000L,
-        proxyUrl: String? = null,
-        dns: String = JAPAN_DNS,
-        initHost: Map<String, List<String>> = emptyMap(),
-        cname: Map<String, String> = emptyMap(),
-        ignore: suspend (Throwable) -> Boolean = { false },
-        head: Boolean = true,
-    ) : this(
-        async = async,
-        blockSize = kilobytes * HTTP_KILO, // HTTP use 1022 no 1024
-        socketTimeout = timeout,
-        connectTimeout = timeout,
-        requestTimeout = timeout,
-        proxySelector = proxyUrl?.let { proxy -> ProxySelector(proxy = proxy, cname = cname) },
-        dns = LocalDns(
-            dns = dns,
-            initHost = initHost,
-            cname = cname
-        ),
-        ignore = ignore,
-        head = head
-    )
+    private val channel = Channel<Int>(async)
 
     init {
         Logger.getLogger(OkHttpClient::class.java.name).level = Level.OFF
     }
 
-    private fun client() = HttpClient(OkHttp) {
+    protected open val client = HttpClient(OkHttp) {
         ContentEncoding {
             gzip()
             deflate()
             identity()
         }
         install(HttpTimeout) {
-            socketTimeoutMillis = socketTimeout
-            connectTimeoutMillis = connectTimeout
-            requestTimeoutMillis = requestTimeout
+            socketTimeoutMillis = timeout
+            connectTimeoutMillis = timeout
+            requestTimeoutMillis = timeout
         }
         engine {
             config {
                 sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                 hostnameVerifier { _, _ -> true }
-                proxySelector?.let {
-                    proxySelector(it)
-                }
-                dns(dns)
+                proxy(this@PixivDownloader.proxy)
+                dns(RubyDns(doh, host))
             }
         }
     }
 
-    private suspend fun <T> withHttpClient(block: suspend HttpClient.() -> T): T = withContext(Dispatchers.IO) {
+    private suspend fun <T> withHttpClient(block: suspend HttpClient.() -> T): T = supervisorScope {
         while (isActive) {
             channel.send(0)
             runCatching {
-                client().use { it.block() }
+                client.run { block() }
             }.also {
                 channel.receive()
             }.onSuccess {
-                return@withContext it
+                return@supervisorScope it
             }.onFailure { throwable ->
                 if (isActive && ignore(throwable)) {
                     //
@@ -117,16 +90,7 @@ open class PixivDownloader(
 
     private fun IntRange.getHeader() = "bytes=${first}-${last}"
 
-    private suspend fun getSize(url: Url): Int = withHttpClient {
-        get<HttpMessage>(url) {
-            header(HttpHeaders.Host, url.host)
-            header(HttpHeaders.Referrer, url)
-            header(HttpHeaders.Range, (0..0).getHeader())
-        }.headers[HttpHeaders.ContentRange]?.substringAfterLast("/")?.toInt()
-            ?: throw IOException("Not Match ContentRange")
-    }
-
-    private suspend fun headSize(url: Url): Int = withHttpClient {
+    private suspend fun length(url: Url): Int = withHttpClient {
         head<HttpMessage>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
@@ -165,10 +129,7 @@ open class PixivDownloader(
         }.check(length)
     }
 
-    private suspend fun download(url: Url): ByteArray = downloadRangesOrAll(
-        url = url,
-        length = if (head) headSize(url = url) else getSize(url = url)
-    )
+    private suspend fun download(url: Url): ByteArray = downloadRangesOrAll(url = url, length = length(url = url))
 
     suspend fun <R> downloadImageUrls(
         urls: List<Url>,

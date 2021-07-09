@@ -12,11 +12,9 @@ data class PixivConfig(
     @SerialName("dns")
     var dns: String = JAPAN_DNS,
     @SerialName("host")
-    var host: Map<String, List<String>> = emptyMap(),
-    @SerialName("cname")
-    var cname: Map<String, String> = PIXIV_CNAME,
-    @SerialName("ruby_ssl_factory")
-    var useRubySSLFactory: Boolean = true,
+    var host: Map<String, List<String>> = PIXIV_HOSTS,
+    @SerialName("sni")
+    var sni: Boolean = true,
     @SerialName("refresh_token")
     var refreshToken: String? = null,
 )
