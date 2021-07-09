@@ -36,7 +36,7 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
 
         other.forEach {
             runCatching {
-                result.addAll(lookup(it))
+                result.addAll(lookup(it).asReversed())
             }
         }
 
