@@ -6,15 +6,15 @@ import javax.net.ssl.*
 
 object RubySSLSocketFactory : SSLSocketFactory() {
 
-    private val regex = """(pixiv|pximg|iij\.jp)""".toRegex()
+    internal val regexes = mutableListOf("""(pixiv|pximg)\.net""".toRegex())
 
     private fun Socket.setServerNames(): Socket = apply {
         if (this !is SSLSocket) return@apply
 
         sslParameters = sslParameters.apply {
-            serverNames = serverNames.filterIsInstance<SNIHostName>().filterNot {
-                // println("${it.asciiName} -> $remoteSocketAddress")
-                regex in it.asciiName
+            serverNames = serverNames.orEmpty().filter { name ->
+                if (name !is SNIHostName) return@filter false
+                regexes.none { it in name.asciiName }
             }
         }
     }

@@ -11,14 +11,9 @@ import java.net.UnknownHostException
 class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
     private val dns: Dns = (if (doh.isNotBlank()) DnsOverHttps(doh) else Dns.SYSTEM)
 
-    private fun DnsOverHttps(url: String, sni: Boolean = true): DnsOverHttps {
+    private fun DnsOverHttps(url: String): DnsOverHttps {
         return DnsOverHttps.Builder().apply {
-            client(OkHttpClient.Builder().apply {
-                if (sni) {
-                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
-                    hostnameVerifier { _, _ -> true }
-                }
-            }.build())
+            client(OkHttpClient())
             includeIPv6(false)
             url(url.toHttpUrl())
             post(true)
