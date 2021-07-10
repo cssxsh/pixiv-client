@@ -1,13 +1,14 @@
 package xyz.cssxsh.pixiv
 
+import io.ktor.client.features.auth.providers.*
 import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
+import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.ProxyException
-import java.io.IOException
 import java.net.*
 import java.util.*
 
@@ -67,15 +68,7 @@ internal fun Url.toProxy(): Proxy {
     return Proxy(type, InetSocketAddress(host, port))
 }
 
-internal fun ProxySelector(proxy: String, cname: Map<String, String>) = object : ProxySelector() {
-    override fun select(uri: URI?): MutableList<Proxy> = mutableListOf<Proxy>().apply {
-        if (uri?.host !in cname) add(Url(proxy).toProxy())
-    }
-
-    override fun connectFailed(uri: URI?, sa: SocketAddress?, ioe: IOException?) {
-        // println("connectFailed； $uri")
-    }
-}
+fun AuthResult.toBearerTokens() = BearerTokens(accessToken, refreshToken)
 
 interface PixivParam {
     val name: String

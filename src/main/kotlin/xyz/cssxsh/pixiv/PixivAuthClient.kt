@@ -66,15 +66,11 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
                 }
 
                 loadTokens {
-                    info().run {
-                        BearerTokens(accessToken, refreshToken)
-                    }
+                    info().toBearerTokens()
                 }
 
                 refreshTokens {
-                    info().run {
-                        BearerTokens(accessToken, refreshToken)
-                    }
+                    refresh(requireNotNull(config.refreshToken) { "Not Found RefreshToken" }).toBearerTokens()
                 }
             }
         }
