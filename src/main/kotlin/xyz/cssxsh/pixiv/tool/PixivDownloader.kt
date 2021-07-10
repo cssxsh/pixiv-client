@@ -47,6 +47,11 @@ open class PixivDownloader(
             connectTimeoutMillis = timeout
             requestTimeoutMillis = timeout
         }
+        defaultRequest {
+            header(HttpHeaders.CacheControl, "no-cache")
+            header(HttpHeaders.Connection, "keep-alive")
+            header(HttpHeaders.Pragma, "no-cache")
+        }
         engine {
             config {
                 sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
@@ -132,7 +137,7 @@ open class PixivDownloader(
         }.check(length)
     }
 
-    private suspend fun download(url: Url): ByteArray = downloadRangesOrAll(url = url, length = length(url = url))
+    open suspend fun download(url: Url): ByteArray = downloadRangesOrAll(url = url, length = length(url = url))
 
     open suspend fun <R> downloadImageUrls(
         urls: List<Url>,
