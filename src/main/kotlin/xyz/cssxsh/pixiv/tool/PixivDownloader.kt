@@ -134,7 +134,7 @@ open class PixivDownloader(
 
     private suspend fun download(url: Url): ByteArray = downloadRangesOrAll(url = url, length = length(url = url))
 
-    suspend fun <R> downloadImageUrls(
+    open suspend fun <R> downloadImageUrls(
         urls: List<Url>,
         block: (url: Url, result: Result<ByteArray>) -> R,
     ): List<R> = urls.asyncMapIndexed { _, url ->
