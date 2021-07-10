@@ -70,7 +70,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
                 }
 
                 refreshTokens {
-                    refresh(requireNotNull(config.refreshToken) { "Not Found RefreshToken" }).toBearerTokens()
+                    refresh().toBearerTokens()
                 }
             }
         }
@@ -110,10 +110,11 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open val mutex = Mutex()
 
+    private val refreshToken get() = requireNotNull(config.refreshToken) { "Not Found RefreshToken" }
+
     override suspend fun info(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        val token = { requireNotNull(config.refreshToken) { "Not Found RefreshToken" } }
-        authInfo?.takeIf { expires > start } ?: (this as UseHttpClient).refresh(token = token()).save(start = start)
+        authInfo?.takeIf { expires > start } ?: (this as UseHttpClient).refresh(token = refreshToken).save(start = start)
     }
 
     override suspend fun login(block: suspend (Url) -> String): AuthResult = mutex.withLock {
@@ -122,6 +123,8 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         val code = block(url)
         authorize(code = code, verifier = verifier).save(start)
     }
+
+    suspend fun refresh() = refresh(token = refreshToken)
 
     override suspend fun refresh(token: String): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
