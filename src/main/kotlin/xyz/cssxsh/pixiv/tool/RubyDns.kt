@@ -14,7 +14,6 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
     private fun DnsOverHttps(url: String): DnsOverHttps {
         return DnsOverHttps.Builder().apply {
             client(OkHttpClient())
-            includeIPv6(false)
             url(url.toHttpUrl())
             post(true)
             resolvePrivateAddresses(false)
