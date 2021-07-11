@@ -35,6 +35,8 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
             }
         }
 
+        result.reverse()
+
         if (result.isEmpty()) runCatching {
             result.addAll(hostname.let(lookup))
         }
