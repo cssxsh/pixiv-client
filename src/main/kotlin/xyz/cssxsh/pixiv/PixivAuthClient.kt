@@ -25,7 +25,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open var authInfo: AuthResult? = null
 
-    protected open var expires: OffsetDateTime = OffsetDateTime.now().withNano(0)
+    protected open var expires: OffsetDateTime = OffsetDateTime.MIN
 
     protected abstract val ignore: suspend (Throwable) -> Boolean
 
@@ -120,7 +120,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     override suspend fun info(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        authInfo?.takeIf { expires > start } ?: (this as UseHttpClient).refresh(token = refreshToken).save(start = start)
+        authInfo?.takeIf { expires > start } ?: refresh(token = refreshToken).save(start = start)
     }
 
     override suspend fun login(block: suspend (Url) -> String): AuthResult = mutex.withLock {
@@ -130,11 +130,9 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         authorize(code = code, verifier = verifier).save(start)
     }
 
-    suspend fun refresh() = refresh(token = refreshToken)
-
-    override suspend fun refresh(token: String): AuthResult = mutex.withLock {
+    override suspend fun refresh(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        (this as UseHttpClient).refresh(token = token).save(start = start)
+        refresh(token = refreshToken).save(start = start)
     }
 
     protected open suspend fun AuthResult.save(start: OffsetDateTime): AuthResult = also {

@@ -11,7 +11,7 @@ interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
 
     suspend fun login(block: suspend (Url) -> String): AuthResult
 
-    suspend fun refresh(token: String): AuthResult
+    suspend fun refresh(): AuthResult
 
     suspend fun info(): AuthResult
 }
