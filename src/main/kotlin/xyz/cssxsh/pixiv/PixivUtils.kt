@@ -47,7 +47,6 @@ val ANDROID_HEADERS: HeadersMap = mapOf(
 
 const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
 
-
 val DEFAULT_PIXIV_HOST = mapOf(
     "oauth.secure.pixiv.net" to listOf("api.fanbox.cc"),
     "app-api.pixiv.net" to listOf("api.fanbox.cc"),
