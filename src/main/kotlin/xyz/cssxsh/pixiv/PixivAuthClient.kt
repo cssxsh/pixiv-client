@@ -15,6 +15,7 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import okhttp3.Protocol
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
@@ -82,6 +83,8 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
                     dns(RubyDns(dns, host))
                     proxy(proxy.takeIf { it.isNotBlank() }?.let(::Url)?.toProxy())
                 }
+                // FIXME StreamResetException: stream was reset: REFUSED_STREAM
+                protocols(listOf(Protocol.HTTP_1_1))
             }
         }
     }
@@ -93,7 +96,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
             runCatching {
                 block(client)
             }.onSuccess {
-                return@supervisorScope  it
+                return@supervisorScope it
             }.onFailure {
                 if (isActive && ignore(it)) {
                     // e.printStackTrace()
