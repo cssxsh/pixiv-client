@@ -23,7 +23,7 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
 
     override fun lookup(hostname: String): List<InetAddress> {
         val lookup: (String) -> List<InetAddress> = {
-            if (hostname.canParseAsIpAddress()) InetAddress.getAllByName(it).asList() else dns.lookup(it)
+            if (it.canParseAsIpAddress()) InetAddress.getAllByName(it).asList() else dns.lookup(it)
         }
         val result = mutableListOf<InetAddress>()
         val other = hosts[hostname].orEmpty()
@@ -34,7 +34,7 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
             }
         }
 
-        result.reverse()
+        result.shuffle()
 
         if (result.isEmpty()) runCatching {
             result.addAll(hostname.let(lookup))
