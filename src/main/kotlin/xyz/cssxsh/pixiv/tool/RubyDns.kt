@@ -31,12 +31,12 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
 
         other.forEach {
             runCatching {
-                result.addAll(lookup(it).asReversed())
+                result.addAll(it.let(lookup))
             }
         }
 
-        runCatching {
-            result.addAll(lookup(hostname))
+        if (result.isEmpty()) runCatching {
+            result.addAll(hostname.let(lookup))
         }
 
         if (result.isEmpty()) runCatching {

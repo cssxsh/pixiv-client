@@ -15,6 +15,7 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import okhttp3.internal.http2.StreamResetException
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
@@ -98,6 +99,11 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
             }.onSuccess {
                 return@supervisorScope  it
             }.onFailure {
+                if (it is StreamResetException) {
+                    (client.engineConfig as OkHttpConfig).config {
+                        dns(RubyDns(config.dns, config.host))
+                    }
+                }
                 if (isActive && ignore(it)) {
                     // e.printStackTrace()
                 } else {
