@@ -21,10 +21,12 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
         }.build()
     }
 
+    private val lookup: (String) -> List<InetAddress> = {
+        if (it.canParseAsIpAddress()) InetAddress.getAllByName(it).asList() else dns.lookup(it)
+    }
+
     override fun lookup(hostname: String): List<InetAddress> {
-        val lookup: (String) -> List<InetAddress> = {
-            if (it.canParseAsIpAddress()) InetAddress.getAllByName(it).asList() else dns.lookup(it)
-        }
+
         val result = mutableListOf<InetAddress>()
         val other = hosts[hostname].orEmpty()
 
