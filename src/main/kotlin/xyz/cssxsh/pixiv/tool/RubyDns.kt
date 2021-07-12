@@ -28,9 +28,13 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
     override fun lookup(hostname: String): List<InetAddress> {
 
         val result = mutableListOf<InetAddress>()
-        val other = hosts[hostname].orEmpty()
+        val other = hosts[hostname] ?: hosts.firstNotNullOfOrNull { (host, cname) ->
+            cname.takeIf {
+                host.startsWith("*.") && hostname.endsWith(host.removePrefix("*."))
+            }
+        }
 
-        other.forEach {
+        other.orEmpty().forEach {
             runCatching {
                 result.addAll(it.let(lookup))
             }

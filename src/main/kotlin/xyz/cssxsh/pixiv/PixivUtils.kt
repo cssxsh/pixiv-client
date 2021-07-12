@@ -48,14 +48,14 @@ val ANDROID_HEADERS: HeadersMap = mapOf(
 const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
 
 val DEFAULT_PIXIV_HOST = mapOf(
-    "oauth.secure.pixiv.net" to listOf("api.fanbox.cc"),
-    "app-api.pixiv.net" to listOf("api.fanbox.cc"),
-    "public-api.secure.pixiv.net" to listOf("api.fanbox.cc"),
-    "public.pixiv.net" to listOf("api.fanbox.cc"),
-    "www.pixiv.net" to listOf("api.fanbox.cc"),
-    "pixiv.me" to listOf("api.fanbox.cc"),
-    "accounts.pixiv.net" to listOf("api.fanbox.cc"),
-    "g-client-proxy.pixiv.net" to listOf("6837361.gigya-api.com")
+    "*.pixiv.net" to listOf("api.fanbox.cc"),
+    "sketch.pixiv.net" to listOf("pixivsketch.net"),
+    "times.pixiv.net" to listOf("domains.tumblr.com"),
+    "matsuri.pixiv.net" to listOf("d37vhba44w9rfk.cloudfront.net"),
+    "festa.pixiv.net" to listOf("d27o62ujhz6nk8.cloudfront.net"),
+    "iracon.pixiv.net" to listOf("dq5nq916rhniu.cloudfront.net"),
+    "g-client-proxy.pixiv.net" to listOf("6837361.gigya-api.com"),
+    "dev.pixiv.net" to listOf("s3-website-ap-northeast-1.amazonaws.com")
 )
 
 internal fun Url.toProxy(): Proxy {
