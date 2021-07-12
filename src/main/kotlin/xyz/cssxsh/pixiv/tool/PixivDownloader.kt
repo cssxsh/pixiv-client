@@ -8,6 +8,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders
+import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import okhttp3.OkHttpClient
@@ -100,9 +101,12 @@ open class PixivDownloader(
         val response = head<HttpResponse>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
+            header(HttpHeaders.Range, "bytes=0-")
         }
-        response.headers[HttpHeaders.ContentLength]?.toInt()
-            ?: throw IOException("Not Match ContentLength $response")
+        val headers = response.headers
+        headers[HttpHeaders.ContentLength]?.toInt()
+            ?: headers[HttpHeaders.ContentRange]?.substringAfter('/')?.toInt()
+            ?: throw IOException("Not Match ContentLength $response ${headers.toMap()}")
     }
 
     private fun ByteArray.check(expected: Int) = also {
