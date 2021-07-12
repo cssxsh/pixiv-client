@@ -4,13 +4,13 @@ import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.*
 import io.ktor.client.features.auth.*
-import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.compression.*
 import io.ktor.client.features.cookies.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.http.auth.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -60,18 +60,27 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
             config.headers.forEach(::header)
         }
         Auth {
-            bearer {
-                sendWithoutRequest {
-                    it.url.host in listOf("app-api.pixiv.net", "public-api.secure.pixiv.net") &&
-                        it.url.encodedPath.startsWith("/web").not()
+            providers.add(object : AuthProvider {
+                override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean {
+                    return request.url.host in listOf("app-api.pixiv.net", "public-api.secure.pixiv.net")
                 }
-                loadTokens {
-                    info().toBearerTokens()
+
+                @Deprecated("Please use sendWithoutRequest function instead")
+                override val sendWithoutRequest: Boolean = true
+
+                override suspend fun addRequestHeaders(request: HttpRequestBuilder) {
+                    val token = "Bearer ${info().accessToken}"
+                    request.headers {
+                        if (contains(HttpHeaders.Authorization)) {
+                            remove(HttpHeaders.Authorization)
+                        }
+                        append(HttpHeaders.Authorization, token)
+                    }
                 }
-                refreshTokens {
-                    refresh().toBearerTokens()
-                }
-            }
+
+                override fun isApplicable(auth: HttpAuthHeader): Boolean = false
+
+            })
         }
         engine {
             config {
