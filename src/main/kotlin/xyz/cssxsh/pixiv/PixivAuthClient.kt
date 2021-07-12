@@ -130,7 +130,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         val start = OffsetDateTime.now()
         val (verifier, url) = verifier(time = start)
         val code = block(url)
-        authorize(code = code, verifier = verifier).save(start)
+        authorize(code = code, verifier = verifier).save(start = start)
     }
 
     override suspend fun refresh(): AuthResult = mutex.withLock {
