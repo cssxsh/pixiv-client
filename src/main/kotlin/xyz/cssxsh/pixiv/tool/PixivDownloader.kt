@@ -8,12 +8,12 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders
-import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import okhttp3.OkHttpClient
 import okio.IOException
 import xyz.cssxsh.pixiv.*
+import xyz.cssxsh.pixiv.exception.*
 import java.net.*
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -64,6 +64,7 @@ open class PixivDownloader(
     }
 
     private suspend fun <T> withHttpClient(block: suspend HttpClient.() -> T): T = supervisorScope {
+        var client = this@PixivDownloader.client
         while (isActive) {
             channel.send(0)
             runCatching {
@@ -74,7 +75,13 @@ open class PixivDownloader(
                 return@supervisorScope it
             }.onFailure { throwable ->
                 if (isActive && ignore(throwable)) {
-                    //
+                    if (throwable is MatchContentLengthException) {
+                        client = client.config {
+                            defaultRequest {
+                                header(HttpHeaders.CacheControl, "no-store")
+                            }
+                        }
+                    }
                 } else {
                     throw throwable
                 }
@@ -103,10 +110,9 @@ open class PixivDownloader(
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, "bytes=0-")
         }
-        val headers = response.headers
-        headers[HttpHeaders.ContentLength]?.toInt()
-            ?: headers[HttpHeaders.ContentRange]?.substringAfter('/')?.toInt()
-            ?: throw IOException("Not Match ContentLength $response ${headers.toMap()}")
+        response.headers[HttpHeaders.ContentLength]?.toInt()
+            ?: response.headers[HttpHeaders.ContentRange]?.substringAfter('/')?.toInt()
+            ?: throw MatchContentLengthException(response)
     }
 
     private fun ByteArray.check(expected: Int) = also {
