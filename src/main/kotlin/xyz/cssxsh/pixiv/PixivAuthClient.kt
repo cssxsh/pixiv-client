@@ -62,7 +62,8 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         Auth {
             providers.add(object : AuthProvider {
                 override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean {
-                    return request.url.host in listOf("app-api.pixiv.net", "public-api.secure.pixiv.net")
+                    return request.url.host in listOf("app-api.pixiv.net", "public-api.secure.pixiv.net") &&
+                        request.url.encodedPath.startsWith("/web").not()
                 }
 
                 @Deprecated("Please use sendWithoutRequest function instead")

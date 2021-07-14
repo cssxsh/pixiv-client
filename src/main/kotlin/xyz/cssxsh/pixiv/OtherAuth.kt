@@ -37,13 +37,11 @@ private suspend fun HttpResponse.account(): HtmlAccount {
     return PixivJson.decodeFromString(html.substringAfter("value='").substringBefore("'"))
 }
 
-private fun HttpClient.noAuth() = config { Auth { providers.clear() } }
-
 /**
  * link for [POST_REDIRECT_URL]
  */
 private suspend fun PixivAuthClient.redirect(link: Url): String {
-    val redirect: HttpResponse = useHttpClient { it.noAuth().get(link) { } }
+    val redirect: HttpResponse = useHttpClient { it.get(link) { } }
 
     check(redirect.request.url.toString().startsWith(POST_REDIRECT_URL)) { redirect.request.url.toString() }
 
@@ -75,7 +73,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
      * authorize for [OAUTH_AUTHORIZE_URL]
      */
     val code: HttpResponse = useHttpClient {
-        it.noAuth().get(authorize) {
+        it.get(authorize) {
             expectSuccess = false
 
             header(HttpHeaders.Origin, "https://accounts.pixiv.net")
@@ -94,7 +92,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
  */
 suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
     // Pixiv Login Page
-    val html: String = useHttpClient { it.noAuth().get(url) }
+    val html: String = useHttpClient { it.get(url) }
 
     val all = html.let("""gigya-auth[^"]+""".toRegex()::findAll).map { it.value.replace("&amp;", "&") }
     val sina = Url("https://accounts.pixiv.net/${all.first { "sina" in it }}")
@@ -144,7 +142,7 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
 suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
     storage.save(load())
     // println(url)
-    val login: HttpResponse = useHttpClient { it.noAuth().get(url) }
+    val login: HttpResponse = useHttpClient { it.get(url) }
     // check("" in login.request.url.parameters)
     val account = login.account()
 
