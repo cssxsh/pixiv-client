@@ -28,7 +28,7 @@ open class PixivDownloader(
 ) {
 
     protected open val ignore: suspend (Throwable) -> Boolean = {
-        it is IOException || it is HttpRequestTimeoutException
+        (it is IOException && it !is MatchContentLengthException) || it is HttpRequestTimeoutException
     }
 
     private val channel = Channel<Int>(async)
@@ -37,7 +37,7 @@ open class PixivDownloader(
         Logger.getLogger(OkHttpClient::class.java.name).level = Level.OFF
     }
 
-    protected open val client = HttpClient(OkHttp) {
+    protected open fun client() = HttpClient(OkHttp) {
         ContentEncoding {
             gzip()
             deflate()
@@ -63,10 +63,11 @@ open class PixivDownloader(
         }
     }
 
-    private suspend fun <T> withHttpClient(block: suspend HttpClient.() -> T): T = supervisorScope {
-        var client = this@PixivDownloader.client
+    protected open val clients by lazy { MutableList(8) { client() } }
+
+    private suspend fun <T> withHttpClient(client: HttpClient, block: suspend HttpClient.() -> T): T = supervisorScope {
         while (isActive) {
-            channel.send(0)
+            channel.send(clients.indexOf(client))
             runCatching {
                 client.run { block() }
             }.also {
@@ -75,13 +76,7 @@ open class PixivDownloader(
                 return@supervisorScope it
             }.onFailure { throwable ->
                 if (isActive && ignore(throwable)) {
-                    if (throwable is MatchContentLengthException) {
-                        client = client.config {
-                            defaultRequest {
-                                header(HttpHeaders.CacheControl, "no-store")
-                            }
-                        }
-                    }
+                    //
                 } else {
                     throw throwable
                 }
@@ -90,9 +85,7 @@ open class PixivDownloader(
         throw CancellationException()
     }
 
-    private suspend fun <T, R> Iterable<T>.asyncMapIndexed(
-        transform: suspend (Int, T) -> R,
-    ): List<R> = withContext(Dispatchers.IO) {
+    private suspend fun <T, R> Iterable<T>.asyncMapIndexed(transform: suspend (Int, T) -> R) = supervisorScope {
         mapIndexed { index, value ->
             async {
                 transform(index, value)
@@ -104,11 +97,14 @@ open class PixivDownloader(
 
     private fun IntRange.getHeader() = "bytes=${first}-${last}"
 
-    private suspend fun length(url: Url): Int = withHttpClient {
+    private suspend fun length(client: HttpClient, url: Url): Int = withHttpClient(client) {
         val response = head<HttpResponse>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, "bytes=0-")
+            header(HttpHeaders.CacheControl, "no-store")
+            header(HttpHeaders.Connection, "keep-alive")
+            header(HttpHeaders.Pragma, "no-store")
         }
         response.headers[HttpHeaders.ContentLength]?.toInt()
             ?: response.headers[HttpHeaders.ContentRange]?.substringAfter('/')?.toInt()
@@ -116,10 +112,10 @@ open class PixivDownloader(
     }
 
     private fun ByteArray.check(expected: Int) = also {
-        check(it.size == expected) { "Expected ${expected}, actual ${it.size}" }
+        if (it.size != expected) throw ByteArrayException("Expected ${expected}, actual ${it.size}")
     }
 
-    private suspend fun downloadRange(url: Url, range: IntRange): ByteArray = withHttpClient {
+    private suspend fun downloadRange(client: HttpClient, url: Url, range: IntRange) = withHttpClient(client) {
         get<ByteArray>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
@@ -127,19 +123,20 @@ open class PixivDownloader(
         }.check(range.getLength())
     }
 
-    private suspend fun downloadAll(url: Url): ByteArray = withHttpClient {
-        get(url) {
+    private suspend fun downloadAll(client: HttpClient, url: Url) = withHttpClient(client) {
+        get<ByteArray>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
         }
     }
 
-    private suspend fun downloadRangesOrAll(url: Url, length: Int): ByteArray {
+    private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray {
         return if (length < blockSize) {
-            downloadAll(url = url)
+            downloadAll(client = client, url = url)
         } else {
             (0 until length step blockSize).asyncMapIndexed { _, offset ->
                 downloadRange(
+                    client = client,
                     url = url,
                     range = offset until (offset + blockSize).coerceAtMost(length)
                 )
@@ -147,7 +144,25 @@ open class PixivDownloader(
         }.check(length)
     }
 
-    open suspend fun download(url: Url): ByteArray = downloadRangesOrAll(url = url, length = length(url = url))
+    open suspend fun download(url: Url): ByteArray = supervisorScope {
+        var client = clients.random()
+        var length = 0
+        while (isActive && length == 0) {
+            runCatching {
+                length(client = client, url = url)
+            }.onSuccess {
+                length = it
+            }.onFailure {
+                if (it !is MatchContentLengthException) {
+                    throw it
+                } else {
+                    client = clients.random()
+                }
+            }
+        }
+
+        downloadRangesOrAll(client = client, url = url, length = length)
+    }
 
     open suspend fun <R> downloadImageUrls(
         urls: List<Url>,
