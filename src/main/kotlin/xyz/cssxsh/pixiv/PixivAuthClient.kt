@@ -15,7 +15,6 @@ import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import okhttp3.Protocol
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
@@ -33,7 +32,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open val timeout = 30_000L
 
-    protected open val client = HttpClient(OkHttp) {
+    protected open fun client() = HttpClient(OkHttp) {
         Json {
             serializer = KotlinxSerializer(PixivJson)
         }
@@ -93,18 +92,20 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
                     dns(RubyDns(dns, host))
                     proxy(proxy.takeIf { it.isNotBlank() }?.let(::Url)?.toProxy())
                 }
-                // FIXME StreamResetException: stream was reset: REFUSED_STREAM
-                protocols(listOf(Protocol.HTTP_1_1))
+                // StreamResetException: stream was reset: REFUSED_STREAM
+                // protocols(listOf(Protocol.HTTP_1_1))
             }
         }
     }
 
-    override fun close() = client.close()
+    protected open val clients by lazy { MutableList(3) { client() } }
+
+    override fun close() = clients.forEach { it.close() }
 
     override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
             runCatching {
-                block(client)
+                block(clients.random())
             }.onSuccess {
                 return@supervisorScope it
             }.onFailure {
