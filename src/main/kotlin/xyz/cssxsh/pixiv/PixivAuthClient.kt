@@ -85,12 +85,13 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         engine {
             config {
                 config.run {
-                    if (config.sni) {
+                    if (proxy.isNotBlank()) {
+                        proxy(Url(proxy).toProxy())
+                    } else if (config.sni) {
                         sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                         hostnameVerifier { _, _ -> true }
                     }
                     dns(RubyDns(dns, host))
-                    proxy(proxy.takeIf { it.isNotBlank() }?.let(::Url)?.toProxy())
                 }
                 // StreamResetException: stream was reset: REFUSED_STREAM
                 // protocols(listOf(Protocol.HTTP_1_1))
