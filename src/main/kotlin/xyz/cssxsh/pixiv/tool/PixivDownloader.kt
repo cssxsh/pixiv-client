@@ -21,11 +21,12 @@ import java.util.logging.Logger
 open class PixivDownloader(
     async: Int = 32,
     private val blockSize: Int = 512 * HTTP_KILO, // HTTP use 1022 no 1024,
-    private val timeout: Long = 10 * 1000L,
     private val proxy: Proxy? = null,
     private val doh: String = JAPAN_DNS,
     private val host: Map<String, List<String>> = DEFAULT_PIXIV_HOST,
 ) {
+
+    protected open val timeout: Long = 10 * 1000L
 
     protected open val ignore: suspend (Throwable) -> Boolean = {
         (it is IOException && it !is MatchContentLengthException) || it is HttpRequestTimeoutException
