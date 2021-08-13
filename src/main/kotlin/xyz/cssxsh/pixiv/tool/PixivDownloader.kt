@@ -9,14 +9,11 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import okhttp3.OkHttpClient
-import okio.IOException
+import kotlinx.coroutines.channels.*
+import okio.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.exception.*
 import java.net.*
-import java.util.logging.Level
-import java.util.logging.Logger
 
 open class PixivDownloader(
     async: Int = 32,
@@ -33,10 +30,6 @@ open class PixivDownloader(
     }
 
     private val channel = Channel<Int>(async)
-
-    init {
-        Logger.getLogger(OkHttpClient::class.java.name).level = Level.OFF
-    }
 
     protected open fun client() = HttpClient(OkHttp) {
         ContentEncoding {
