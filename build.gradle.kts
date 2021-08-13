@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "xzy.cssxsh.pixiv"
-version = "0.7.0-M-2"
+version = "1.0.0"
 
 repositories {
     mavenLocal()
@@ -35,13 +35,14 @@ dependencies {
 kotlin {
     sourceSets {
         all {
-            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-            languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
-            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
-            languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
-            languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
-            languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
-            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+//            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+//            languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+//            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
+//            languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
+//            languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
+//            languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
+//            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }

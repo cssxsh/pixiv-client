@@ -1,3 +1,5 @@
+@file:OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
+
 package xyz.cssxsh.pixiv
 
 import io.ktor.http.*
