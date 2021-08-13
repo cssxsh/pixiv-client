@@ -73,5 +73,5 @@ data class IllustInfo(
 
     fun getOriginImageUrls(): List<Url> = getImageUrls().map { urls ->
         Url(requireNotNull(urls.entries.find { "origin" in it.key }) { "Not Found origin $urls" }.value)
-    }.distinctBy { it.encodedPath }
+    }
 }
