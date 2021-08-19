@@ -7,16 +7,14 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.auth.*
 
 const val WEIBO_QRCODE_GENERATE = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
 
 const val WEIBO_QRCODE_QUERY = "https://api.weibo.com/oauth2/qrcode_authorize/query"
 
-internal fun HttpMessage.location() = headers[HttpHeaders.Location]?.let { Url(it) }
+private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
 @Serializable
 internal data class HtmlAccount(
@@ -32,16 +30,18 @@ internal data class HtmlAccount(
 
 private suspend fun HttpResponse.account(): HtmlAccount {
     val html = receive<String>()
-    return PixivJson.decodeFromString(html.substringAfter("value='").substringBefore("'"))
+    val data = html.substringAfter("value='").substringBefore("'")
+    return PixivJson.decodeFromString(data)
 }
 
 /**
  * link for [POST_REDIRECT_URL]
  */
 private suspend fun PixivAuthClient.redirect(link: Url): String {
-    val redirect: HttpResponse = useHttpClient { it.get(link) { } }
+    val redirect: HttpResponse = useHttpClient { it.get(link) }
+    val location = redirect.request.url
 
-    check(redirect.request.url.toString().startsWith(POST_REDIRECT_URL)) { redirect.request.url.toString() }
+    check(location.toString().startsWith(POST_REDIRECT_URL)) { "$link To $location" }
 
     val account = redirect.account()
 
@@ -49,40 +49,36 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
 
     val current = Url(account.returnTo)
 
-    // println(current)
-
     /**
      * current for [START_URL]
      */
-    val response: HttpResponse = useHttpClient {
+    val response: HttpMessage = useHttpClient {
         it.post(current) {
             expectSuccess = false
 
-            header(HttpHeaders.Origin, "https://accounts.pixiv.net")
-            header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
+            header(HttpHeaders.Origin, ORIGIN_URL)
+            header(HttpHeaders.Referrer, LOGIN_URL)
         }
     }
 
-    val authorize = requireNotNull(response.location())
-
-    // println(authorize)
+    val authorize = requireNotNull(response.location()) { "跳转到 $OAUTH_AUTHORIZE_URL 失败" }
 
     /**
      * authorize for [OAUTH_AUTHORIZE_URL]
      */
-    val code: HttpResponse = useHttpClient {
+    val code: HttpMessage = useHttpClient {
         it.get(authorize) {
             expectSuccess = false
 
-            header(HttpHeaders.Origin, "https://accounts.pixiv.net")
-            header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
+            header(HttpHeaders.Origin, ORIGIN_URL)
+            header(HttpHeaders.Referrer, LOGIN_URL)
         }
     }
 
     /**
      * Code by Url pixiv://...
      */
-    return Url(code.headers[HttpHeaders.Location]!!).parameters["code"]!!
+    return requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }.parameters["code"]!!
 }
 
 /**
@@ -93,7 +89,7 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
     val html: String = useHttpClient { it.get(url) }
 
     val all = html.let("""gigya-auth[^"]+""".toRegex()::findAll).map { it.value.replace("&amp;", "&") }
-    val sina = Url("https://accounts.pixiv.net/${all.first { "sina" in it }}")
+    val sina = Url("$ORIGIN_URL/${all.first { "sina" in it }}")
 
     // Jump to Sina Weibo
     val temp: HttpResponse = useHttpClient { it.head(sina) }
@@ -139,20 +135,18 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
  */
 suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
     storage.save(load())
-    // println(url)
     val login: HttpResponse = useHttpClient { it.get(url) }
-    // check("" in login.request.url.parameters)
     val account = login.account()
 
     /**
      * for [POST_SELECTED_URL]
      */
-    val response: HttpResponse = useHttpClient {
+    val response: HttpMessage = useHttpClient {
         it.post(POST_SELECTED_URL) {
             expectSuccess = false
 
-            header(HttpHeaders.Origin, "https://accounts.pixiv.net")
-            header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
+            header(HttpHeaders.Origin, ORIGIN_URL)
+            header(HttpHeaders.Referrer, LOGIN_URL)
 
             body = FormDataContent(Parameters.build {
                 append("return_to", account.current)
@@ -161,7 +155,7 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
         }
     }
 
-    val link = requireNotNull(response.location())
+    val link = requireNotNull(response.location()) { "跳转到 $POST_REDIRECT_URL 失败" }
 
     redirect(link = link)
 }

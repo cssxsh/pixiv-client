@@ -17,6 +17,8 @@ const val START_URL = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/start"
 
 const val REDIRECT_URL = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"
 
+const val ORIGIN_URL = "https://accounts.pixiv.net"
+
 const val LOGIN_URL = "https://accounts.pixiv.net/login"
 
 const val POST_SELECTED_URL = "https://accounts.pixiv.net/account-selected"
