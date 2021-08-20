@@ -17,10 +17,10 @@ import java.net.*
 
 open class PixivDownloader(
     async: Int = 32,
-    private val blockSize: Int = 512 * HTTP_KILO, // HTTP use 1022 no 1024,
-    private val proxy: Proxy? = null,
-    private val doh: String = JAPAN_DNS,
-    private val host: Map<String, List<String>> = DEFAULT_PIXIV_HOST,
+    protected open val blockSize: Int = 512 * HTTP_KILO, // HTTP use 1022 no 1024,
+    protected open val proxy: Proxy? = null,
+    protected open val doh: String = JAPAN_DNS,
+    protected open val host: Map<String, List<String>> = DEFAULT_PIXIV_HOST,
 ) {
 
     protected open val timeout: Long = 10 * 1000L
@@ -29,7 +29,7 @@ open class PixivDownloader(
         (it is IOException && it !is MatchContentLengthException) || it is HttpRequestTimeoutException
     }
 
-    private val channel = Channel<Int>(async)
+    protected open val channel = Channel<Int>(async)
 
     protected open fun client() = HttpClient(OkHttp) {
         ContentEncoding {
