@@ -58,6 +58,8 @@ val DEFAULT_PIXIV_HOST = mapOf(
     "dev.pixiv.net" to listOf("s3-website-ap-northeast-1.amazonaws.com")
 )
 
+const val NO_PROFILE_IMAGE = "https://s.pximg.net/common/images/no_profile.png"
+
 internal fun Url.toProxy(): Proxy {
     val type = when (protocol) {
         URLProtocol.SOCKS -> Proxy.Type.SOCKS
