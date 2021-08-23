@@ -125,7 +125,7 @@ open class PixivDownloader(
     }
 
     private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray {
-        return if (length < blockSize) {
+        return if (blockSize <= 0 || length < blockSize) {
             downloadAll(client = client, url = url)
         } else {
             (0 until length step blockSize).asyncMapIndexed { _, offset ->
