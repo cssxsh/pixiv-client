@@ -2,7 +2,7 @@ package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
-import xyz.cssxsh.pixiv.PixivAppClient
+import xyz.cssxsh.pixiv.*
 
 suspend fun PixivAppClient.getSearchWorks(
     word: String,

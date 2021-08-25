@@ -1,8 +1,7 @@
 package xyz.cssxsh.pixiv.publics
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import xyz.cssxsh.pixiv.PublicityType
+import kotlinx.serialization.*
+import xyz.cssxsh.pixiv.*
 
 @Serializable
 data class FavoriteWorkData(

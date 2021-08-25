@@ -2,8 +2,8 @@ package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.json.JsonElement
-import xyz.cssxsh.pixiv.PixivAppClient
+import kotlinx.serialization.json.*
+import xyz.cssxsh.pixiv.*
 
 suspend fun PixivAppClient.postViewedWorks(
     pids:  List<Long>,

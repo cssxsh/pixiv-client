@@ -2,8 +2,7 @@ package xyz.cssxsh.pixiv.publics
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 @Serializable
 data class PublicApiConfig(
