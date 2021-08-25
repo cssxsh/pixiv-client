@@ -7,10 +7,9 @@ import io.ktor.client.features.compression.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.HttpHeaders
+import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
-import okio.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.exception.*
 import java.net.*

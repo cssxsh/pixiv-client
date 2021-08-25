@@ -1,8 +1,7 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import xyz.cssxsh.pixiv.FileUrls
+import kotlinx.serialization.*
+import xyz.cssxsh.pixiv.*
 
 @Serializable
 data class UgoiraMetadata(

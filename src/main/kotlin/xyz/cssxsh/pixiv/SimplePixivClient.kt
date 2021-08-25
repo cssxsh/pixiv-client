@@ -1,11 +1,9 @@
 package xyz.cssxsh.pixiv
 
 import io.ktor.client.features.*
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.SupervisorJob
-import okio.IOException
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
+import io.ktor.utils.io.errors.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.*
 
 open class SimplePixivClient(
     parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,

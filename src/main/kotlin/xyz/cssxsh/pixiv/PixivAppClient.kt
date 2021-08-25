@@ -1,8 +1,8 @@
 package xyz.cssxsh.pixiv
 
 import io.ktor.http.*
-import kotlinx.coroutines.CoroutineScope
-import xyz.cssxsh.pixiv.auth.AuthResult
+import kotlinx.coroutines.*
+import xyz.cssxsh.pixiv.auth.*
 
 /**
  * PixivClient，Multiplatform interface

@@ -2,8 +2,8 @@ package xyz.cssxsh.pixiv.apps
 
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.*
+import java.time.format.*
 
 suspend fun PixivAppClient.searchAutoCompleteOld(
     word: String,

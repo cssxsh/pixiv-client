@@ -1,12 +1,10 @@
 package xyz.cssxsh.pixiv.tool
 
-import okhttp3.Dns
+import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.dnsoverhttps.DnsOverHttps
-import okhttp3.internal.canParseAsIpAddress
-import java.net.InetAddress
-import java.net.UnknownHostException
+import okhttp3.dnsoverhttps.*
+import okhttp3.internal.*
+import java.net.*
 
 class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
     private val dns: Dns = (if (doh.isNotBlank()) DnsOverHttps(doh) else Dns.SYSTEM)

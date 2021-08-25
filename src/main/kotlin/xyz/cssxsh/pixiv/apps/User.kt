@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 
 suspend fun PixivAppClient.userBlacklist(

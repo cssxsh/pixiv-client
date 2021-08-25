@@ -1,10 +1,8 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
-import xyz.cssxsh.pixiv.JapanDateTimeSerializer
-import java.time.OffsetDateTime
+import java.time.*
 
 @Serializable
 data class NovelInfo(

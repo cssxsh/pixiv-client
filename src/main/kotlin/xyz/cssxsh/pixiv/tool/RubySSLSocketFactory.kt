@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.tool
 
-import java.net.InetAddress
-import java.net.Socket
+import java.net.*
 import javax.net.ssl.*
 
 object RubySSLSocketFactory : SSLSocketFactory() {

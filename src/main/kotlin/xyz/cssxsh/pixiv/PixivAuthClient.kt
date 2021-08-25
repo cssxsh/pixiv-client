@@ -13,12 +13,11 @@ import io.ktor.http.*
 import io.ktor.http.auth.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.*
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
-import java.time.OffsetDateTime
+import java.time.*
 
 abstract class PixivAuthClient : PixivAppClient, Closeable {
 
@@ -84,7 +83,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         }
         engine {
             config {
-                config.run {
+                with(config) {
                     if (proxy.isNotBlank()) {
                         proxy(Url(proxy).toProxy())
                     } else if (config.sni) {

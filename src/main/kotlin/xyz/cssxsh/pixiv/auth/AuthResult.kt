@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.auth
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
