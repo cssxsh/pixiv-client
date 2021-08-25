@@ -101,17 +101,19 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open val clients by lazy { MutableList(3) { client() } }
 
+    protected open var index = 0
+
     override fun close() = clients.forEach { it.close() }
 
     override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
             runCatching {
-                block(clients.random())
+                block(clients[index])
             }.onSuccess {
                 return@supervisorScope it
             }.onFailure {
                 if (isActive && ignore(it)) {
-                    // e.printStackTrace()
+                    index = (index + 1) % clients.size
                 } else {
                     throw it
                 }
