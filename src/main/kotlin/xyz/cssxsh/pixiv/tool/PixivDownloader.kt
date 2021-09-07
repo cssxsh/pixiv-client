@@ -96,17 +96,19 @@ open class PixivDownloader(
             ?: throw MatchContentLengthException(response)
     }
 
-    private fun ByteArray.check(expected: Int) = also {
-        if (it.size != expected) throw ByteArrayException("Expected ${expected}, actual ${it.size}")
-    }
-
     private suspend fun downloadRange(client: HttpClient, url: Url, range: IntRange) = withHttpClient(client) {
         get<ByteArray>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, range.getHeader())
-            parameter("range", range)
-        }.check(range.getLength())
+            url {
+                fragment = range.getHeader()
+            }
+        }.also {
+            if (it.size > range.last + 1) return@withHttpClient it.sliceArray(range)
+            val length = range.getLength()
+            if (it.size != length) throw ByteArrayException(it, length)
+        }
     }
 
     private suspend fun downloadAll(client: HttpClient, url: Url) = withHttpClient(client) {
@@ -128,8 +130,10 @@ open class PixivDownloader(
                         range = offset until (offset + blockSize).coerceAtMost(length)
                     )
                 }
-            }.fold(byteArrayOf()) { acc, deferred -> acc + deferred.await() }
-        }.check(length)
+            }.fold(ByteArray(0)) { acc, deferred -> acc + deferred.await() }.also {
+                if (it.size != length) throw ByteArrayException(it, length)
+            }
+        }
     }
 
     open suspend fun download(url: Url): ByteArray = supervisorScope {
