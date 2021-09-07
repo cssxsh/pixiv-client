@@ -1,3 +1,5 @@
+import java.util.*
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -8,9 +10,11 @@ version = "1.0.0"
 
 repositories {
     mavenLocal()
-    maven(url = "https://maven.aliyun.com/repository/public")
+    if (Locale.getDefault() == Locale.SIMPLIFIED_CHINESE) {
+        maven(url = "https://maven.aliyun.com/repository/public")
+        maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
+    }
     mavenCentral()
-    maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
     gradlePluginPortal()
 }
 
