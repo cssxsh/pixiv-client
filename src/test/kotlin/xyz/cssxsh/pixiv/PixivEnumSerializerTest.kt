@@ -1,9 +1,8 @@
 package xyz.cssxsh.pixiv
 
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Test
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+import org.junit.jupiter.api.*
 
 @InternalSerializationApi
 internal class PixivEnumSerializerTest {
@@ -25,5 +24,11 @@ internal class PixivEnumSerializerTest {
         Json.decodeFromString(Order.serializer(), """{"type":"ASC"}""").let {
             println(it.toString())
         }
+    }
+
+    @Test
+    fun json() {
+        println(PixivJson.decodeFromString<String>("\"sss\""))
+        println(PixivJson.decodeFromString<String>("'sss'"))
     }
 }

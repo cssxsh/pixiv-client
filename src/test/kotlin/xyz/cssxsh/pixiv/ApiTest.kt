@@ -7,12 +7,12 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class ApiTest {
 
-    protected val client = SimplePixivClient {
-        refreshToken = "dmQyznswcjxsZp4oTTMTluQZNtLtX4HPaWSFGiQrAOY"
-    }
+    protected val client = SimplePixivClient(
+        config = PixivConfig(refreshToken = System.getenv("PIXIV_TOKEN"))
+    )
 
     @BeforeAll
     fun showAuthInfo(): Unit = runBlocking {
-        println(client.getAuthInfo())
+        println(client.config)
     }
 }
