@@ -295,5 +295,5 @@ enum class CategoryType : PixivParam {
     ILLUST,
     MANGA;
 
-    companion object : KSerializer<SanityLevel> by PixivEnumSerializer()
+    companion object : KSerializer<CategoryType> by PixivEnumSerializer()
 }

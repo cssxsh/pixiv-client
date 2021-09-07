@@ -10,7 +10,6 @@ repositories {
     mavenLocal()
     maven(url = "https://maven.aliyun.com/repository/public")
     mavenCentral()
-    jcenter()
     maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
     gradlePluginPortal()
 }
@@ -40,9 +39,9 @@ kotlin {
 //            languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
 //            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
 //            languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
-//            languageSettings.useExperimentalAnnotation("io.ktor.util.KtorExperimentalAPI")
+            languageSettings.useExperimentalAnnotation("io.ktor.util.InternalAPI")
 //            languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
-//            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }

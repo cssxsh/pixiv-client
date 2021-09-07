@@ -78,14 +78,6 @@ open class PixivDownloader(
         throw CancellationException()
     }
 
-    private suspend fun <T, R> Iterable<T>.asyncMapIndexed(transform: suspend (Int, T) -> R) = supervisorScope {
-        mapIndexed { index, value ->
-            async {
-                transform(index, value)
-            }
-        }.awaitAll()
-    }
-
     private fun IntRange.getLength() = (last - first + 1)
 
     private fun IntRange.getHeader() = "bytes=${first}-${last}"
@@ -113,6 +105,7 @@ open class PixivDownloader(
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, range.getHeader())
+            parameter("range", range)
         }.check(range.getLength())
     }
 
@@ -123,17 +116,19 @@ open class PixivDownloader(
         }
     }
 
-    private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray {
-        return if (blockSize <= 0 || length < blockSize) {
+    private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray = supervisorScope {
+        if (blockSize <= 0 || length < blockSize) {
             downloadAll(client = client, url = url)
         } else {
-            (0 until length step blockSize).asyncMapIndexed { _, offset ->
-                downloadRange(
-                    client = client,
-                    url = url,
-                    range = offset until (offset + blockSize).coerceAtMost(length)
-                )
-            }.reduce { accumulator, bytes -> accumulator + bytes }
+            (0 until length step blockSize).mapIndexed { _, offset ->
+                async {
+                    downloadRange(
+                        client = client,
+                        url = url,
+                        range = offset until (offset + blockSize).coerceAtMost(length)
+                    )
+                }
+            }.fold(byteArrayOf()) { acc, deferred -> acc + deferred.await() }
         }.check(length)
     }
 
@@ -159,8 +154,10 @@ open class PixivDownloader(
 
     open suspend fun <R> downloadImageUrls(
         urls: List<Url>,
-        block: (url: Url, result: Result<ByteArray>) -> R,
-    ): List<R> = urls.asyncMapIndexed { _, url ->
-        block(url, runCatching { download(url) })
+        block: suspend (url: Url, deferred: Deferred<ByteArray>) -> R,
+    ): List<R> = supervisorScope {
+        urls.mapIndexed { _, url ->
+            block(url, async { download(url) })
+        }
     }
 }
