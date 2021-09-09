@@ -105,7 +105,7 @@ open class PixivDownloader(
                 fragment = range.getHeader()
             }
         }.also {
-            if (it.size > range.last + 1) return@withHttpClient it.sliceArray(range)
+            if (it.size > range.last) return@withHttpClient it.sliceArray(range)
             val length = range.getLength()
             if (it.size != length) throw ByteArrayException(it, length)
         }
