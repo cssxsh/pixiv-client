@@ -13,7 +13,7 @@ data class UgoiraMetadata(
     @Serializable
     data class Frame(
         @SerialName("delay")
-        val delay: Int,
+        val delay: Long,
         @SerialName("file")
         val file: String,
     )

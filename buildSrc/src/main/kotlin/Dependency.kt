@@ -11,5 +11,8 @@ fun DependencyHandler.ktor(module: String, version: String) =
 fun DependencyHandler.okhttp3(module: String, version: String) =
     "com.squareup.okhttp3:$module:$version"
 
+fun DependencyHandler.square(module: String, version: String) =
+    "com.squareup.${module.substringBeforeLast('-')}:$module:$version"
+
 fun DependencyHandler.junit(module: String, version: String) =
     "org.junit.jupiter:junit-jupiter-${module}:${version}"
