@@ -15,6 +15,18 @@ repositories {
         maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
     }
     mavenCentral()
+    maven(url = "https://maven.pkg.github.com/Moon70/APNG-builder")
+    maven(url = "https://maven.pkg.github.com/Moon70/GPAC")
+    maven(url = "https://maven.pkg.github.com/Moon70/LunarTools")
+    filterIsInstance<MavenArtifactRepository>().forEach { repo ->
+        if (repo.url.host == "maven.pkg.github.com") {
+            println(repo.url)
+            repo.credentials {
+                username = System.getenv("GITHUB_ID")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
     gradlePluginPortal()
 }
 
@@ -30,6 +42,7 @@ dependencies {
     implementation(okhttp3("okhttp", Versions.okhttp))
     implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
     api(square("gifencoder", Versions.gifencoder))
+    api("lunartools:apngbuilder:0.9-SNAPSHOT")
     // implementation(jsoup(Versions.jsoup))
     testImplementation(kotlin("test-junit5"))
     testImplementation(junit("api", Versions.junit))
