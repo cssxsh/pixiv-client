@@ -117,7 +117,7 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
 
     // replace protocol for ssl with g-client-proxy.pixiv.net
     val gigya: String = useHttpClient {
-        it.get(Url(jump).copy(protocol = URLProtocol.HTTPS))
+        it.get(Url(jump).copy(protocol = URLProtocol.HTTPS, host = "d1ctzrip8l97jt.cloudfront.net"))
     }
 
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
