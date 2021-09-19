@@ -27,9 +27,7 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
 
         val result = mutableListOf<InetAddress>()
         val other = hosts[hostname] ?: hosts.firstNotNullOfOrNull { (host, cname) ->
-            cname.takeIf {
-                host.startsWith("*.") && hostname.endsWith(host.removePrefix("*."))
-            }
+            cname.takeIf { hostname.endsWith(host.removePrefix("*.")) }
         }
 
         other.orEmpty().forEach {
