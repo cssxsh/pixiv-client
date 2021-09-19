@@ -53,7 +53,7 @@ val DEFAULT_PIXIV_HOST = mapOf(
     "matsuri.pixiv.net" to listOf("d37vhba44w9rfk.cloudfront.net"),
     "festa.pixiv.net" to listOf("d27o62ujhz6nk8.cloudfront.net"),
     "iracon.pixiv.net" to listOf("dq5nq916rhniu.cloudfront.net"),
-    "g-client-proxy.pixiv.net" to listOf("6837361.gigya-api.com"),
+    "g-client-proxy.pixiv.net" to listOf("6837361.gigya-api.com", "d1ctzrip8l97jt.cloudfront.net"),
     "dev.pixiv.net" to listOf("s3-website-ap-northeast-1.amazonaws.com")
 )
 

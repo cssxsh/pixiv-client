@@ -105,7 +105,7 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
     withTimeout(10 * 60 * 1000L) {
         while (isActive) {
             delay(3 * 1000L)
-            val status = PixivJson.decodeFromString<WeiboQrcodeStatus>(useHttpClient {
+            val status: WeiboQrcodeStatus = PixivJson.decodeFromString(useHttpClient {
                 it.get(WEIBO_QRCODE_QUERY) {
                     parameter("vcode", qrcode.vcode)
                 }
@@ -115,14 +115,14 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
         }
     }
 
-    // replace protocol and host for ssl
+    // replace protocol for ssl with g-client-proxy.pixiv.net
     val gigya: String = useHttpClient {
-        it.get(Url(jump).copy(protocol = URLProtocol.HTTPS, host = "d1ctzrip8l97jt.cloudfront.net"))
+        it.get(Url(jump).copy(protocol = URLProtocol.HTTPS))
     }
 
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
     // transform Unicode
-    val link = Url(PixivJson.decodeFromString<String>("\"${sign}\""))
+    val link = Url(PixivJson.decodeFromString<String>(sign))
 
     /**
      * GiGya auto to [POST_REDIRECT_URL]
