@@ -57,7 +57,14 @@ internal class IllustKtTest : ApiTest() {
         client.illustMyPixiv().illusts.let {
             assertTrue(it.isNotEmpty())
         }
-        client.illustFollow(offset = 30).illusts.let {
+        client.illustMyPixiv(offset = 30).illusts.let {
+            assertTrue(it.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun illustNew(): Unit = runBlocking {
+        client.illustNew().illusts.let {
             assertTrue(it.isNotEmpty())
         }
     }

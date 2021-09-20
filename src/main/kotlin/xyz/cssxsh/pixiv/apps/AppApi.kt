@@ -69,8 +69,8 @@ const val SEARCH_BOOKMARK_RANGES_ILLUST = "${ROOT_PATH}/v1/search/bookmark-range
 const val SEARCH_BOOKMARK_RANGES_NOVEL = "${ROOT_PATH}/v1/search/bookmark-ranges/novel"
 const val SEARCH_ILLUST = "${ROOT_PATH}/v1/search/illust"
 const val SEARCH_NOVEL = "${ROOT_PATH}/v1/search/novel?include_translated_tag_results=true&merge_plain_keyword_results=true"
-const val SEARCH_POPULAR_PREVIEW_NOVEL = "${ROOT_PATH}/v1/search/popular-preview/novel?include_translated_tag_results=true&merge_plain_keyword_results=true"
 const val SEARCH_POPULAR_PREVIEW_ILLUST = "${ROOT_PATH}/v1/search/popular-preview/illust?include_translated_tag_results=true&merge_plain_keyword_results=true"
+const val SEARCH_POPULAR_PREVIEW_NOVEL = "${ROOT_PATH}/v1/search/popular-preview/novel?include_translated_tag_results=true&merge_plain_keyword_results=true"
 const val SEARCH_USER = "${ROOT_PATH}/v1/search/user"
 
 // Spotlight

@@ -142,7 +142,7 @@ enum class SearchSort : PixivParam {
     DATE_DESC,
     DATE_ASC,
 
-    // 高级会员选项
+    // FOR PREMIUM
     POPULAR_DESC,
     POPULAR_MALE_DESC,
     POPULAR_FEMALE_DESC;
@@ -197,9 +197,7 @@ enum class PublicityType : PixivParam {
 enum class SearchTarget : PixivParam {
     PARTIAL_MATCH_FOR_TAGS,
     EXACT_MATCH_FOR_TAGS,
-    TITLE_AND_CAPTION,
-    TEST,
-    KEYWORD;
+    TITLE_AND_CAPTION;
 
     companion object : KSerializer<SearchTarget> by PixivEnumSerializer()
 }
@@ -213,36 +211,35 @@ enum class WorkContentType : PixivParam {
     companion object : KSerializer<WorkContentType> by PixivEnumSerializer()
 }
 
-@Serializable(with = WorkType.Companion::class)
-enum class WorkType : PixivParam {
-    ILLUST,
-    MANGA;
-
-    companion object : KSerializer<WorkType> by PixivEnumSerializer()
-}
-
 @Serializable(with = RankMode.Companion::class)
 enum class RankMode : PixivParam {
     // MONTH
     MONTH,
+    MONTH_MANGA,
 
     // WEEK
     WEEK,
     WEEK_ORIGINAL,
     WEEK_ROOKIE,
+    WEEK_R18,
+    WEEK_R18G,
+    WEEK_MANGA,
+    WEEK_ORIGINAL_MANGA,
+    WEEK_ROOKIE_MANGA,
+    WEEK_R18_MANGA,
+    WEEK_R18G_MANGA,
 
     // DAY
     DAY,
     DAY_MALE,
     DAY_FEMALE,
-    DAY_MANGA,
-
-    // R18
     DAY_R18,
     DAY_MALE_R18,
     DAY_FEMALE_R18,
-    WEEK_R18,
-    WEEK_R18G;
+    DAY_MANGA,
+    DAY_R18_MANGA,
+    DAY_R18G_MANGA,
+    ;
 
     companion object : KSerializer<RankMode> by PixivEnumSerializer()
 }

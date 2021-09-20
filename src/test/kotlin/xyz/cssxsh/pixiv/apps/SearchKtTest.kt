@@ -1,9 +1,9 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
+import kotlinx.coroutines.*
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.ApiTest
+import xyz.cssxsh.pixiv.*
 
 internal class SearchKtTest : ApiTest() {
 
@@ -21,6 +21,12 @@ internal class SearchKtTest : ApiTest() {
         }
     }
 
+    @Test
+    fun searchBookmarkRangesIllust(): Unit = runBlocking {
+        client.searchBookmarkRangesIllust("巨乳", offset = 0).ranges.let {
+            assertTrue(it.isNotEmpty())
+        }
+    }
 
     @Test
     fun searchUser(): Unit = runBlocking {

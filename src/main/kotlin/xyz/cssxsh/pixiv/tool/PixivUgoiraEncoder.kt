@@ -14,6 +14,7 @@ abstract class PixivUgoiraEncoder {
     protected open val downloader: PixivDownloader = PixivDownloader()
 
     protected open suspend fun UgoiraMetadata.zip(): ZipFile {
+        // origin not found in app api
         val url = Url(zipUrls.values.first().replace("600x600", "1920x1080"))
         return dir.resolve(url.encodedPath.substringAfterLast('/')).apply {
             if (exists().not()) {

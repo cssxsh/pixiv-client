@@ -88,7 +88,7 @@ suspend fun PixivAppClient.illustMyPixiv(
 }
 
 suspend fun PixivAppClient.illustNew(
-    type: WorkType? = null,
+    type: WorkContentType? = null,
     max: Long? = null,
     url: String = ILLUST_NEW,
 ): IllustData = useHttpClient { client ->

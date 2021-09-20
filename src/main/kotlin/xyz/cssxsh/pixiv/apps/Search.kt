@@ -48,6 +48,9 @@ suspend fun PixivAppClient.searchBookmarkRangesIllust(
     }
 }
 
+/**
+ * url or [SEARCH_POPULAR_PREVIEW_ILLUST]
+ */
 suspend fun PixivAppClient.searchIllust(
     word: String,
     target: SearchTarget? = null,
@@ -66,7 +69,7 @@ suspend fun PixivAppClient.searchIllust(
     client.get(url) {
         parameter("word", word)
         parameter("search_target", target?.value())
-        parameter("sort", sort?.value())
+        parameter("sort", sort?.value() ?: if (info().user.isPremium) SearchSort.DATE_DESC else SearchSort.POPULAR_DESC )
         parameter("duration", duration?.value())
         parameter("bookmark_num_min", min)
         parameter("bookmark_num_max", max)
