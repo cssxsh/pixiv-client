@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
 import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
@@ -13,7 +12,7 @@ data class SpotlightArticle(
     @SerialName("id")
     val aid: Long,
     @SerialName("publish_date")
-    @Serializable(with = JapanDateTimeSerializer::class)
+    @Contextual
     val publish: OffsetDateTime,
     @SerialName("pure_title")
     val pureTitle: String,

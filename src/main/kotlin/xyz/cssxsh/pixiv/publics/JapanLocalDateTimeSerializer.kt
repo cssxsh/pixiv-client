@@ -1,6 +1,7 @@
-package xyz.cssxsh.pixiv
+package xyz.cssxsh.pixiv.publics
 
 import kotlinx.serialization.encoding.*
+import xyz.cssxsh.pixiv.*
 import java.time.*
 import java.time.format.*
 import java.util.*

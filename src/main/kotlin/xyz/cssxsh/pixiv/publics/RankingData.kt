@@ -2,7 +2,6 @@ package xyz.cssxsh.pixiv.publics
 
 import kotlinx.serialization.*
 import java.time.*
-import xyz.cssxsh.pixiv.*
 
 @Serializable
 data class RankingData(

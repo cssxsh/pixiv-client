@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
 import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
@@ -9,7 +8,7 @@ data class CommentInfo(
     @SerialName("comment")
     val comment: String,
     @SerialName("date")
-    @Serializable(with = JapanDateTimeSerializer::class)
+    @Contextual
     val date: OffsetDateTime,
     @SerialName("has_replies")
     val hasReplies: Boolean,

@@ -9,7 +9,7 @@ data class NovelInfo(
     @SerialName("caption")
     val caption: String,
     @SerialName("create_date")
-    @Serializable(with = JapanDateTimeSerializer::class)
+    @Contextual
     val createDate: OffsetDateTime,
     @SerialName("id")
     val pid: Long,

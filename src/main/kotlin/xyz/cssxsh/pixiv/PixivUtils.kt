@@ -20,6 +20,9 @@ val PixivJson = Json {
     ignoreUnknownKeys = true
     allowSpecialFloatingPointValues = true
     useArrayPolymorphism = false
+    serializersModule += SerializersModule {
+        contextual(JapanDateTimeSerializer)
+    }
 }
 
 const val HTTP_KILO = 1022
