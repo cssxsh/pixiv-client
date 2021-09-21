@@ -7,6 +7,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.*
+import kotlinx.serialization.modules.*
 import xyz.cssxsh.pixiv.exception.*
 import java.net.*
 import java.util.*
