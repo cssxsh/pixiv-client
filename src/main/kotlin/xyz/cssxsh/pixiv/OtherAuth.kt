@@ -122,7 +122,8 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
 
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
     // transform Unicode
-    val link = Url(PixivJson.decodeFromString<String>(sign))
+    val unicode = """\\u\d{4}""".toRegex()
+    val link = Url(sign.replace(unicode) { it.value.removePrefix("""\u""").toInt(16).toChar().toString() })
 
     /**
      * GiGya auto to [POST_REDIRECT_URL]
