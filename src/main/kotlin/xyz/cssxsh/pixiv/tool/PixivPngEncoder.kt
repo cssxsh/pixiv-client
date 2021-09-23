@@ -14,8 +14,8 @@ open class PixivPngEncoder(override val downloader: PixivDownloader = PixivDownl
     protected open val reencode = true
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun encode(pid: Long, metadata: UgoiraMetadata, width: Int, height: Int, loop: Int): File {
-        val png = dir.resolve("${pid}.png")
+    override suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int): File {
+        val png = dir.resolve("${illust.pid}.png")
         val builder = ApngBuilder()
             .setQuantizerAlgorithm(quantizer)
             .setDitheringAlgorithm(dithering)

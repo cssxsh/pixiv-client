@@ -6,7 +6,6 @@ import java.awt.image.*
 import java.io.*
 import java.util.concurrent.*
 
-
 open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownloader()) : PixivUgoiraEncoder() {
     protected open val quantizer: ColorQuantizer = MedianCutQuantizer.INSTANCE
 
@@ -14,9 +13,9 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
 
     protected open val disposalMethod = DisposalMethod.UNSPECIFIED
 
-    private fun BufferedImage.readRGBs() = Array(height) { y -> IntArray(width) { x -> getRGB(x, y) } }
+    protected fun BufferedImage.readRGBs() = Array(height) { y -> IntArray(width) { x -> getRGB(x, y) } }
 
-    private fun UgoiraFrame.toImageOptions() = ImageOptions().apply {
+    protected fun UgoiraFrame.toImageOptions() = ImageOptions().apply {
         setColorQuantizer(quantizer)
         setDitherer(ditherer)
         setDisposalMethod(disposalMethod)
@@ -34,10 +33,10 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
-    override suspend fun encode(pid: Long, metadata: UgoiraMetadata, width: Int, height: Int, loop: Int): File {
-        val gif = dir.resolve("${pid}.gif")
+    override suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int): File {
+        val gif = dir.resolve("${illust.pid}.gif")
         val output = gif.outputStream().buffered(1 shl 20)
-        val encoder = GifEncoder(output, width, height, loop)
+        val encoder = GifEncoder(output, illust.width, illust.height, loop)
 
         metadata.frame { frame, image ->
             encoder.addImage(image.readRGBs(), frame.toImageOptions())

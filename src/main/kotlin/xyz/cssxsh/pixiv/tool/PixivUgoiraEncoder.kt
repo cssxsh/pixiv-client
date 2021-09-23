@@ -13,16 +13,17 @@ abstract class PixivUgoiraEncoder {
 
     protected open val downloader: PixivDownloader = PixivDownloader()
 
-    protected open suspend fun UgoiraMetadata.zip(): ZipFile {
-        // origin not found in app api
-        val url = Url(zipUrls.values.first().replace("600x600", "1920x1080"))
-        return dir.resolve(url.encodedPath.substringAfterLast('/')).apply {
-            if (exists().not()) {
-                writeBytes(downloader.download(url))
-            }
-        }.let {
-            ZipFile(it)
+    // origin not found in app api
+    protected val UgoiraMetadata.original get() = Url(zipUrls.values.first().replace("600x600", "1920x1080"))
+
+    protected open suspend fun download(url: Url, filename: String) = dir.resolve(filename).apply {
+        if (exists().not()) {
+            writeBytes(downloader.download(url))
         }
+    }
+
+    protected open suspend fun UgoiraMetadata.zip(): ZipFile {
+        return ZipFile(download(original, original.encodedPath.substringAfterLast('/')))
     }
 
     protected infix fun UgoiraFrame.with(zip: ZipFile): BufferedImage = with(zip) {
@@ -36,7 +37,7 @@ abstract class PixivUgoiraEncoder {
     }
 
     /**
-     * write to [PixivUgoiraEncoder.dir] with [pid] as filename
+     * write to [PixivUgoiraEncoder.dir] with pid of [illust] as filename
      */
-    abstract suspend fun encode(pid: Long, metadata: UgoiraMetadata, width: Int, height: Int, loop: Int = 0): File
+    abstract suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int = 0): File
 }
