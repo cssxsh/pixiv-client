@@ -105,40 +105,12 @@ inline fun <reified T> PixivTypeSerializer(): KSerializer<T> where T : PixivPara
     }
 }
 
-@Serializable(with = SearchMode.Companion::class)
-enum class SearchMode : PixivParam {
-    TEXT,
-    CAPTION,
-    TAG,
-    EXACT_TAG;
-
-    companion object : KSerializer<SearchMode> by PixivEnumSerializer()
-}
-
 @Serializable(with = OrderType.Companion::class)
 enum class OrderType : PixivParam {
     DESC,
     ASC;
 
     companion object : KSerializer<OrderType> by PixivEnumSerializer()
-}
-
-@Serializable(with = PeriodType.Companion::class)
-enum class PeriodType : PixivParam {
-    ALL,
-    DAY,
-    WEEK,
-    MONTH;
-
-    companion object : KSerializer<PeriodType> by PixivEnumSerializer()
-}
-
-@Serializable(with = SortMode.Companion::class)
-enum class SortMode : PixivParam {
-    DATE,
-    POPULAR;
-
-    companion object : KSerializer<SortMode> by PixivEnumSerializer()
 }
 
 @Serializable(with = SearchSort.Companion::class)
@@ -166,24 +138,6 @@ enum class SearchDuration : PixivParam {
     SELECT;
 
     companion object : KSerializer<SearchDuration> by PixivEnumSerializer()
-}
-
-enum class SearchSize : PixivParam {
-    MINIMUM,
-    MEDIUM,
-    LARGE;
-}
-
-enum class SearchIllustTool : PixivParam {
-    PHOTOSHOP,
-    ILLUSTRATOR,
-    FIREWORKS;
-}
-
-enum class SearchAspectRatio : PixivParam {
-    PORTRAIT,
-    LANDSCAPE,
-    SQUARE;
 }
 
 @Serializable(with = PublicityType.Companion::class)

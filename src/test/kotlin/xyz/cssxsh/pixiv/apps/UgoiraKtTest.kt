@@ -3,17 +3,27 @@ package xyz.cssxsh.pixiv.apps
 import com.squareup.gifencoder.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import lunartools.apng.ApngBuilder
+import lunartools.apng.*
+import org.bytedeco.opencv.global.opencv_core.getCudaEnabledDeviceCount
+import org.bytedeco.opencv.opencv_java
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.opencv.core.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.tool.*
 import java.io.*
 import kotlin.time.*
 
+
 @OptIn(ExperimentalTime::class)
 internal class UgoiraKtTest : ApiTest() {
+    init {
+         // `android-arm`, `linux-x86_64`, `macosx-x86_64`, `windows-x86_64`
+        System.setProperty("javacpp.platform", "windows-x86_64")
+        opencv_java()
+        println(Core.getNumThreads())
+        println(getCudaEnabledDeviceCount())
+    }
 
     @Test
     fun ugoiraMetadata(): Unit = runBlocking {
@@ -45,8 +55,8 @@ internal class UgoiraKtTest : ApiTest() {
 
     @Test
     fun gif(): Unit = runBlocking {
-        val illust = Json.decodeFromString<IllustInfo>(work.resolve("87036967.json").readText())
-        val ugoira = Json.decodeFromString<UgoiraMetadata>(work.resolve("87036967.ugoira.json").readText())
+        val illust = PixivJson.decodeFromString<IllustInfo>(work.resolve("87036967.json").readText())
+        val ugoira = PixivJson.decodeFromString<UgoiraMetadata>(work.resolve("87036967.ugoira.json").readText())
         val (file, duration) = measureTimedValue {
             gif.encode(
                 pid = illust.pid,
@@ -63,8 +73,8 @@ internal class UgoiraKtTest : ApiTest() {
 
     @Test
     fun png(): Unit = runBlocking {
-        val illust = Json.decodeFromString<IllustInfo>(work.resolve("87036967.json").readText())
-        val ugoira = Json.decodeFromString<UgoiraMetadata>(work.resolve("87036967.ugoira.json").readText())
+        val illust = PixivJson.decodeFromString<IllustInfo>(work.resolve("87036967.json").readText())
+        val ugoira = PixivJson.decodeFromString<UgoiraMetadata>(work.resolve("87036967.ugoira.json").readText())
         val (file, duration) = measureTimedValue {
             png.encode(
                 pid = illust.pid,
