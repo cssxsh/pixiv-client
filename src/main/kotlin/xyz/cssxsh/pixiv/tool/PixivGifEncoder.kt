@@ -36,9 +36,13 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
     override suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int): File {
         val gif = dir.resolve("${illust.pid}.gif")
         val output = gif.outputStream().buffered(1 shl 20)
-        val encoder = GifEncoder(output, illust.width, illust.height, loop)
+        var width = illust.width
+        var height = illust.height
+        val encoder by lazy { GifEncoder(output, width, height, loop) }
 
         metadata.frame { frame, image ->
+            width = image.width
+            height = image.height
             encoder.addImage(image.readRGBs(), frame.toImageOptions())
         }
 
