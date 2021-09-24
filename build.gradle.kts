@@ -43,6 +43,12 @@ dependencies {
     implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
     api(square("gifencoder", Versions.gifencoder))
     api("lunartools:apngbuilder:0.9-SNAPSHOT")
+    compileOnly(fileTree(File(requireNotNull(System.getenv("OPENCV_HOME")) {
+        "请安装 OPENCV 并设置 环境变量 OPENCV_HOME 和 PATH "
+    }).resolve("build/java")))
+    //testImplementation("org.bytedeco.javacv:demo:1.5.6")
+    //testImplementation("org.bytedeco:javacv-platform:1.5.6")
+    //testImplementation("org.bytedeco:opencv-platform-gpu:4.5.3-1.5.6")
     // implementation(jsoup(Versions.jsoup))
     testImplementation(kotlin("test-junit5"))
     testImplementation(junit("api", Versions.junit))
