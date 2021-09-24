@@ -7,6 +7,7 @@ class OpenCVQuantizer : ColorQuantizer {
     init {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
     }
+
     companion object {
         @JvmStatic
         val INSTANCE = OpenCVQuantizer()
@@ -31,7 +32,7 @@ class OpenCVQuantizer : ColorQuantizer {
         val src = Mat().apply { original.convertTo(this, CvType.CV_32F) }
 
         val labels = Mat()
-        val criteria = TermCriteria(TermCriteria.EPS, 3, 1.0)
+        val criteria = TermCriteria(TermCriteria.EPS or TermCriteria.MAX_ITER, 3, 1.0)
         val centers = Mat()
 
         Core.kmeans(

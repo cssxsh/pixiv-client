@@ -53,6 +53,7 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation(junit("api", Versions.junit))
     testRuntimeOnly(junit("engine", Versions.junit))
+    testRuntimeOnly(fileTree(File(System.getenv("OPENCV_HOME")).resolve("build/java")))
 }
 
 kotlin {
