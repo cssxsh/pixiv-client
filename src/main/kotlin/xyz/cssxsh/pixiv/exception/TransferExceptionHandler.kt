@@ -13,12 +13,6 @@ val TransferExceptionHandler: CallExceptionHandler = { cause ->
             }
 
             runCatching {
-                PublicApiException(cause.response, content)
-            }.onSuccess {
-                throw it
-            }
-
-            runCatching {
                 AuthException(cause.response, content)
             }.onSuccess {
                 throw it
