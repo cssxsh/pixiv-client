@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.tool
 import com.squareup.gifencoder.*
 import org.opencv.core.*
 
-class OpenCVQuantizer : ColorQuantizer {
+class OpenCVQuantizer private constructor() : ColorQuantizer {
     init {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
     }
@@ -11,11 +11,21 @@ class OpenCVQuantizer : ColorQuantizer {
     companion object {
         @JvmStatic
         val INSTANCE = OpenCVQuantizer()
+
+
+        @JvmStatic
+        val MAX_COUNT = "xyz.cssxsh.pixiv.tool.quantizer.max_count"
     }
 
-    private val red = Color::class.java.getDeclaredField("red").apply { isAccessible = true }
-    private val green = Color::class.java.getDeclaredField("green").apply { isAccessible = true }
-    private val blue = Color::class.java.getDeclaredField("blue").apply { isAccessible = true }
+    private var last: Mat? = null
+
+    fun reset() {
+        last = null
+    }
+
+    private val maxCount by lazy {
+        System.getProperty(MAX_COUNT, "32").toInt()
+    }
 
     override fun quantize(originalColors: Multiset<Color>, maxColorCount: Int): MutableSet<Color> {
         val original = Mat(originalColors.size, 1, CvType.CV_64FC3).apply {
@@ -23,16 +33,18 @@ class OpenCVQuantizer : ColorQuantizer {
             for ((row, color) in originalColors.withIndex()) {
                 put(
                     row, 0,
-                    red.get(color) as Double,
-                    green.get(color) as Double,
-                    blue.get(color) as Double
+                    color.getComponent(0),
+                    color.getComponent(1),
+                    color.getComponent(2)
                 )
             }
         }
         val src = Mat().apply { original.convertTo(this, CvType.CV_32F) }
 
-        val labels = Mat()
-        val criteria = TermCriteria(TermCriteria.EPS or TermCriteria.MAX_ITER, 3, 1.0)
+        val flags =
+            if (last == null) Core.KMEANS_PP_CENTERS else Core.KMEANS_USE_INITIAL_LABELS + Core.KMEANS_PP_CENTERS
+        val labels = last ?: Mat()
+        val criteria = TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER, maxCount, 1.0 / 64.0)
         val centers = Mat()
 
         Core.kmeans(
@@ -41,9 +53,11 @@ class OpenCVQuantizer : ColorQuantizer {
             labels,
             criteria,
             1,
-            Core.KMEANS_PP_CENTERS,
+            flags,
             centers
         )
+
+        last = labels
 
         val colors = mutableSetOf<Color>()
         val temp = Mat().apply { centers.convertTo(this, CvType.CV_64F) }

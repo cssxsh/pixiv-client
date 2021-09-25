@@ -13,6 +13,8 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
 
     protected open val disposalMethod = DisposalMethod.UNSPECIFIED
 
+    protected open val bufferSize = 1 shl 22
+
     protected fun BufferedImage.readRGBs() = Array(height) { y -> IntArray(width) { x -> getRGB(x, y) } }
 
     protected fun UgoiraFrame.toImageOptions() = ImageOptions().apply {
@@ -34,8 +36,8 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int): File {
-        val gif = dir.resolve("${illust.pid}.gif")
-        val output = gif.outputStream().buffered(1 shl 20)
+        val gif = dir.resolve("${illust.pid}.temp")
+        val output = gif.outputStream().buffered(bufferSize)
         var width = illust.width
         var height = illust.height
         val encoder by lazy { GifEncoder(output, width, height, loop) }
@@ -45,9 +47,15 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
             height = image.height
             encoder.addImage(image.readRGBs(), frame.toImageOptions())
         }
+        (quantizer as? OpenCVQuantizer)?.reset()
 
         encoder.finishEncoding()
         output.close()
+        gif.renameTo(dir.resolve("${illust.pid}.gif").apply {
+            if (exists()) {
+                renameTo(dir.resolve("${illust.pid}.${lastModified()}.gif"))
+            }
+        })
         return gif
     }
 }
