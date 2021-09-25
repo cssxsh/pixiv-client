@@ -36,8 +36,8 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int): File {
-        val gif = dir.resolve("${illust.pid}.temp")
-        val output = gif.outputStream().buffered(bufferSize)
+        val temp = dir.resolve("${illust.pid}.temp")
+        val output = temp.outputStream().buffered(bufferSize)
         var width = illust.width
         var height = illust.height
         val encoder by lazy { GifEncoder(output, width, height, loop) }
@@ -51,11 +51,12 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
 
         encoder.finishEncoding()
         output.close()
-        gif.renameTo(dir.resolve("${illust.pid}.gif").apply {
+
+        return dir.resolve("${illust.pid}.gif").apply {
             if (exists()) {
                 renameTo(dir.resolve("${illust.pid}.${lastModified()}.gif"))
             }
-        })
-        return gif
+            temp.renameTo(this)
+        }
     }
 }
