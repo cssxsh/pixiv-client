@@ -9,12 +9,10 @@ class OpenCVQuantizer private constructor() : ColorQuantizer {
     }
 
     companion object {
-        @JvmStatic
+        @JvmField
         val INSTANCE = OpenCVQuantizer()
 
-
-        @JvmStatic
-        val MAX_COUNT = "xyz.cssxsh.pixiv.tool.quantizer.max_count"
+        const val MAX_COUNT = "xyz.cssxsh.pixiv.tool.quantizer.max_count"
     }
 
     private var last: Mat? = null
