@@ -10,9 +10,11 @@ import io.ktor.http.*
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
+import okhttp3.ConnectionPool
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.exception.*
 import java.net.*
+import java.util.concurrent.TimeUnit
 
 open class PixivDownloader(
     async: Int = 32,
@@ -25,7 +27,7 @@ open class PixivDownloader(
     protected open val timeout: Long = 10 * 1000L
 
     protected open val ignore: suspend (Throwable) -> Boolean = {
-        (it is IOException && it !is MatchContentLengthException) || it is HttpRequestTimeoutException
+        it is IOException || it is HttpRequestTimeoutException
     }
 
     protected open val channel = Channel<Int>(async)
@@ -48,6 +50,7 @@ open class PixivDownloader(
         }
         engine {
             config {
+                connectionPool(ConnectionPool(5, 10, TimeUnit.MINUTES))
                 sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
                 hostnameVerifier { _, _ -> true }
                 proxy(this@PixivDownloader.proxy)
