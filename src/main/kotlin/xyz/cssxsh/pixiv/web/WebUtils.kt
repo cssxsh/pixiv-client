@@ -1,10 +1,13 @@
 package xyz.cssxsh.pixiv.web
 
+import io.ktor.client.request.*
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.*
+import xyz.cssxsh.pixiv.*
+import xyz.cssxsh.pixiv.exception.*
 
 @Serializable
 class WebApiResult(
@@ -17,12 +20,19 @@ class WebApiResult(
 )
 
 inline fun <reified T> WebApiResult.value(): T {
-    check(error.not()) { message }
+    if (error) throw WebApiException(this)
     return Json.decodeFromJsonElement(body)
 }
 
+suspend inline fun <reified T> UseHttpClient.web(
+    api: String,
+    crossinline block: HttpRequestBuilder.() -> Unit = {}
+): T = useHttpClient { client ->
+    client.request<WebApiResult>(api, block).value()
+}
+
 object WepApiSet : KSerializer<Set<Long>> {
-    private val serializer get() = SetSerializer(Long.serializer())
+    private val serializer = SetSerializer(Long.serializer())
 
     override val descriptor: SerialDescriptor
         get() = serializer.descriptor
@@ -34,25 +44,42 @@ object WepApiSet : KSerializer<Set<Long>> {
     }
 
     override fun serialize(encoder: Encoder, value: Set<Long>) {
-        if (value.isEmpty()) {
-            encoder.encodeSerializableValue(serializer, value)
-        } else {
+        if (value.isNotEmpty()) {
             encoder.encodeSerializableValue(JsonObject.serializer(), buildJsonObject {
                 value.forEach { put(it.toString(), JsonNull) }
             })
+        } else {
+            encoder.encodeSerializableValue(serializer, emptySet())
+        }
+    }
+}
+
+sealed class WebApiMap<V: WebWorkInfo>(valueSerializer: KSerializer<V>) : KSerializer<Map<Long, V>> {
+    private val serializer: KSerializer<Map<Long, V>> = MapSerializer(Long.serializer(), valueSerializer)
+
+    override val descriptor: SerialDescriptor get() = serializer.descriptor
+
+    override fun deserialize(decoder: Decoder): Map<Long, V> {
+        val element = decoder.decodeSerializableValue(JsonElement.serializer())
+        return if (element is JsonObject) {
+            decoder.decodeSerializableValue(serializer)
+        } else {
+            emptyMap()
         }
     }
 
+    override fun serialize(encoder: Encoder, value: Map<Long, V>) {
+        if (value.isNotEmpty()) {
+            encoder.encodeSerializableValue(serializer, value)
+        } else {
+            encoder.encodeSerializableValue(ListSerializer(Unit.serializer()), emptyList())
+        }
+    }
+
+
+    object Illust: WebApiMap<WebIllust>(WebIllust.serializer())
+
+    object Novel: WebApiMap<WebNovel>(WebNovel.serializer())
 }
 
-sealed class WebTemp<T> {
-    private val origin: JsonElement = JsonNull
-
-    abstract val serializer: KSerializer<T>
-
-    val value: T? get() = if (origin is JsonNull) null else Json.decodeFromJsonElement(serializer, origin)
-
-    @Serializable
-    class Bookmark(override val serializer: KSerializer<BookmarkData> = BookmarkData.serializer()) :
-        WebTemp<BookmarkData>()
-}
+// https://www.pixiv.net/ajax/tags/frequent/illust?lang=zh

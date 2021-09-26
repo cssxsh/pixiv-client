@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class ProfileAll(
+data class UserProfileAll(
     @SerialName("bookmarkCount")
     val bookmarkCount: Map<PublicityType, BookmarkCount>,
     @SerialName("externalSiteWorksStatus")
@@ -23,7 +23,7 @@ data class ProfileAll(
     @SerialName("novelSeries")
     val novelSeries: List<NovelSeries>,
     @SerialName("pickup")
-    val pickup: List<PickupInfo>,
+    val pickup: List<UserPickupInfo>,
     @SerialName("request")
-    val request: RequestInfo,
+    val request: UserRequestInfo,
 )

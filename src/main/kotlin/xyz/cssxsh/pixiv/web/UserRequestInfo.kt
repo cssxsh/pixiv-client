@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class RequestInfo(
+data class UserRequestInfo(
     @SerialName("postWorks")
     val postWorks: PostWorks,
     @SerialName("showRequestSentTab")

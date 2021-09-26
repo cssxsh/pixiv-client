@@ -63,6 +63,8 @@ val DEFAULT_PIXIV_HOST = mapOf(
 
 const val NO_PROFILE_IMAGE = "https://s.pximg.net/common/images/no_profile.png"
 
+const val LIMIT_UNKNOWN_IMAGE = "https://s.pximg.net/common/images/limit_unknown_360.png"
+
 internal fun Url.toProxy(): Proxy {
     val type = when (protocol) {
         URLProtocol.SOCKS -> Proxy.Type.SOCKS
@@ -166,7 +168,9 @@ enum class WorkContentType : PixivParam {
     UGOIRA,
     MANGA;
 
-    companion object : KSerializer<WorkContentType> by PixivEnumSerializer()
+    companion object : KSerializer<WorkContentType> by PixivEnumSerializer() {
+        object TypeSerializer : KSerializer<WorkContentType> by PixivTypeSerializer()
+    }
 }
 
 @Serializable(with = RankMode.Companion::class)
@@ -251,4 +255,9 @@ enum class CategoryType : PixivParam {
     MANGA;
 
     companion object : KSerializer<CategoryType> by PixivEnumSerializer()
+}
+
+enum class FollowType : PixivParam {
+    SHOW,
+    HIDE;
 }
