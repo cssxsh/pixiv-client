@@ -28,7 +28,7 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
     protected fun <T> instance(name: String): T {
         val clazz = Class.forName(name, true, PixivGifEncoder::class.java.classLoader)
         return kotlin.runCatching {
-            clazz.getField("INSTANCE").get(clazz)
+            clazz.getField("INSTANCE").get(null)
         }.getOrElse {
             clazz.getConstructor().newInstance()
         } as T
