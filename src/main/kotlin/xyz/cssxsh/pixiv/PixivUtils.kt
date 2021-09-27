@@ -17,10 +17,8 @@ typealias HeadersMap = Map<String, String>
 typealias FileUrls = Map<String, String>
 
 val PixivJson = Json {
-    isLenient = true
     ignoreUnknownKeys = true
     allowSpecialFloatingPointValues = true
-    useArrayPolymorphism = false
     serializersModule += SerializersModule {
         contextual(JapanDateTimeSerializer)
     }
