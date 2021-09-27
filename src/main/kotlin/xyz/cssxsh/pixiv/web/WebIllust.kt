@@ -56,6 +56,7 @@ data class WebIllust(
     val name: String,
     @SerialName("width")
     val width: Int,
+    @SerialName("xRestrict")
     @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
     val age: AgeLimit,
 ) : WebWorkInfo

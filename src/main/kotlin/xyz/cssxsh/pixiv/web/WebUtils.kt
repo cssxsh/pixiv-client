@@ -21,7 +21,7 @@ class WebApiResult(
 
 inline fun <reified T> WebApiResult.value(): T {
     if (error) throw WebApiException(this)
-    return Json.decodeFromJsonElement(body)
+    return PixivJson.decodeFromJsonElement(body)
 }
 
 suspend inline fun <reified T> UseHttpClient.web(
