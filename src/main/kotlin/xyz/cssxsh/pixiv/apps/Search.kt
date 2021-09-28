@@ -69,7 +69,10 @@ suspend fun PixivAppClient.searchIllust(
     client.get(url) {
         parameter("word", word)
         parameter("search_target", target?.value())
-        parameter("sort", sort?.value() ?: if (info().user.isPremium) SearchSort.POPULAR_DESC else SearchSort.DATE_DESC )
+        parameter(
+            "sort",
+            (sort ?: if (info().user.isPremium) SearchSort.POPULAR_DESC else SearchSort.DATE_DESC).value()
+        )
         parameter("duration", duration?.value())
         parameter("bookmark_num_min", min)
         parameter("bookmark_num_max", max)
