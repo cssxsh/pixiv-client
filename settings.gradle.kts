@@ -2,25 +2,15 @@
 
 pluginManagement {
     plugins {
-        kotlin("jvm") version "1.4.30"
-        kotlin("plugin.serialization") version "1.4.30"
-
-        id("net.mamoe.mirai-console") version "2.6.4"
+        kotlin("jvm") version "1.5.30"
+        kotlin("plugin.serialization") version "1.5.30"
     }
     repositories {
         mavenLocal()
-        maven(url = "https://maven.aliyun.com/repository/releases")
-        maven(url = "https://mirrors.huaweicloud.com/repository/maven")
-        gradlePluginPortal()
-        // bintray
-        maven(url = "https://bintray.proxy.ustclug.org/kotlin/kotlin-eap")
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        // central
-        maven(url = "https://maven.aliyun.com/repository/central")
+        maven(url = "https://maven.aliyun.com/repository/public")
+        maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
         mavenCentral()
-        // jcenter
-        maven(url = "https://maven.aliyun.com/repository/jcenter")
-        jcenter()
+        gradlePluginPortal()
     }
 }
 rootProject.name = "pixiv-client"
