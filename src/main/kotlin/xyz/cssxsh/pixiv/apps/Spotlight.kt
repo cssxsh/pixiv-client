@@ -10,8 +10,8 @@ suspend fun UseHttpClient.spotlightArticles(
     url: String = SPOTLIGHT_ARTICLES,
 ): SpotlightArticleData = useHttpClient { client ->
     client.get(url) {
-        parameter("category", category?.value())
+        parameter("category", category)
         parameter("offset", offset)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
     }
 }

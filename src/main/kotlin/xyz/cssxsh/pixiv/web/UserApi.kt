@@ -38,7 +38,7 @@ suspend fun UseHttpClient.getProfileIllusts(
     for (id in ids) {
         parameter("ids[]", id)
     }
-    parameter("work_category", category.value())
+    parameter("work_category", category)
     parameter("is_first_page", 1)
     parameter("lang", locale.language)
 }
@@ -57,7 +57,7 @@ suspend fun UseHttpClient.getFollowing(
 
     parameter("offset", offset)
     parameter("limit", limit)
-    parameter("rest", rest.value())
+    parameter("rest", rest)
     parameter("tag", tag)
     parameter("lang", locale.language)
 }
@@ -76,7 +76,7 @@ suspend fun UseHttpClient.getBookmarks(
 
     parameter("offset", offset)
     parameter("limit", limit)
-    parameter("rest", rest.value())
+    parameter("rest", rest)
     parameter("tag", tag)
     parameter("lang", locale.language)
 }

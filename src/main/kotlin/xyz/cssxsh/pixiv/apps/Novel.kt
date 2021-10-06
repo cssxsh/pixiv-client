@@ -18,7 +18,7 @@ suspend fun PixivAppClient.novelBookmarkAdd(
         body = FormDataContent(Parameters.build {
             append("novel_id", pid.toString())
             append("tags", tags.joinToString(separator = " ", postfix = " "))
-            append("restrict", restrict.value())
+            append("restrict", restrict.toString())
         })
     }
 }
@@ -73,8 +73,8 @@ suspend fun PixivAppClient.novelFollow(
     url: String = NOVEL_FOLLOW,
 ): NovelData = useHttpClient { client ->
     client.get(url) {
-        parameter("restrict", restrict.value())
-        parameter("filter", filter.value())
+        parameter("restrict", restrict)
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -86,8 +86,8 @@ suspend fun PixivAppClient.novelMyPixiv(
     url: String = NOVEL_MYPIXIV,
 ): NovelData = useHttpClient { client ->
     client.get(url) {
-        parameter("restrict", restrict.value())
-        parameter("filter", filter.value())
+        parameter("restrict", restrict)
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -99,8 +99,8 @@ suspend fun PixivAppClient.novelNew(
     url: String = NOVEL_NEW,
 ): NovelData = useHttpClient { client ->
     client.get(url) {
-        parameter("restrict", restrict.value())
-        parameter("filter", filter.value())
+        parameter("restrict", restrict)
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -114,8 +114,8 @@ suspend fun PixivAppClient.novelRanking(
 ): NovelData = useHttpClient { client ->
     client.get(url) {
         parameter("date", date)
-        parameter("mode", mode?.value())
-        parameter("filter", filter.value())
+        parameter("mode", mode)
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -135,7 +135,6 @@ suspend fun PixivAppClient.novelRanking(
 )
 
 suspend fun PixivAppClient.novelRecommended(
-    workContentType: WorkContentType = WorkContentType.ILLUST,
     filter: FilterType? = null,
     includeRankingLabel: Boolean = true,
     includePrivacyPolicy: Boolean = true,
@@ -144,8 +143,7 @@ suspend fun PixivAppClient.novelRecommended(
     url: String = NOVEL_RECOMMENDED,
 ): RecommendedData = useHttpClient { client ->
     client.get(url) {
-        parameter("content_type", workContentType.value())
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("include_ranking_label", includeRankingLabel)
         parameter("include_privacy_policy", includePrivacyPolicy)
         parameter("min_bookmark_id_for_recent_illust", minBookmarkIdForRecentIllust)

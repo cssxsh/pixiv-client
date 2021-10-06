@@ -17,10 +17,10 @@ suspend fun PixivAppClient.illustBookmarkAdd(
     client.post(url) {
         body = FormDataContent(Parameters.build {
             append("illust_id", pid.toString())
-            tags.forEachIndexed { index, item ->
+            for ((index, item) in tags.withIndex()) {
                 append("tags[$index]", item)
             }
-            append("restrict", restrict.value())
+            append("restrict", restrict.toString())
         })
     }
 }
@@ -73,7 +73,7 @@ suspend fun PixivAppClient.illustFollow(
     url: String = ILLUST_FOLLOW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
-        parameter("restrict", restrict.value())
+        parameter("restrict", restrict)
         parameter("offset", offset)
     }
 }
@@ -93,7 +93,7 @@ suspend fun PixivAppClient.illustNew(
     url: String = ILLUST_NEW,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
-        parameter("content_type", type?.value())
+        parameter("content_type", type)
         parameter("max_illust_id", max)
     }
 }
@@ -107,8 +107,8 @@ suspend fun PixivAppClient.illustRanking(
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("date", date?.format(DateTimeFormatter.ISO_DATE))
-        parameter("mode", mode?.value())
-        parameter("filter", filter?.value())
+        parameter("mode", mode)
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -123,7 +123,7 @@ suspend fun PixivAppClient.illustRecommended(
     url: String = ILLUST_RECOMMENDED,
 ): RecommendedData = useHttpClient { client ->
     client.get(url) {
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("include_ranking_label", includeRankingLabel)
         parameter("include_privacy_policy", includePrivacyPolicy)
         parameter("min_bookmark_id_for_recent_illust", minBookmarkIdForRecentIllust)
@@ -141,7 +141,7 @@ suspend fun PixivAppClient.illustRelated(
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("offset", offset)
         seeds?.forEachIndexed { index, item ->
             parameter("seed_illust_ids[$index]", item)

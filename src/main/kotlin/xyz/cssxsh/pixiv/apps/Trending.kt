@@ -8,6 +8,6 @@ suspend fun PixivAppClient.trendingTagsIllust(
     url: String = TRENDING_TAGS_ILLUST,
 ): TrendIllustData = useHttpClient  { client ->
     client.get(url) {
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
     }
 }

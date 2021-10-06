@@ -72,19 +72,14 @@ internal fun Url.toProxy(): Proxy {
     return Proxy(type, InetSocketAddress(host, port))
 }
 
-interface PixivParam {
-    val name: String
-    fun value() = name.lowercase()
-}
-
 @Suppress("FunctionName")
-inline fun <reified T> PixivEnumSerializer(): KSerializer<T> where T : PixivParam, T : Enum<T> {
+inline fun <reified T: Enum<T>> PixivEnumSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, SerialKind.ENUM)
 
         override fun serialize(encoder: Encoder, value: T) =
-            encoder.encodeString(value.value())
+            encoder.encodeString(value.name.lowercase())
 
         override fun deserialize(decoder: Decoder): T =
             enumValueOf(decoder.decodeString().uppercase())
@@ -92,7 +87,7 @@ inline fun <reified T> PixivEnumSerializer(): KSerializer<T> where T : PixivPara
 }
 
 @Suppress("FunctionName")
-inline fun <reified T> PixivTypeSerializer(): KSerializer<T> where T : PixivParam, T : Enum<T> {
+inline fun <reified T: Enum<T>> PixivTypeSerializer(): KSerializer<T>  {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
@@ -106,15 +101,17 @@ inline fun <reified T> PixivTypeSerializer(): KSerializer<T> where T : PixivPara
 }
 
 @Serializable(with = OrderType.Companion::class)
-enum class OrderType : PixivParam {
+enum class OrderType {
     DESC,
     ASC;
+
+    override fun toString(): String = name.lowercase()
 
     companion object : KSerializer<OrderType> by PixivEnumSerializer()
 }
 
 @Serializable(with = SearchSort.Companion::class)
-enum class SearchSort : PixivParam {
+enum class SearchSort {
     DATE_DESC,
     DATE_ASC,
 
@@ -123,11 +120,13 @@ enum class SearchSort : PixivParam {
     POPULAR_MALE_DESC,
     POPULAR_FEMALE_DESC;
 
+    override fun toString(): String = name.lowercase()
+
     companion object : KSerializer<SearchSort> by PixivEnumSerializer()
 }
 
 @Serializable(with = SearchDuration.Companion::class)
-enum class SearchDuration : PixivParam {
+enum class SearchDuration {
     CUSTOM_DURATION,
     ALL,
     WITHIN_LAST_DAY,
@@ -137,14 +136,18 @@ enum class SearchDuration : PixivParam {
     WITHIN_YEAR,
     SELECT;
 
+    override fun toString(): String = name.lowercase()
+
     companion object : KSerializer<SearchDuration> by PixivEnumSerializer()
 }
 
 @Serializable(with = PublicityType.Companion::class)
-enum class PublicityType : PixivParam {
+enum class PublicityType {
     PUBLIC,
     PRIVATE,
     TEMP;
+
+    override fun toString(): String = name.lowercase()
 
     companion object : KSerializer<PublicityType> by PixivEnumSerializer() {
         object TypeSerializer : KSerializer<PublicityType> by PixivTypeSerializer()
@@ -152,19 +155,23 @@ enum class PublicityType : PixivParam {
 }
 
 @Serializable(with = SearchTarget.Companion::class)
-enum class SearchTarget : PixivParam {
+enum class SearchTarget {
     PARTIAL_MATCH_FOR_TAGS,
     EXACT_MATCH_FOR_TAGS,
     TITLE_AND_CAPTION;
+
+    override fun toString(): String = name.lowercase()
 
     companion object : KSerializer<SearchTarget> by PixivEnumSerializer()
 }
 
 @Serializable(with = WorkContentType.Companion::class)
-enum class WorkContentType : PixivParam {
+enum class WorkContentType {
     ILLUST,
     UGOIRA,
     MANGA;
+
+    override fun toString(): String = name.lowercase()
 
     companion object : KSerializer<WorkContentType> by PixivEnumSerializer() {
         object TypeSerializer : KSerializer<WorkContentType> by PixivTypeSerializer()
@@ -172,7 +179,7 @@ enum class WorkContentType : PixivParam {
 }
 
 @Serializable(with = RankMode.Companion::class)
-enum class RankMode : PixivParam {
+enum class RankMode {
     // MONTH
     MONTH,
     MONTH_MANGA,
@@ -198,14 +205,15 @@ enum class RankMode : PixivParam {
     DAY_FEMALE_R18,
     DAY_MANGA,
     DAY_R18_MANGA,
-    DAY_R18G_MANGA,
-    ;
+    DAY_R18G_MANGA;
+
+    override fun toString(): String = name.lowercase()
 
     companion object : KSerializer<RankMode> by PixivEnumSerializer()
 }
 
 @Serializable(with = SanityLevel.Companion::class)
-enum class SanityLevel : PixivParam {
+enum class SanityLevel {
     UNCHECKED,
     TEMP1,
     WHITE,
@@ -215,47 +223,55 @@ enum class SanityLevel : PixivParam {
     BLACK,
     NONE;
 
+    override fun toString(): String = name.lowercase()
+
     companion object : KSerializer<SanityLevel> by PixivEnumSerializer() {
         object TypeSerializer : KSerializer<SanityLevel> by PixivTypeSerializer()
     }
 }
 
 @Serializable(with = AgeLimit.Companion::class)
-enum class AgeLimit : PixivParam {
+enum class AgeLimit {
     ALL {
-        override fun value() = "all-age"
+        override fun toString(): String = "all-age"
     },
     R18 {
-        override fun value() = "r18"
+        override fun toString(): String = "r18"
     },
     R18G {
-        override fun value() = "r18-g"
+        override fun toString(): String = "r18-g"
     };
 
     companion object : KSerializer<AgeLimit> by PixivEnumSerializer() {
         override fun deserialize(decoder: Decoder): AgeLimit = decoder.decodeString().let { value ->
-            requireNotNull(values().find { it.value() == value }) { "$value not in ${values().toList()}" }
+            requireNotNull(values().find { it.toString() == value }) { "$value not in ${values().toList()}" }
         }
 
         object TypeSerializer : KSerializer<AgeLimit> by PixivTypeSerializer()
     }
 }
 
-enum class FilterType : PixivParam {
+enum class FilterType {
     FOR_ANDROID,
     FOR_ISO;
+
+    override fun toString(): String = name.lowercase()
 }
 
 @Serializable(with = CategoryType.Companion::class)
-enum class CategoryType : PixivParam {
+enum class CategoryType {
     ALL,
     ILLUST,
     MANGA;
 
+    override fun toString(): String = name.lowercase()
+
     companion object : KSerializer<CategoryType> by PixivEnumSerializer()
 }
 
-enum class FollowType : PixivParam {
+enum class FollowType {
     SHOW,
     HIDE;
+
+    override fun toString(): String = name.lowercase()
 }

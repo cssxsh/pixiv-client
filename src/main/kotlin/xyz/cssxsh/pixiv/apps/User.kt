@@ -23,9 +23,9 @@ suspend fun PixivAppClient.userBookmarksIllust(
     client.get(url) {
         parameter("user_id", uid)
         parameter("tag", tag)
-        parameter("restrict", restrict.value())
+        parameter("restrict", restrict)
         parameter("max_bookmark_id", max)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
     }
 }
 
@@ -38,9 +38,9 @@ suspend fun PixivAppClient.userBookmarksNovel(
 ): NovelData = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("restrict", restrict.value())
+        parameter("restrict", restrict)
         parameter("max_bookmark_id", max)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
     }
 }
 
@@ -50,7 +50,7 @@ suspend fun PixivAppClient.userBookmarksTagsIllust(
     url: String = USER_BOOKMARKS_TAGS_ILLUST,
 ): BookmarkTagData = useHttpClient { client ->
     client.get(url) {
-        parameter("restrict", restrict.value())
+        parameter("restrict", restrict)
         parameter("offset", offset)
     }
 }
@@ -61,7 +61,7 @@ suspend fun PixivAppClient.userBookmarksTagsNovel(
     url: String = USER_BOOKMARKS_TAGS_NOVEL,
 ): BookmarkTagData = useHttpClient { client ->
     client.get(url) {
-        parameter("restrict", restrict.value())
+        parameter("restrict", restrict)
         parameter("offset", offset)
     }
 }
@@ -73,7 +73,7 @@ suspend fun PixivAppClient.userDetail(
 ): UserDetail = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
     }
 }
 
@@ -85,7 +85,7 @@ suspend fun PixivAppClient.userFollowAdd(
     client.post(url) {
         body = FormDataContent(Parameters.build {
             append("user_id", uid.toString())
-            append("restrict", restrict.value())
+            append("restrict", restrict.toString())
         })
     }
 }
@@ -109,7 +109,7 @@ suspend fun PixivAppClient.userFollower(
 ): PreviewData = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -122,7 +122,7 @@ suspend fun PixivAppClient.userFollowing(
 ): PreviewData = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -136,8 +136,8 @@ suspend fun PixivAppClient.userIllusts(
 ): IllustData =  useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("type", type?.value())
-        parameter("filter", filter?.value())
+        parameter("type", type)
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -150,7 +150,7 @@ suspend fun PixivAppClient.userMyPixiv(
 ): PreviewData = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
@@ -161,7 +161,7 @@ suspend fun PixivAppClient.userRecommended(
     url: String = USER_RECOMMENDED,
 ): PreviewData =  useHttpClient { client ->
     client.get(url) {
-        parameter("filter", filter?.value())
+        parameter("filter", filter)
         parameter("offset", offset)
     }
 }
