@@ -73,7 +73,7 @@ internal fun Url.toProxy(): Proxy {
 }
 
 @Suppress("FunctionName")
-inline fun <reified T: Enum<T>> PixivEnumSerializer(): KSerializer<T> {
+inline fun <reified T : Enum<T>> PixivEnumSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, SerialKind.ENUM)
@@ -87,7 +87,7 @@ inline fun <reified T: Enum<T>> PixivEnumSerializer(): KSerializer<T> {
 }
 
 @Suppress("FunctionName")
-inline fun <reified T: Enum<T>> PixivTypeSerializer(): KSerializer<T>  {
+inline fun <reified T : Enum<T>> PixivTypeSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
