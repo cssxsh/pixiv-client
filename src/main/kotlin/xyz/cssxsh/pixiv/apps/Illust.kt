@@ -134,7 +134,6 @@ suspend fun PixivAppClient.illustRecommended(
 
 suspend fun PixivAppClient.illustRelated(
     pid: Long,
-    seeds: Set<Long>? = null,
     filter: FilterType? = null,
     offset: Long? = null,
     url: String = ILLUST_RELATED,
@@ -143,9 +142,6 @@ suspend fun PixivAppClient.illustRelated(
         parameter("illust_id", pid)
         parameter("filter", filter)
         parameter("offset", offset)
-        seeds?.forEachIndexed { index, item ->
-            parameter("seed_illust_ids[$index]", item)
-        }
     }
 }
 
