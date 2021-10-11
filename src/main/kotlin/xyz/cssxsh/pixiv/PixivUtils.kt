@@ -275,3 +275,19 @@ enum class FollowType {
 
     override fun toString(): String = name.lowercase()
 }
+
+internal object RegexSerializer : KSerializer<Regex> {
+    override val descriptor: SerialDescriptor get() = buildSerialDescriptor("kotlin.text.Regex", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): Regex {
+        return Regex(decoder.decodeString())
+    }
+
+    override fun serialize(encoder: Encoder, value: Regex) {
+        encoder.encodeString(value.pattern)
+    }
+}
+
+fun RegexSerializer(): KSerializer<Regex> = RegexSerializer
+
+fun Regex.Companion.serializer(): KSerializer<Regex> = RegexSerializer
