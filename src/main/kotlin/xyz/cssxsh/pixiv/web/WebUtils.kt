@@ -46,7 +46,9 @@ object WepApiSet : KSerializer<Set<Long>> {
     override fun serialize(encoder: Encoder, value: Set<Long>) {
         if (value.isNotEmpty()) {
             encoder.encodeSerializableValue(JsonObject.serializer(), buildJsonObject {
-                value.forEach { put(it.toString(), JsonNull) }
+                for (item in value) {
+                    put(item.toString(), JsonNull)
+                }
             })
         } else {
             encoder.encodeSerializableValue(serializer, emptySet())

@@ -30,10 +30,8 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
             cname.takeIf { hostname.endsWith(host.removePrefix("*.")) }
         }
 
-        other.orEmpty().forEach {
-            runCatching {
-                result.addAll(it.let(lookup))
-            }
+        for (item in other.orEmpty()) runCatching {
+            result.addAll(item.let(lookup))
         }
 
         result.shuffle()
