@@ -25,7 +25,7 @@ const val POST_SELECTED_URL = "https://accounts.pixiv.net/account-selected"
 
 const val POST_REDIRECT_URL = "https://accounts.pixiv.net/post-redirect"
 
-fun verifier(time: OffsetDateTime = OffsetDateTime.now()): Pair<String, Url> {
+internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
     val origin = time.toString().encode().sha512().base64Url().replace("=", "")
 
     return origin to Url(REDIRECT_LOGIN_URL).copy(parameters = Parameters.build {
