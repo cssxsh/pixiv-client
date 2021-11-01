@@ -2,6 +2,7 @@ package xyz.cssxsh.pixiv
 
 import io.ktor.client.call.*
 import io.ktor.client.features.*
+import io.ktor.client.features.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -135,7 +136,10 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
  * 登录，通过 Web Cookies
  */
 suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
-    storage.save(load())
+    for (cookie in load()) {
+        storage.addCookie(url, cookie)
+    }
+    requireNotNull(storage.get(url)["PHPSESSID"]) { "PHPSESSID is null" }
     val login: HttpResponse = useHttpClient { it.get(url) }
     val account = login.account()
 
