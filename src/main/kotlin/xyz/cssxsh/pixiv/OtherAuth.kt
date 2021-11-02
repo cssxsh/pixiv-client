@@ -143,6 +143,8 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
     val login: HttpResponse = useHttpClient { it.get(url) }
     val account = login.account()
 
+    checkNotNull(account.uid) { "未登录" }
+
     /**
      * for [POST_SELECTED_URL]
      */
