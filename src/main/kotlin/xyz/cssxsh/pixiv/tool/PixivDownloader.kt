@@ -64,19 +64,17 @@ open class PixivDownloader(
     private suspend fun <T> withHttpClient(client: HttpClient, block: suspend HttpClient.() -> T): T = supervisorScope {
         while (isActive) {
             channel.send(clients.indexOf(client))
-            runCatching {
-                client.run { block() }
-            }.also {
-                channel.receive()
-            }.onSuccess {
-                return@supervisorScope it
-            }.onFailure { throwable ->
+            return@supervisorScope try {
+                with(client) { block() }
+            } catch (throwable: Throwable) {
                 if (isActive && ignore(throwable)) {
-                    //
+                    null
                 } else {
                     throw throwable
                 }
-            }
+            } finally {
+                channel.receive()
+            } ?: continue
         }
         throw CancellationException()
     }
@@ -143,16 +141,10 @@ open class PixivDownloader(
         var client = clients.random()
         var length = 0
         while (isActive && length == 0) {
-            runCatching {
-                length(client = client, url = url)
-            }.onSuccess {
-                length = it
-            }.onFailure {
-                if (it !is MatchContentLengthException) {
-                    throw it
-                } else {
-                    client = clients.random()
-                }
+            try {
+                length = length(client = client, url = url)
+            } catch (e: MatchContentLengthException) {
+                client = clients.random()
             }
         }
 

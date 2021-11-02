@@ -106,15 +106,13 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
-            runCatching {
-                block(clients[index])
-            }.onSuccess {
-                return@supervisorScope it
-            }.onFailure {
-                if (isActive && ignore(it)) {
+            try {
+                return@supervisorScope block(clients[index])
+            } catch (e: Throwable) {
+                if (isActive && ignore(e)) {
                     index = (index + 1) % clients.size
                 } else {
-                    throw it
+                    throw e
                 }
             }
         }
