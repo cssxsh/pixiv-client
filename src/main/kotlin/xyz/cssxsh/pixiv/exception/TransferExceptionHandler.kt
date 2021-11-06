@@ -6,23 +6,14 @@ import io.ktor.client.statement.*
 val TransferExceptionHandler: CallExceptionHandler = { cause ->
     if (cause is ClientRequestException) {
         val content = cause.response.readText()
+        val list = listOf(::AppApiException, ::AuthException, ::OtherClientException)
 
-        cause.runCatching {
-            AppApiException(response, content)
-        }.onSuccess {
-            throw it
-        }
-
-        cause.runCatching {
-            AppApiException(response, content)
-        }.onSuccess {
-            throw it
-        }
-
-        cause.runCatching {
-            AppApiException(response, content)
-        }.onSuccess {
-            throw it
+        for (builder in list) {
+            throw try {
+                builder(cause.response, content)
+            } catch (e: Throwable) {
+                continue
+            }
         }
     }
 }
