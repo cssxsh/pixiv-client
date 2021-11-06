@@ -15,6 +15,10 @@ const val WEIBO_QRCODE_GENERATE = "https://api.weibo.com/oauth2/qrcode_authorize
 
 const val WEIBO_QRCODE_QUERY = "https://api.weibo.com/oauth2/qrcode_authorize/query"
 
+const val WEIBO_QRCODE_TIMEOUT = 10 * 60 * 1000L
+
+const val WEIBO_QRCODE_INTERVAL = 3 * 1000L
+
 private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
 @Serializable
@@ -102,18 +106,19 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
         show(Url(qrcode.url))
     }
 
-    lateinit var jump: String
-    withTimeout(10 * 60 * 1000L) {
+    val jump = withTimeout(WEIBO_QRCODE_TIMEOUT) {
+        lateinit var auto: String
         while (isActive) {
-            delay(3 * 1000L)
+            delay(WEIBO_QRCODE_INTERVAL)
             val status: WeiboQrcodeStatus = PixivJson.decodeFromString(useHttpClient {
                 it.get(WEIBO_QRCODE_QUERY) {
                     parameter("vcode", qrcode.vcode)
                 }
             })
-            jump = status.url ?: continue
+            auto = status.url ?: continue
             break
         }
+        auto
     }
 
     // replace protocol for ssl with g-client-proxy.pixiv.net
