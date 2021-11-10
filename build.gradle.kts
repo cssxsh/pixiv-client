@@ -11,7 +11,7 @@ version = "1.0.0"
 repositories {
     mavenLocal()
     if (Locale.getDefault() == Locale.SIMPLIFIED_CHINESE) {
-        maven(url = "https://maven.aliyun.com/repository/public")
+        maven(url = "https://maven.aliyun.com/repository/central")
         maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
     }
     mavenCentral()
