@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import java.time.*
@@ -15,6 +16,7 @@ suspend fun PixivAppClient.illustBookmarkAdd(
     url: String = ILLUST_BOOKMARK_ADD,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("illust_id", pid.toString())
             for ((index, item) in tags.withIndex()) {
@@ -30,6 +32,7 @@ suspend fun PixivAppClient.illustBookmarkDelete(
     url: String = ILLUST_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("illust_id", pid.toString())
         })

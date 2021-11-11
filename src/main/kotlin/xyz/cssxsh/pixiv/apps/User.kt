@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 
@@ -83,6 +84,7 @@ suspend fun PixivAppClient.userFollowAdd(
     url: String = USER_FOLLOW_ADD,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("user_id", uid.toString())
             append("restrict", restrict.toString())
@@ -95,6 +97,7 @@ suspend fun PixivAppClient.userFollowDelete(
     url: String = USER_FOLLOW_DELETE,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("user_id", uid.toString())
         })

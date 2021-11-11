@@ -11,6 +11,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.auth.*
+import io.ktor.util.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
@@ -69,6 +70,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
                 override suspend fun addRequestHeaders(request: HttpRequestBuilder) {
                     val token = "Bearer ${info().accessToken}"
+                    @OptIn(InternalAPI::class)
                     request.headers {
                         if (contains(HttpHeaders.Authorization)) {
                             remove(HttpHeaders.Authorization)

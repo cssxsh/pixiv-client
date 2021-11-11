@@ -7,6 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.auth.*
@@ -33,6 +34,7 @@ internal data class HtmlAccount(
     val uid: Long? = null,
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 private suspend fun HttpResponse.account(): HtmlAccount {
     val html = receive<String>()
     val data = html.substringAfter("value='").substringBefore("'")
@@ -89,6 +91,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
 /**
  * 登录，通过新浪微博关联Pixiv
  */
+@OptIn(ExperimentalSerializationApi::class)
 suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
     // Pixiv Login Page
     val html: String = useHttpClient { it.get(url) }
@@ -160,6 +163,7 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
             header(HttpHeaders.Origin, ORIGIN_URL)
             header(HttpHeaders.Referrer, LOGIN_URL)
 
+            @OptIn(InternalAPI::class)
             body = FormDataContent(Parameters.build {
                 append("return_to", account.current)
                 append("tt", account.tt)

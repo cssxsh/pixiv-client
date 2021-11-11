@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.auth
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import okio.ByteString.Companion.encode
 import xyz.cssxsh.pixiv.*
 import java.time.*
@@ -28,6 +29,7 @@ const val POST_REDIRECT_URL = "https://accounts.pixiv.net/post-redirect"
 internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
     val origin = time.toString().encode().sha512().base64Url().replace("=", "")
 
+    @OptIn(InternalAPI::class)
     return origin to Url(REDIRECT_LOGIN_URL).copy(parameters = Parameters.build {
         append("code_challenge", origin.encode().sha256().base64Url().replace("=", ""))
         append("code_challenge_method", "S256")
@@ -37,6 +39,7 @@ internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
 
 suspend fun UseHttpClient.authorize(code: String, verifier: String): AuthResult = useHttpClient {
     it.post(OAUTH_TOKEN_URL) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("client_id", CLIENT_ID)
             append("client_secret", CLIENT_SECRET)
@@ -52,6 +55,7 @@ suspend fun UseHttpClient.authorize(code: String, verifier: String): AuthResult 
 
 suspend fun UseHttpClient.refresh(token: String): AuthResult = useHttpClient {
     it.post(OAUTH_TOKEN_URL) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("client_id", CLIENT_ID)
             append("client_secret", CLIENT_SECRET)

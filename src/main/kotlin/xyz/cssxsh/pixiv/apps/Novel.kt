@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import java.time.*
@@ -15,6 +16,7 @@ suspend fun PixivAppClient.novelBookmarkAdd(
     url: String = NOVEL_BOOKMARK_ADD,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("novel_id", pid.toString())
             append("tags", tags.joinToString(separator = " ", postfix = " "))
@@ -28,6 +30,7 @@ suspend fun PixivAppClient.novelBookmarkDelete(
     url: String = NOVEL_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
     client.post(url) {
+        @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
             append("novel_id", pid.toString())
         })
