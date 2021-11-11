@@ -47,13 +47,6 @@ kotlin {
     sourceSets {
         all {
             languageSettings.optIn("kotlin.RequiresOptIn")
-//            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-//            languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
-//            languageSettings.useExperimentalAnnotation("kotlinx.coroutines.ExperimentalCoroutinesApi")
-//            languageSettings.useExperimentalAnnotation("io.ktor.utils.io.core.ExperimentalIoApi")
-            languageSettings.optIn("io.ktor.util.InternalAPI")
-//            languageSettings.useExperimentalAnnotation("kotlinx.serialization.InternalSerializationApi")
-            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }
