@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
 import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.*
 
 @Serializable
 data class UgoiraFrame(

@@ -8,7 +8,7 @@ class AtkinsonDitherer private constructor() : UniversalDitherer(DISTRIBUTION) {
             ErrorComponent(2, 0, 1 / 8.0),
 
             ErrorComponent(-1, 1, 1 / 8.0),
-            ErrorComponent(0, 1, 1/ 8.0),
+            ErrorComponent(0, 1, 1 / 8.0),
             ErrorComponent(1, 1, 1 / 8.0),
 
             ErrorComponent(0, 2, 1 / 8.0),

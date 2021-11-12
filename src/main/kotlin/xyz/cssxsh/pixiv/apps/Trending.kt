@@ -6,7 +6,7 @@ import xyz.cssxsh.pixiv.*
 suspend fun PixivAppClient.trendingTagsIllust(
     filter: FilterType? = null,
     url: String = TRENDING_TAGS_ILLUST,
-): TrendIllustData = useHttpClient  { client ->
+): TrendIllustData = useHttpClient { client ->
     client.get(url) {
         parameter("filter", filter)
     }

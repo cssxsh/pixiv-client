@@ -53,4 +53,4 @@ data class WebNovel(
     @SerialName("xRestrict")
     @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
     val age: AgeLimit,
-): WebWorkInfo
+) : WebWorkInfo

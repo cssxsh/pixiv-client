@@ -136,7 +136,7 @@ suspend fun PixivAppClient.userIllusts(
     filter: FilterType? = null,
     offset: Long = 0,
     url: String = USER_ILLUSTS,
-): IllustData =  useHttpClient { client ->
+): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
         parameter("type", type)
@@ -162,7 +162,7 @@ suspend fun PixivAppClient.userRecommended(
     filter: FilterType? = null,
     offset: Long = 0,
     url: String = USER_RECOMMENDED,
-): PreviewData =  useHttpClient { client ->
+): PreviewData = useHttpClient { client ->
     client.get(url) {
         parameter("filter", filter)
         parameter("offset", offset)

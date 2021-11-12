@@ -13,7 +13,7 @@ const val TAG_LIMIT = 10L
 const val BOOKMARK_TAG_LIMIT = 5000L
 
 // Illust
-const val ILLUST_BOOKMARK_ADD =  "${ROOT_PATH}/v2/illust/bookmark/add"
+const val ILLUST_BOOKMARK_ADD = "${ROOT_PATH}/v2/illust/bookmark/add"
 const val ILLUST_BOOKMARK_DELETE = "${ROOT_PATH}/v1/illust/bookmark/delete"
 const val ILLUST_BOOKMARK_DETAIL = "${ROOT_PATH}/v2/illust/bookmark/detail"
 const val ILLUST_BOOKMARK_USERS = "${ROOT_PATH}/v1/illust/bookmark/users?filter=for_android"
@@ -42,7 +42,7 @@ const val NOTIFICATION_SETTINGS_EDIT = "${ROOT_PATH}/v1/notification/settings/ed
 const val NOTIFICATION_USER_REGISTER = "${ROOT_PATH}/v1/notification/user/register"
 
 // Novel
-const val NOVEL_BOOKMARK_ADD =  "${ROOT_PATH}/v2/novel/bookmark/add"
+const val NOVEL_BOOKMARK_ADD = "${ROOT_PATH}/v2/novel/bookmark/add"
 const val NOVEL_BOOKMARK_DELETE = "${ROOT_PATH}/v1/novel/bookmark/delete"
 const val NOVEL_BOOKMARK_DETAIL = "${ROOT_PATH}/v2/novel/bookmark/detail"
 const val NOVEL_BOOKMARK_USERS = "${ROOT_PATH}/v2/novel/bookmark/users"
@@ -68,9 +68,10 @@ const val SEARCH_AUTO_COMPLETE = "${ROOT_PATH}/v2/search/autocomplete"
 const val SEARCH_BOOKMARK_RANGES_ILLUST = "${ROOT_PATH}/v1/search/bookmark-ranges/illust"
 const val SEARCH_BOOKMARK_RANGES_NOVEL = "${ROOT_PATH}/v1/search/bookmark-ranges/novel"
 const val SEARCH_ILLUST = "${ROOT_PATH}/v1/search/illust"
-const val SEARCH_NOVEL = "${ROOT_PATH}/v1/search/novel?include_translated_tag_results=true&merge_plain_keyword_results=true"
-const val SEARCH_POPULAR_PREVIEW_ILLUST = "${ROOT_PATH}/v1/search/popular-preview/illust?include_translated_tag_results=true&merge_plain_keyword_results=true"
-const val SEARCH_POPULAR_PREVIEW_NOVEL = "${ROOT_PATH}/v1/search/popular-preview/novel?include_translated_tag_results=true&merge_plain_keyword_results=true"
+// TODO: include_translated_tag_results=true&merge_plain_keyword_results=true
+const val SEARCH_NOVEL = "${ROOT_PATH}/v1/search/novel"
+const val SEARCH_POPULAR_PREVIEW_ILLUST = "${ROOT_PATH}/v1/search/popular-preview/illust"
+const val SEARCH_POPULAR_PREVIEW_NOVEL = "${ROOT_PATH}/v1/search/popular-preview/novel"
 const val SEARCH_USER = "${ROOT_PATH}/v1/search/user"
 
 // Spotlight
@@ -145,6 +146,7 @@ const val APPLICATION_INFO_IOS = "${ROOT_PATH}/v1/application-info/ios"
 const val EMOJI = "${ROOT_PATH}/v1/emoji"
 const val STAMPS = "${ROOT_PATH}/v1/stamps"
 const val IDP_URLS = "${ROOT_PATH}/idp-urls"
+
 // 指定されたエンドポイントは存在しません
 // const val FEEDBACK = "${ROOT_PATH}/v1/feedback"
 const val LIVE_LIST = "${ROOT_PATH}/v1/live/list"

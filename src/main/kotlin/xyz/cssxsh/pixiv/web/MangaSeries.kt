@@ -1,7 +1,7 @@
 package xyz.cssxsh.pixiv.web
 
 import kotlinx.serialization.*
-import java.time.OffsetDateTime
+import java.time.*
 
 @Serializable
 data class MangaSeries(

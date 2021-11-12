@@ -24,8 +24,10 @@ suspend fun UseHttpClient.urls(
 suspend fun UseHttpClient.application(
     type: FilterType,
 ): ApplicationData = useHttpClient { client ->
-    client.get(when (type) {
-        FilterType.FOR_ANDROID -> APPLICATION_INFO_ANDROID
-        FilterType.FOR_ISO -> APPLICATION_INFO_IOS
-    })
+    client.get(
+        when (type) {
+            FilterType.FOR_ANDROID -> APPLICATION_INFO_ANDROID
+            FilterType.FOR_ISO -> APPLICATION_INFO_IOS
+        }
+    )
 }

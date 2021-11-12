@@ -8,7 +8,7 @@ repositories {
 }
 
 kotlin {
-    sourceSets{
+    sourceSets {
         all {
             languageSettings.optIn("kotlin.Experimental")
             languageSettings.optIn("kotlin.RequiresOptIn")

@@ -55,7 +55,7 @@ object WepApiSet : KSerializer<Set<Long>> {
     }
 }
 
-sealed class WebApiMap<V: WebWorkInfo>(valueSerializer: KSerializer<V>) : KSerializer<Map<Long, V>> {
+sealed class WebApiMap<V : WebWorkInfo>(valueSerializer: KSerializer<V>) : KSerializer<Map<Long, V>> {
     private val serializer: KSerializer<Map<Long, V>> = MapSerializer(Long.serializer(), valueSerializer)
 
     override val descriptor: SerialDescriptor get() = serializer.descriptor
@@ -78,9 +78,9 @@ sealed class WebApiMap<V: WebWorkInfo>(valueSerializer: KSerializer<V>) : KSeria
     }
 
 
-    object Illust: WebApiMap<WebIllust>(WebIllust.serializer())
+    object Illust : WebApiMap<WebIllust>(WebIllust.serializer())
 
-    object Novel: WebApiMap<WebNovel>(WebNovel.serializer())
+    object Novel : WebApiMap<WebNovel>(WebNovel.serializer())
 }
 
 // https://www.pixiv.net/ajax/tags/frequent/illust?lang=zh

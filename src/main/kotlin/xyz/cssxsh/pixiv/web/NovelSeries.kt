@@ -1,8 +1,8 @@
 package xyz.cssxsh.pixiv.web
 
 import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.AgeLimit
-import java.time.OffsetDateTime
+import xyz.cssxsh.pixiv.*
+import java.time.*
 
 @Serializable
 data class NovelSeries(
