@@ -145,7 +145,7 @@ enum class SearchDuration {
 enum class PublicityType {
     PUBLIC,
     PRIVATE,
-    TEMP;
+    MYPIXIV;
 
     override fun toString(): String = name.lowercase()
 
