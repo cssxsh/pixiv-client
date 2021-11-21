@@ -9,14 +9,14 @@ import javax.imageio.*
 
 @Suppress("BlockingMethodInNonBlockingContext")
 abstract class PixivUgoiraEncoder {
-    protected open val dir: File = File(".")
+    protected open val cache: File = File(".")
 
     protected open val downloader: PixivDownloader = PixivDownloader()
 
     // origin not found in app api
     protected val UgoiraMetadata.original get() = Url(zipUrls.values.first().replace("600x600", "1920x1080"))
 
-    protected open suspend fun download(url: Url, filename: String) = dir.resolve(filename).apply {
+    protected open suspend fun download(url: Url, filename: String) = cache.resolve(filename).apply {
         if (exists().not()) {
             writeBytes(downloader.download(url))
         }
@@ -37,7 +37,7 @@ abstract class PixivUgoiraEncoder {
     }
 
     /**
-     * write to [PixivUgoiraEncoder.dir] with pid of [illust] as filename
+     * write to [PixivUgoiraEncoder.cache] with pid of [illust] as filename
      */
     abstract suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int = 0): File
 }

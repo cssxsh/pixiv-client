@@ -11,7 +11,7 @@ interface OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
     val dateFormat: DateTimeFormatter
 
     override val descriptor: SerialDescriptor
-        get() = PrimitiveSerialDescriptor("OffsetDateTimeSerializerTo[${dateFormat}]", PrimitiveKind.STRING)
+        get() = PrimitiveSerialDescriptor(OffsetDateTime::class.qualifiedName!!, PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: OffsetDateTime): Unit =
         encoder.encodeString(value.format(dateFormat))

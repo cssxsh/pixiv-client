@@ -27,16 +27,16 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
     @Suppress("UNCHECKED_CAST")
     protected fun <T> instance(name: String): T {
         val clazz = Class.forName(name, true, PixivGifEncoder::class.java.classLoader)
-        return kotlin.runCatching {
+        return try {
             clazz.getField("INSTANCE").get(null)
-        }.getOrElse {
+        } catch (e: Throwable) {
             clazz.getConstructor().newInstance()
         } as T
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     override suspend fun encode(illust: IllustInfo, metadata: UgoiraMetadata, loop: Int): File {
-        val temp = dir.resolve("${illust.pid}.temp")
+        val temp = cache.resolve("${illust.pid}.temp")
         val output = temp.outputStream().buffered(bufferSize)
         var width = illust.width
         var height = illust.height
@@ -52,9 +52,9 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
         encoder.finishEncoding()
         output.close()
 
-        return dir.resolve("${illust.pid}.gif").apply {
+        return cache.resolve("${illust.pid}.gif").apply {
             if (exists()) {
-                renameTo(dir.resolve("${illust.pid}.${lastModified()}.gif"))
+                renameTo(cache.resolve("${illust.pid}.${lastModified()}.gif"))
             }
             temp.renameTo(this)
         }
