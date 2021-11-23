@@ -30,12 +30,19 @@ dependencies {
     implementation(okhttp3("okhttp", Versions.okhttp))
     implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
     api(square("gifencoder", Versions.gifencoder))
-    compileOnly(fileTree(File(requireNotNull(System.getenv("OPENCV_HOME")) {
-        "请安装 OPENCV 并设置 环境变量 OPENCV_HOME 和 PATH "
-    }).resolve("build/java")))
+    /**
+     * $OPENCV_HOME = ...
+     * $PATH = $PATH;OPENCV_HOME/build/bin;OPENCV_HOME/build/java/x64
+     */
+    val opencv: String? = System.getenv("OPENCV_HOME")
+    if (opencv != null) {
+        compileOnly(fileTree(File(opencv).resolve("build/java")))
+    } else {
+        println("请安装 OPENCV 并设置 环境变量 OPENCV_HOME 和 PATH")
+        compileOnly("org.openpnp:opencv:4.5.1-2")
+    }
 
     testImplementation(kotlin("test", "1.5.31"))
-    testRuntimeOnly(fileTree(File(System.getenv("OPENCV_HOME")).resolve("build/java")))
 }
 
 kotlin {
