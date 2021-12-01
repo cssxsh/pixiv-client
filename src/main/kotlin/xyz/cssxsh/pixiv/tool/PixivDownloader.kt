@@ -41,7 +41,7 @@ open class PixivDownloader(
         install(HttpTimeout) {
             socketTimeoutMillis = timeout
             connectTimeoutMillis = timeout
-            requestTimeoutMillis = timeout
+            requestTimeoutMillis = null
         }
         defaultRequest {
             header(HttpHeaders.CacheControl, "no-cache")

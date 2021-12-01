@@ -39,7 +39,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         install(HttpTimeout) {
             socketTimeoutMillis = timeout
             connectTimeoutMillis = timeout
-            requestTimeoutMillis = timeout
+            requestTimeoutMillis = null
         }
         install(HttpCookies) {
             storage = this@PixivAuthClient.storage
