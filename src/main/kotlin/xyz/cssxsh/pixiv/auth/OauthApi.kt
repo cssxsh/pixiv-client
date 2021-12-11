@@ -22,6 +22,8 @@ const val ORIGIN_URL = "https://accounts.pixiv.net"
 
 const val LOGIN_URL = "https://accounts.pixiv.net/login"
 
+const val LOGIN_API_URL = "https://accounts.pixiv.net/api/login"
+
 const val POST_SELECTED_URL = "https://accounts.pixiv.net/account-selected"
 
 const val POST_REDIRECT_URL = "https://accounts.pixiv.net/post-redirect"
@@ -37,7 +39,7 @@ internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
     })
 }
 
-suspend fun UseHttpClient.authorize(code: String, verifier: String): AuthResult = useHttpClient {
+internal suspend fun UseHttpClient.authorize(code: String, verifier: String): AuthResult = useHttpClient {
     it.post(OAUTH_TOKEN_URL) {
         @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {
@@ -53,7 +55,7 @@ suspend fun UseHttpClient.authorize(code: String, verifier: String): AuthResult 
     }
 }
 
-suspend fun UseHttpClient.refresh(token: String): AuthResult = useHttpClient {
+internal suspend fun UseHttpClient.refresh(token: String): AuthResult = useHttpClient {
     it.post(OAUTH_TOKEN_URL) {
         @OptIn(InternalAPI::class)
         body = FormDataContent(Parameters.build {

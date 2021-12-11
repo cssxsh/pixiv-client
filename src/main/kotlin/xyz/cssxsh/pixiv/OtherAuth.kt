@@ -10,7 +10,11 @@ import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+import org.openqa.selenium.logging.*
+import org.openqa.selenium.remote.*
 import xyz.cssxsh.pixiv.auth.*
+import xyz.cssxsh.pixiv.tool.*
 
 const val WEIBO_QRCODE_GENERATE = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
 
@@ -20,19 +24,11 @@ const val WEIBO_QRCODE_TIMEOUT = 10 * 60 * 1000L
 
 const val WEIBO_QRCODE_INTERVAL = 3 * 1000L
 
-private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
+const val SELENIUM_TIMEOUT = 15 * 60 * 1000L
 
-@Serializable
-internal data class HtmlAccount(
-    @SerialName("pixivAccount.continueWithCurrentAccountUrl")
-    val current: String = "",
-    @SerialName("pixivAccount.returnTo")
-    val returnTo: String,
-    @SerialName("pixivAccount.tt")
-    val tt: String,
-    @SerialName("pixivAccount.userId")
-    val uid: Long? = null,
-)
+const val SELENIUM_DELAY = 15 * 1000L
+
+private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
 @OptIn(ExperimentalSerializationApi::class)
 private suspend fun HttpResponse.account(): HtmlAccount {
@@ -42,7 +38,7 @@ private suspend fun HttpResponse.account(): HtmlAccount {
 }
 
 /**
- * link for [POST_REDIRECT_URL]
+ * @param link for [POST_REDIRECT_URL]
  */
 private suspend fun PixivAuthClient.redirect(link: Url): String {
     val redirect: HttpResponse = useHttpClient { it.get(link) }
@@ -90,14 +86,17 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
 
 /**
  * 登录，通过新浪微博关联Pixiv
+ * @param show handle qrcode image url
  */
 @OptIn(ExperimentalSerializationApi::class)
-suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
-    // Pixiv Login Page
-    val html: String = useHttpClient { it.get(url) }
+suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit) = login { redirect ->
+    /**
+     * for [LOGIN_URL]
+     */
+    val html: String = useHttpClient { it.get(redirect) }
 
     val all = html.let("""gigya-auth[^"]+""".toRegex()::findAll).map { it.value.replace("&amp;", "&") }
-    val sina = Url("$ORIGIN_URL/${all.first { "sina" in it }}")
+    val sina = Url(ORIGIN_URL).copy(encodedPath = all.first { "sina" in it })
 
     // Jump to Sina Weibo
     val temp: HttpResponse = useHttpClient { it.head(sina) }
@@ -131,8 +130,8 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
 
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
     // transform Unicode
-    val unicode = """\\u\d{4}""".toRegex()
-    val link = Url(sign.replace(unicode) { it.value.removePrefix("""\u""").toInt(16).toChar().toString() })
+    val unicode = """(?<=\\u)\d{4}""".toRegex()
+    val link = Url(sign.replace(unicode) { it.value.toInt(16).toChar().toString() })
 
     /**
      * GiGya auto to [POST_REDIRECT_URL]
@@ -142,13 +141,14 @@ suspend fun PixivAuthClient.sina(show: suspend (Url) -> Unit) = login { url ->
 
 /**
  * 登录，通过 Web Cookies
+ * @param load get pixiv web cookie
  */
-suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
+suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { redirect ->
     for (cookie in load()) {
-        storage.addCookie(url, cookie)
+        storage.addCookie(ORIGIN_URL, cookie)
     }
-    requireNotNull(storage.get(url)["PHPSESSID"]) { "PHPSESSID is null" }
-    val login: HttpResponse = useHttpClient { it.get(url) }
+    requireNotNull(storage.get(Url(ORIGIN_URL))["PHPSESSID"]) { "PHPSESSID is null" }
+    val login: HttpResponse = useHttpClient { it.get(redirect) }
     val account = login.account()
 
     checkNotNull(account.uid) { "未登录" }
@@ -174,4 +174,95 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { url ->
     val link = requireNotNull(response.location()) { "跳转到 $POST_REDIRECT_URL 失败" }
 
     redirect(link = link)
+}
+
+/**
+ * 登录，通过 账户密码
+ * @param username Pixiv ID 或者 Email
+ * @param password 密码
+ * @param handler 人机验证处理
+ */
+suspend fun PixivAuthClient.password(username: String, password: String, handler: CaptchaHandler) = login { redirect ->
+    /**
+     * for [LOGIN_URL]
+     */
+    val login: HttpResponse = useHttpClient { it.get(redirect) }
+    val account = login.account()
+
+    while (isActive) {
+
+        val gRecaptchaResponse = handler.handle(siteKey = account.scoreSiteKey, referer = login.request.url.toString())
+
+        val attempt: JsonObject = useHttpClient {
+            it.post(LOGIN_API_URL) {
+
+                header(HttpHeaders.Origin, ORIGIN_URL)
+                header(HttpHeaders.Referrer, LOGIN_URL)
+
+                parameter("lang", "zh")
+
+                @OptIn(InternalAPI::class)
+                body = FormDataContent(Parameters.build {
+                    append("password", password)
+                    append("pixiv_id", username)
+                    append("captcha", "")
+                    append("g-recaptcha-response", gRecaptchaResponse)
+                    append("post_key", account.postKey)
+                    append("source", account.source)
+                    append("ref", account.ref)
+                    append("return_to", account.returnTo)
+                    append("recaptcha_enterprise_score_token", gRecaptchaResponse)
+                    append("tt", account.tt)
+                })
+
+                println((body as FormDataContent).bytes().decodeToString())// XXX
+            }
+        }
+        println(attempt)// XXX
+
+        val result = PixivJson.decodeFromJsonElement<WebLoginResult>(attempt)
+
+        if ("captcha" in result.body.validationErrors) continue
+
+        check(result.body.validationErrors.isNotEmpty()) { result.body }
+
+        break
+    }
+
+    /**
+     * for [POST_SELECTED_URL]
+     */
+    val message: HttpMessage = useHttpClient {
+        it.post(POST_SELECTED_URL) {
+            expectSuccess = false
+
+            header(HttpHeaders.Origin, ORIGIN_URL)
+            header(HttpHeaders.Referrer, LOGIN_URL)
+
+            @OptIn(InternalAPI::class)
+            body = FormDataContent(Parameters.build {
+                append("return_to", account.current)
+                append("tt", account.tt)
+            })
+        }
+    }
+
+    val link = requireNotNull(message.location()) { "跳转到 $POST_REDIRECT_URL 失败" }
+
+    redirect(link = link)
+}
+
+suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver) = login { redirect ->
+    driver.get(redirect.toString())
+    withTimeout(SELENIUM_TIMEOUT) {
+        while (driver.currentUrl.orEmpty().startsWith(POST_REDIRECT_URL).not()) {
+            delay(SELENIUM_DELAY)
+        }
+    }
+    // XXX: 通过错误日志获取 跳转URL
+    val log = driver.manage().logs().get(LogType.BROWSER)
+        .first { log -> "'pixiv://account/login" in log.message.orEmpty() }
+    val url = Url(log.message.substringAfter("'").substringBefore("'"))
+
+    url.parameters["code"]!!
 }

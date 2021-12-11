@@ -9,11 +9,3 @@ data class WeiboQrcode(
     @SerialName("vcode")
     val vcode: String
 )
-
-@Serializable
-data class WeiboQrcodeStatus(
-    @SerialName("status")
-    val code: Int,
-    @SerialName("url")
-    val url: String? = null
-)

@@ -69,14 +69,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
                 override val sendWithoutRequest: Boolean = true
 
                 override suspend fun addRequestHeaders(request: HttpRequestBuilder) {
-                    val token = "Bearer ${info().accessToken}"
-                    @OptIn(InternalAPI::class)
-                    request.headers {
-                        if (contains(HttpHeaders.Authorization)) {
-                            remove(HttpHeaders.Authorization)
-                        }
-                        append(HttpHeaders.Authorization, token)
-                    }
+                    request.header(HttpHeaders.Authorization, "Bearer ${info().accessToken}")
                 }
 
                 override fun isApplicable(auth: HttpAuthHeader): Boolean = false
@@ -130,7 +123,14 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         authInfo?.takeIf { expires > start } ?: refresh(token = refreshToken).save(start = start)
     }
 
-    override suspend fun login(block: suspend (Url) -> String): AuthResult = mutex.withLock {
+    /**
+     * 登录通过验证页面
+     * @param block 从验证页面获得 code
+     * @see sina
+     * @see cookie
+     * @see authorize
+     */
+    override suspend fun login(block: suspend (redirect: Url) -> String): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
         val (verifier, url) = verifier(time = start)
         val code = block(url)

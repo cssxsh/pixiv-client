@@ -41,8 +41,10 @@ dependencies {
         println("请安装 OPENCV 并设置 环境变量 OPENCV_HOME 和 PATH")
         compileOnly("org.openpnp:opencv:4.5.1-2")
     }
+    compileOnly("org.seleniumhq.selenium:selenium-java:4.1.0")
 
     testImplementation(kotlin("test", "1.5.31"))
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.1.0")
 }
 
 kotlin {
