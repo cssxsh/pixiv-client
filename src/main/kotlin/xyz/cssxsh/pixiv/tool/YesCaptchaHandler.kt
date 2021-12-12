@@ -30,7 +30,7 @@ class YesCaptchaHandler(private val clientKey: String, val host: String = "api.y
     /**
      * [全部任务类型及价格](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/164286)
      */
-    private val type: String = "RecaptchaV2TaskProxyless"
+    private val type: String = "RecaptchaV2EnterpriseTaskProxylessM1"
 
     /**
      * [查询帐户余额](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/229767/getBalance)
@@ -54,7 +54,7 @@ class YesCaptchaHandler(private val clientKey: String, val host: String = "api.y
      *
      * @return 识别结果
      */
-    suspend fun getTaskResult(taskId: String): Pair<Boolean, JsonObject> {
+    private suspend fun getTaskResult(taskId: String): Pair<Boolean, JsonObject> {
         val result = client.post<JsonObject>("https://$host/getTaskResult") {
             body = buildJsonObject {
                 put("clientKey", clientKey)
@@ -73,7 +73,7 @@ class YesCaptchaHandler(private val clientKey: String, val host: String = "api.y
      *
      * @return TaskId
      */
-    suspend fun createTask(builderTask: JsonObjectBuilder.() -> Unit): String {
+    private suspend fun createTask(builderTask: JsonObjectBuilder.() -> Unit): String {
         val result = client.post<JsonObject>("https://$host/createTask") {
             body = buildJsonObject {
                 put("clientKey", clientKey)

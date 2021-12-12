@@ -61,6 +61,16 @@ tasks {
         useJUnitPlatform()
     }
 
+    compileJava {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+
+    compileTestJava {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+
     compileKotlin {
         kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
         kotlinOptions.jvmTarget = "11"

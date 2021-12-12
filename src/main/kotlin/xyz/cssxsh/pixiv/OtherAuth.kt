@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package xyz.cssxsh.pixiv
 
 import io.ktor.client.call.*
@@ -30,7 +32,6 @@ const val SELENIUM_DELAY = 15 * 1000L
 
 private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
-@OptIn(ExperimentalSerializationApi::class)
 private suspend fun HttpResponse.account(): HtmlAccount {
     val html = receive<String>()
     val data = html.substringAfter("value='").substringBefore("'")
@@ -88,7 +89,6 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
  * 登录，通过新浪微博关联Pixiv
  * @param show handle qrcode image url
  */
-@OptIn(ExperimentalSerializationApi::class)
 suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit) = login { redirect ->
     /**
      * for [LOGIN_URL]
@@ -190,14 +190,16 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
     val account = login.account()
 
     while (isActive) {
-
+        /**
+         * 实际上 SiteKey 是固定值 6LfF1dcZAAAAAOHQX8v16MX5SktDwmQINVD_6mBF
+         */
         val gRecaptchaResponse = handler.handle(siteKey = account.scoreSiteKey, referer = login.request.url.toString())
 
         val attempt: JsonObject = useHttpClient {
             it.post(LOGIN_API_URL) {
 
                 header(HttpHeaders.Origin, ORIGIN_URL)
-                header(HttpHeaders.Referrer, LOGIN_URL)
+                header(HttpHeaders.Referrer, "https://accounts.pixiv.net/")
 
                 parameter("lang", "zh")
 
@@ -214,15 +216,15 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
                     append("recaptcha_enterprise_score_token", gRecaptchaResponse)
                     append("tt", account.tt)
                 })
-
-                println((body as FormDataContent).bytes().decodeToString())// XXX
             }
         }
-        println(attempt)// XXX
 
         val result = PixivJson.decodeFromJsonElement<WebLoginResult>(attempt)
 
-        if ("captcha" in result.body.validationErrors) continue
+        if ("captcha" in result.body.validationErrors) {
+            println(result)
+            continue
+        }
 
         check(result.body.validationErrors.isNotEmpty()) { result.body }
 
@@ -252,6 +254,10 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
     redirect(link = link)
 }
 
+/**
+ * 登录，通过 selenium 调用浏览器
+ * @param driver 浏览器驱动器
+ */
 suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver) = login { redirect ->
     driver.get(redirect.toString())
     withTimeout(SELENIUM_TIMEOUT) {
@@ -261,7 +267,7 @@ suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver) = login { redirect
     }
     // XXX: 通过错误日志获取 跳转URL
     val log = driver.manage().logs().get(LogType.BROWSER)
-        .first { log -> "'pixiv://account/login" in log.message.orEmpty() }
+        .first { log -> "pixiv://account/login" in log.message.orEmpty() }
     val url = Url(log.message.substringAfter("'").substringBefore("'"))
 
     url.parameters["code"]!!
