@@ -64,7 +64,9 @@ data class UserDetail(
         val twitterUrl: String?,
         @SerialName("webpage")
         val webpage: String?,
-    )
+    ) {
+        val totalArtwork get() = totalIllusts + totalManga
+    }
 
     @Serializable
     data class ProfilePublicity(
