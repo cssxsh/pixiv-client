@@ -155,8 +155,10 @@ open class PixivDownloader(
         urls: List<Url>,
         block: suspend (url: Url, deferred: Deferred<ByteArray>) -> R,
     ): List<R> = supervisorScope {
-        urls.mapIndexed { _, url ->
-            block(url, async { download(url) })
+        urls.map { url ->
+            url to async { download(url) }
+        }.map { (url, deferred) ->
+            block(url, deferred)
         }
     }
 }
