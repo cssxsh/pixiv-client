@@ -19,16 +19,12 @@ class WebApiResult(
     val message: String,
 )
 
-inline fun <reified T> WebApiResult.value(): T {
-    if (error) throw WebApiException(this)
-    return PixivJson.decodeFromJsonElement(body)
-}
-
-suspend inline fun <reified T> UseHttpClient.web(
-    api: String,
-    crossinline block: HttpRequestBuilder.() -> Unit = {}
-): T = useHttpClient { client ->
-    client.request<WebApiResult>(api, block).value()
+suspend inline fun <reified T> PixivWebClient.ajax(api: String, crossinline block: HttpRequestBuilder.() -> Unit): T {
+    return useHttpClient { client ->
+        val result = client.request<WebApiResult>(api, block)
+        if (result.error) throw WebApiException(result)
+        PixivJson.decodeFromJsonElement(result.body)
+    }
 }
 
 object WepApiSet : KSerializer<Set<Long>> {

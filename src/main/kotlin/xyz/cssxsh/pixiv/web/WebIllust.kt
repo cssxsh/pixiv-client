@@ -13,15 +13,17 @@ data class WebIllust(
     val bookmarkData: JsonElement,// TODO
     @SerialName("createDate")
     @Contextual
-    val createDate: OffsetDateTime,
+    val createAt: OffsetDateTime,
     @SerialName("description")
     val description: String,
+    @SerialName("width")
+    val width: Int,
     @SerialName("height")
     val height: Int,
     @SerialName("id")
-    val id: Long,
+    val pid: Long,
     @SerialName("illustType")
-    @Serializable(WorkContentType.Companion.TypeSerializer::class)
+    @Serializable(with = WorkContentType.IndexSerializer::class)
     val type: WorkContentType,
     @SerialName("isBookmarkable")
     val isBookmarkAble: Boolean,
@@ -34,10 +36,9 @@ data class WebIllust(
     @SerialName("profileImageUrl")
     val profileImageUrl: String,
     @SerialName("restrict")
-    @Serializable(PublicityType.Companion.TypeSerializer::class)
+    @Serializable(with = PublicityType.IndexSerializer::class)
     val publicity: PublicityType,
     @SerialName("sl")
-    @Serializable(SanityLevel.Companion.TypeSerializer::class)
     val sanityLevel: SanityLevel,
     @SerialName("tags")
     val tags: List<String>,
@@ -47,16 +48,13 @@ data class WebIllust(
     val caption: WebTitleCaption,
     @SerialName("updateDate")
     @Contextual
-    val updateDate: OffsetDateTime,
+    val updateAt: OffsetDateTime,
     @SerialName("url")
     val url: String,
     @SerialName("userId")
     val uid: Long,
     @SerialName("userName")
     val name: String,
-    @SerialName("width")
-    val width: Int,
     @SerialName("xRestrict")
-    @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
     val age: AgeLimit,
 ) : WebWorkInfo

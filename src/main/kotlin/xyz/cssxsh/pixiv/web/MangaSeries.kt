@@ -13,7 +13,7 @@ data class MangaSeries(
     val coverImageSl: Int,
     @SerialName("createDate")
     @Contextual
-    val createDate: OffsetDateTime,
+    val createAt: OffsetDateTime,
     @SerialName("description")
     val description: String,
     @SerialName("firstIllustId")
@@ -32,11 +32,11 @@ data class MangaSeries(
     val total: Int,
     @SerialName("updateDate")
     @Contextual
-    val updateDate: OffsetDateTime,
+    val updateAt: OffsetDateTime,
     @SerialName("url")
     val url: String,
     @SerialName("userId")
-    val userId: Long,
+    val uid: Long,
     @SerialName("watchCount")
-    val watchCount: Long?
+    val watchCount: Long? = null
 )

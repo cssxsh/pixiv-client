@@ -23,7 +23,7 @@ data class UserWebPreview(
     @SerialName("userComment")
     val userComment: String,
     @SerialName("userId")
-    val userId: Long,
+    val uid: Long,
     @SerialName("userName")
-    val userName: String
+    val name: String
 )

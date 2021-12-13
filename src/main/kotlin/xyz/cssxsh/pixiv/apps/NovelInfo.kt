@@ -10,7 +10,9 @@ data class NovelInfo(
     val caption: String,
     @SerialName("create_date")
     @Contextual
-    val createDate: OffsetDateTime,
+    val createAt: OffsetDateTime,
+    @SerialName("text_length")
+    val textLength: Long,
     @SerialName("id")
     val pid: Long,
     @SerialName("image_urls")
@@ -24,11 +26,11 @@ data class NovelInfo(
     @SerialName("is_original")
     val isOriginal: Boolean,
     @SerialName("is_x_restricted")
-    val isXRestricted: Boolean,
+    val isAgeLimit: Boolean,
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("restrict")
-    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+    @Serializable(with = PublicityType.IndexSerializer::class)
     val restrict: PublicityType,
     @SerialName("series")
     val series: SeriesInfo?,
@@ -37,18 +39,15 @@ data class NovelInfo(
     @SerialName("title")
     val title: String,
     @SerialName("total_bookmarks")
-    val totalBookmarks: Int,
+    val totalBookmarks: Long? = null,
     @SerialName("total_comments")
-    val totalComments: Int,
+    val totalComments: Long? = null,
     @SerialName("total_view")
-    val totalView: Int,
-    @SerialName("text_length")
-    val textLength: Long,
+    val totalView: Long? = null,
     @SerialName("user")
     val user: UserInfo,
     @SerialName("visible")
     val visible: Boolean,
     @SerialName("x_restrict")
-    @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
     val age: AgeLimit,
 )

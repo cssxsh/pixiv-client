@@ -16,7 +16,7 @@ suspend fun PixivWebClient.ajaxIllust(
     rest: FollowType = FollowType.SHOW,
     tag: String = "",
     locale: Locale = Locale.CHINA,
-): UserFollowing = web(illust(pid = pid)) {
+): UserFollowing = ajax(illust(pid = pid)) {
     header(HttpHeaders.Referrer, referer(pid = pid))
 
     parameter("offset", offset)

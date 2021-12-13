@@ -12,7 +12,7 @@ private fun profile(uid: Long, type: String) = "https://www.pixiv.net/ajax/user/
 suspend fun PixivWebClient.ajaxProfileAll(
     uid: Long,
     locale: Locale = Locale.CHINA,
-): UserProfileAll = web(profile(uid = uid, type = "all")) {
+): UserProfileAll = ajax(profile(uid = uid, type = "all")) {
     header(HttpHeaders.Referrer, referer(uid = uid))
 
     parameter("lang", locale.language)
@@ -21,7 +21,7 @@ suspend fun PixivWebClient.ajaxProfileAll(
 suspend fun PixivWebClient.ajaxProfileTop(
     uid: Long,
     locale: Locale = Locale.CHINA,
-): UserProfileTop = web(profile(uid = uid, type = "top")) {
+): UserProfileTop = ajax(profile(uid = uid, type = "top")) {
     header(HttpHeaders.Referrer, referer(uid = uid))
 
     parameter("lang", locale.language)
@@ -32,7 +32,7 @@ suspend fun PixivWebClient.ajaxProfileIllusts(
     ids: Set<Long>,
     category: CategoryType,
     locale: Locale = Locale.CHINA,
-): UserProfileIllusts = web(profile(uid = uid, type = "illusts")) {
+): UserProfileIllusts = ajax(profile(uid = uid, type = "illusts")) {
     header(HttpHeaders.Referrer, referer(uid = uid))
 
     for (id in ids) {
@@ -52,7 +52,7 @@ suspend fun PixivWebClient.ajaxFollowing(
     rest: FollowType = FollowType.SHOW,
     tag: String = "",
     locale: Locale = Locale.CHINA,
-): UserFollowing = web(following(uid = uid)) {
+): UserFollowing = ajax(following(uid = uid)) {
     header(HttpHeaders.Referrer, referer(uid = uid))
 
     parameter("offset", offset)
@@ -71,7 +71,7 @@ suspend fun PixivWebClient.ajaxBookmarks(
     rest: FollowType = FollowType.SHOW,
     tag: String = "",
     locale: Locale = Locale.CHINA,
-): UserBookmarks<WebIllust> = web(bookmarks(uid = uid, type = "illust")) {
+): UserBookmarks<WebIllust> = ajax(bookmarks(uid = uid, type = "illust")) {
     header(HttpHeaders.Referrer, referer(uid = uid))
 
     parameter("offset", offset)

@@ -12,6 +12,8 @@ data class IllustInfo(
     @SerialName("create_date")
     @Contextual
     val createAt: OffsetDateTime,
+    @SerialName("width")
+    val width: Int,
     @SerialName("height")
     val height: Int,
     @SerialName("id")
@@ -29,10 +31,9 @@ data class IllustInfo(
     @SerialName("page_count")
     val pageCount: Int,
     @SerialName("restrict")
-    @Serializable(with = PublicityType.Companion.TypeSerializer::class)
+    @Serializable(with = PublicityType.IndexSerializer::class)
     val restrict: PublicityType,
     @SerialName("sanity_level")
-    @Serializable(with = SanityLevel.Companion.TypeSerializer::class)
     val sanityLevel: SanityLevel,
     @SerialName("series")
     val series: SeriesInfo?,
@@ -54,10 +55,7 @@ data class IllustInfo(
     val user: UserInfo,
     @SerialName("visible")
     val visible: Boolean,
-    @SerialName("width")
-    val width: Int,
     @SerialName("x_restrict")
-    @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
     val age: AgeLimit,
 ) {
     @Serializable

@@ -73,7 +73,7 @@ internal fun Url.toProxy(): Proxy {
 }
 
 @Suppress("FunctionName")
-inline fun <reified T : Enum<T>> PixivEnumSerializer(): KSerializer<T> {
+inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, SerialKind.ENUM)
@@ -87,7 +87,7 @@ inline fun <reified T : Enum<T>> PixivEnumSerializer(): KSerializer<T> {
 }
 
 @Suppress("FunctionName")
-inline fun <reified T : Enum<T>> PixivTypeSerializer(): KSerializer<T> {
+inline fun <reified T : Enum<T>> EnumIndexSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
@@ -100,17 +100,21 @@ inline fun <reified T : Enum<T>> PixivTypeSerializer(): KSerializer<T> {
     }
 }
 
-@Serializable(with = OrderType.Companion::class)
+@Serializable(with = OrderType.NameSerializer::class)
 enum class OrderType {
     DESC,
     ASC;
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<OrderType> by PixivEnumSerializer()
+    object NameSerializer : KSerializer<OrderType> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<OrderType> by EnumIndexSerializer()
+
+    companion object : KSerializer<OrderType> by NameSerializer
 }
 
-@Serializable(with = SearchSort.Companion::class)
+@Serializable(with = SearchSort.NameSerializer::class)
 enum class SearchSort {
     DATE_DESC,
     DATE_ASC,
@@ -122,10 +126,14 @@ enum class SearchSort {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<SearchSort> by PixivEnumSerializer()
+    object NameSerializer : KSerializer<SearchSort> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<SearchSort> by EnumIndexSerializer()
+
+    companion object : KSerializer<SearchSort> by NameSerializer
 }
 
-@Serializable(with = SearchDuration.Companion::class)
+@Serializable(with = SearchDuration.NameSerializer::class)
 enum class SearchDuration {
     CUSTOM_DURATION,
     ALL,
@@ -138,10 +146,14 @@ enum class SearchDuration {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<SearchDuration> by PixivEnumSerializer()
+    object NameSerializer : KSerializer<SearchDuration> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<SearchDuration> by EnumIndexSerializer()
+
+    companion object : KSerializer<SearchDuration> by NameSerializer
 }
 
-@Serializable(with = PublicityType.Companion::class)
+@Serializable(with = PublicityType.NameSerializer::class)
 enum class PublicityType {
     PUBLIC,
     PRIVATE,
@@ -149,12 +161,14 @@ enum class PublicityType {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<PublicityType> by PixivEnumSerializer() {
-        object TypeSerializer : KSerializer<PublicityType> by PixivTypeSerializer()
-    }
+    object NameSerializer : KSerializer<PublicityType> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<PublicityType> by EnumIndexSerializer()
+
+    companion object : KSerializer<PublicityType> by NameSerializer
 }
 
-@Serializable(with = SearchTarget.Companion::class)
+@Serializable(with = SearchTarget.NameSerializer::class)
 enum class SearchTarget {
     PARTIAL_MATCH_FOR_TAGS,
     EXACT_MATCH_FOR_TAGS,
@@ -162,10 +176,14 @@ enum class SearchTarget {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<SearchTarget> by PixivEnumSerializer()
+    object NameSerializer : KSerializer<SearchTarget> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<SearchTarget> by EnumIndexSerializer()
+
+    companion object : KSerializer<SearchTarget> by NameSerializer
 }
 
-@Serializable(with = WorkContentType.Companion::class)
+@Serializable(with = WorkContentType.NameSerializer::class)
 enum class WorkContentType {
     ILLUST,
     UGOIRA,
@@ -173,12 +191,14 @@ enum class WorkContentType {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<WorkContentType> by PixivEnumSerializer() {
-        object TypeSerializer : KSerializer<WorkContentType> by PixivTypeSerializer()
-    }
+    object NameSerializer : KSerializer<WorkContentType> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<WorkContentType> by EnumIndexSerializer()
+
+    companion object : KSerializer<WorkContentType> by NameSerializer
 }
 
-@Serializable(with = RankMode.Companion::class)
+@Serializable(with = RankMode.NameSerializer::class)
 enum class RankMode {
     // MONTH
     MONTH,
@@ -209,10 +229,14 @@ enum class RankMode {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<RankMode> by PixivEnumSerializer()
+    object NameSerializer : KSerializer<RankMode> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<RankMode> by EnumIndexSerializer()
+
+    companion object : KSerializer<RankMode> by NameSerializer
 }
 
-@Serializable(with = SanityLevel.Companion::class)
+@Serializable(with = SanityLevel.IndexSerializer::class)
 enum class SanityLevel {
     UNCHECKED,
     TEMP1,
@@ -225,12 +249,14 @@ enum class SanityLevel {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<SanityLevel> by PixivEnumSerializer() {
-        object TypeSerializer : KSerializer<SanityLevel> by PixivTypeSerializer()
-    }
+    object NameSerializer : KSerializer<SanityLevel> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<SanityLevel> by EnumIndexSerializer()
+
+    companion object : KSerializer<SanityLevel> by IndexSerializer
 }
 
-@Serializable(with = AgeLimit.Companion::class)
+@Serializable(with = AgeLimit.IndexSerializer::class)
 enum class AgeLimit {
     ALL {
         override fun toString(): String = "all-age"
@@ -242,13 +268,16 @@ enum class AgeLimit {
         override fun toString(): String = "r18-g"
     };
 
-    companion object : KSerializer<AgeLimit> by PixivEnumSerializer() {
-        override fun deserialize(decoder: Decoder): AgeLimit = decoder.decodeString().let { value ->
-            requireNotNull(values().find { it.toString() == value }) { "$value not in ${values().toList()}" }
+    object NameSerializer : KSerializer<AgeLimit> by EnumNameSerializer() {
+        override fun deserialize(decoder: Decoder): AgeLimit {
+            val value = decoder.decodeString()
+            return requireNotNull(values().find { it.toString() == value }) { "$value not in ${values().toList()}" }
         }
-
-        object TypeSerializer : KSerializer<AgeLimit> by PixivTypeSerializer()
     }
+
+    object IndexSerializer : KSerializer<AgeLimit> by EnumIndexSerializer()
+
+    companion object : KSerializer<AgeLimit> by IndexSerializer
 }
 
 enum class FilterType {
@@ -258,7 +287,7 @@ enum class FilterType {
     override fun toString(): String = name.lowercase()
 }
 
-@Serializable(with = CategoryType.Companion::class)
+@Serializable(with = CategoryType.NameSerializer::class)
 enum class CategoryType {
     ALL,
     ILLUST,
@@ -266,7 +295,11 @@ enum class CategoryType {
 
     override fun toString(): String = name.lowercase()
 
-    companion object : KSerializer<CategoryType> by PixivEnumSerializer()
+    object NameSerializer : KSerializer<CategoryType> by EnumNameSerializer()
+
+    object IndexSerializer : KSerializer<CategoryType> by EnumIndexSerializer()
+
+    companion object : KSerializer<CategoryType> by NameSerializer
 }
 
 enum class FollowType {

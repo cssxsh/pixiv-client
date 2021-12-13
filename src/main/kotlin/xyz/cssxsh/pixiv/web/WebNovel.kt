@@ -13,7 +13,7 @@ data class WebNovel(
     val bookmarkData: JsonElement,// TODO
     @SerialName("createDate")
     @Contextual
-    val createDate: OffsetDateTime,
+    val createAt: OffsetDateTime,
     @SerialName("description")
     val description: String,
     @SerialName("id")
@@ -31,7 +31,7 @@ data class WebNovel(
     @SerialName("profileImageUrl")
     val profileImageUrl: String,
     @SerialName("restrict")
-    @Serializable(PublicityType.Companion.TypeSerializer::class)
+    @Serializable(with = PublicityType.IndexSerializer::class)
     val publicity: PublicityType,
     @SerialName("tags")
     val tags: List<String>,
@@ -43,7 +43,7 @@ data class WebNovel(
     val caption: WebTitleCaption,
     @SerialName("updateDate")
     @Contextual
-    val updateDate: OffsetDateTime,
+    val updateAt: OffsetDateTime,
     @SerialName("url")
     val url: String,
     @SerialName("userId")
@@ -51,6 +51,5 @@ data class WebNovel(
     @SerialName("userName")
     val name: String,
     @SerialName("xRestrict")
-    @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
     val age: AgeLimit,
 ) : WebWorkInfo

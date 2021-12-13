@@ -9,7 +9,7 @@ data class NovelSeries(
     @SerialName("caption")
     val caption: String,
     @SerialName("createDate")
-    val createDate: String,
+    val createAt: String,
     @SerialName("createdTimestamp")
     val createdTimestamp: Int,
     @SerialName("displaySeriesContentCount")
@@ -48,18 +48,17 @@ data class NovelSeries(
     val total: Int,
     @SerialName("updateDate")
     @Contextual
-    val updateDate: OffsetDateTime,
+    val updateAt: OffsetDateTime,
     @SerialName("updatedTimestamp")
     val updatedTimestamp: Long,
     @SerialName("userId")
-    val userId: Long,
+    val uid: Long,
     @SerialName("userName")
-    val userName: String,
+    val name: String,
     @SerialName("watchCount")
     val watchCount: Long?,
     @SerialName("xRestrict")
-    @Serializable(AgeLimit.Companion.TypeSerializer::class)
-    val ageLimit: AgeLimit
+    val age: AgeLimit
 ) {
     @Serializable
     data class Episode(

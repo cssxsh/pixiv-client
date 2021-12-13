@@ -42,7 +42,6 @@ data class AuthResult(
         @SerialName("profile_image_urls")
         val profileFileUrls: FileUrls,
         @SerialName("x_restrict")
-        @Serializable(with = AgeLimit.Companion.TypeSerializer::class)
         val age: AgeLimit,
     )
 }
