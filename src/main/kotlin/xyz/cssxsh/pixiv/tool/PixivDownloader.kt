@@ -143,7 +143,7 @@ open class PixivDownloader(
         while (isActive && length == 0) {
             try {
                 length = length(client = client, url = url)
-            } catch (e: MatchContentLengthException) {
+            } catch (_: MatchContentLengthException) {
                 client = clients.random()
             }
         }

@@ -11,7 +11,7 @@ val TransferExceptionHandler: CallExceptionHandler = { cause ->
         for (builder in list) {
             throw try {
                 builder(cause.response, content)
-            } catch (e: Throwable) {
+            } catch (_: Throwable) {
                 continue
             }
         }

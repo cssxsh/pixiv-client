@@ -29,7 +29,7 @@ open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownl
         val clazz = Class.forName(name, true, PixivGifEncoder::class.java.classLoader)
         return try {
             clazz.getField("INSTANCE").get(null)
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             clazz.getConstructor().newInstance()
         } as T
     }

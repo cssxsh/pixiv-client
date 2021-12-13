@@ -32,7 +32,7 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
 
         for (item in other.orEmpty()) try {
             result.addAll(item.let(lookup))
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             //
         }
 
@@ -40,13 +40,13 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
 
         if (result.isEmpty()) try {
             result.addAll(hostname.let(lookup))
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             //
         }
 
         if (result.isEmpty()) try {
             result.addAll(InetAddress.getAllByName(hostname))
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             //
         }
 
