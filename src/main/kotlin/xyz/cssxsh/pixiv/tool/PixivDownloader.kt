@@ -14,7 +14,7 @@ import okhttp3.ConnectionPool
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.exception.*
 import java.net.*
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 open class PixivDownloader(
     async: Int = 32,
@@ -76,12 +76,8 @@ open class PixivDownloader(
                 channel.receive()
             } ?: continue
         }
-        throw CancellationException()
+        throw CancellationException(null, null)
     }
-
-    private fun IntRange.getLength() = (last - first + 1)
-
-    private fun IntRange.getHeader() = "bytes=${first}-${last}"
 
     private suspend fun length(client: HttpClient, url: Url): Int = withHttpClient(client) {
         val response = head<HttpResponse>(url) {
@@ -92,28 +88,33 @@ open class PixivDownloader(
             header(HttpHeaders.Connection, "keep-alive")
             header(HttpHeaders.Pragma, "no-store")
         }
-        response.headers[HttpHeaders.ContentLength]?.toInt()
+        response.headers[HttpHeaders.ContentLength]?.toIntOrNull()
             ?: response.headers[HttpHeaders.ContentRange]?.substringAfter('/')?.toInt()
             ?: throw MatchContentLengthException(response)
     }
 
-    private suspend fun downloadRange(client: HttpClient, url: Url, range: IntRange) = withHttpClient(client) {
-        get<ByteArray>(url) {
+    private suspend fun range(client: HttpClient, url: Url, dst: ByteArray, offset: Int) = withHttpClient(client) {
+        val length = minOf(dst.size - offset, blockSize)
+        val range = "bytes=${offset}-${offset + length - 1}"
+
+        val response = get<HttpResponse>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
-            header(HttpHeaders.Range, range.getHeader())
+            header(HttpHeaders.Range, range)
             url {
-                fragment = range.getHeader()
+                fragment = range
             }
-        }.also {
-            if (it.size > range.last) return@withHttpClient it.sliceArray(range)
-            val length = range.getLength()
-            if (it.size != length) throw ByteArrayException(it, length)
         }
+
+        val size = response.headers[HttpHeaders.ContentLength]?.toIntOrNull() ?: -1
+
+        if (size != length) throw MatchContentLengthException(response)
+
+        response.content.readFully(dst, offset, length)
     }
 
-    private suspend fun downloadAll(client: HttpClient, url: Url) = withHttpClient(client) {
-        get<ByteArray>(url) {
+    private suspend fun all(client: HttpClient, url: Url): ByteArray = withHttpClient(client) {
+        get(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
         }
@@ -121,19 +122,22 @@ open class PixivDownloader(
 
     private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray = supervisorScope {
         if (blockSize <= 0 || length < blockSize) {
-            downloadAll(client = client, url = url)
+            all(client = client, url = url)
         } else {
-            (0 until length step blockSize).mapIndexed { _, offset ->
-                async {
-                    downloadRange(
+            val bytes = ByteArray(size = length)
+
+            (0 until length step blockSize).map { offset ->
+                async(Dispatchers.IO) {
+                    range(
                         client = client,
                         url = url,
-                        range = offset until (offset + blockSize).coerceAtMost(length)
+                        dst = bytes,
+                        offset = offset
                     )
                 }
-            }.fold(ByteArray(0)) { acc, deferred -> acc + deferred.await() }.also {
-                if (it.size != length) throw ByteArrayException(it, length)
-            }
+            }.awaitAll()
+
+            bytes
         }
     }
 
