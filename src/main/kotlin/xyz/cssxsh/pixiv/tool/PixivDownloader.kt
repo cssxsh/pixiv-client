@@ -139,7 +139,7 @@ open class PixivDownloader(
 
     private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray = supervisorScope {
         val bytes = ByteArray(size = length)
-        if (blockSize <= 0 || length < blockSize) {
+        if (blockSize <= 0 || length <= blockSize) {
             all(client = client, url = url, dst = bytes)
         } else {
             (0 until length step blockSize).map { offset ->
