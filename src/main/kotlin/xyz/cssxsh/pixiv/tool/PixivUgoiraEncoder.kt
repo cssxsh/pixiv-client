@@ -22,17 +22,19 @@ abstract class PixivUgoiraEncoder {
         }
     }
 
-    protected open suspend fun UgoiraMetadata.zip(): ZipFile {
-        return ZipFile(download(original, original.encodedPath.substringAfterLast('/')))
+    protected open suspend fun UgoiraMetadata.download(): File {
+        return download(original, original.encodedPath.substringAfterLast('/'))
     }
 
     protected infix fun UgoiraFrame.with(zip: ZipFile): BufferedImage = with(zip) {
         getInputStream(getEntry(file)).use { ImageIO.read(it) }
     }
 
-    protected suspend fun <T> UgoiraMetadata.frame(block: (UgoiraFrame, BufferedImage) -> T) = zip().use { zip ->
-        frames.map { frame ->
-            block(frame, frame with zip)
+    protected suspend fun <T> UgoiraMetadata.frame(block: (UgoiraFrame, BufferedImage) -> T): List<T> {
+        return ZipFile(download()).use { zip ->
+            frames.map { frame ->
+                block(frame, frame with zip)
+            }
         }
     }
 
