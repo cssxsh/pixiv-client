@@ -88,6 +88,9 @@ open class PixivDownloader(
             header(HttpHeaders.Connection, "keep-alive")
             header(HttpHeaders.Pragma, "no-store")
         }
+        if (response.headers[HttpHeaders.Age]?.toIntOrNull() == 0) {
+            throw NoCacheException(response)
+        }
         response.headers[HttpHeaders.ContentLength]?.toIntOrNull()
             ?: response.headers[HttpHeaders.ContentRange]?.substringAfter('/')?.toInt()
             ?: throw MatchContentLengthException(response)
@@ -106,26 +109,39 @@ open class PixivDownloader(
             }
         }
 
-        val size = response.headers[HttpHeaders.ContentLength]?.toIntOrNull() ?: -1
+        if (response.headers[HttpHeaders.Age]?.toIntOrNull() == 0) {
+            throw NoCacheException(response)
+        }
 
-        if (size != length) throw MatchContentLengthException(response)
+        if ((response.headers[HttpHeaders.ContentLength]?.toIntOrNull() ?: -1) != length) {
+            throw MatchContentLengthException(response)
+        }
 
         response.content.readFully(dst, offset, length)
     }
 
-    private suspend fun all(client: HttpClient, url: Url): ByteArray = withHttpClient(client) {
-        get(url) {
+    private suspend fun all(client: HttpClient, url: Url, dst: ByteArray) = withHttpClient(client) {
+        val response = get<HttpResponse>(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
         }
+
+        if (response.headers[HttpHeaders.Age]?.toIntOrNull() == 0) {
+            throw NoCacheException(response)
+        }
+
+        if ((response.headers[HttpHeaders.ContentLength]?.toIntOrNull() ?: -1) != dst.size) {
+            throw MatchContentLengthException(response)
+        }
+
+        response.content.readFully(dst, 0, dst.size)
     }
 
     private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray = supervisorScope {
+        val bytes = ByteArray(size = length)
         if (blockSize <= 0 || length < blockSize) {
-            all(client = client, url = url)
+            all(client = client, url = url, dst = bytes)
         } else {
-            val bytes = ByteArray(size = length)
-
             (0 until length step blockSize).map { offset ->
                 async(Dispatchers.IO) {
                     range(
@@ -136,9 +152,8 @@ open class PixivDownloader(
                     )
                 }
             }.awaitAll()
-
-            bytes
         }
+        bytes
     }
 
     open suspend fun download(url: Url): ByteArray = supervisorScope {
@@ -148,6 +163,8 @@ open class PixivDownloader(
             try {
                 length = length(client = client, url = url)
             } catch (_: MatchContentLengthException) {
+                client = clients.random()
+            } catch (_: NoCacheException) {
                 client = clients.random()
             }
         }
