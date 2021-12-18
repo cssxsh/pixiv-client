@@ -11,7 +11,6 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.auth.*
-import io.ktor.util.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
@@ -44,11 +43,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         install(HttpCookies) {
             storage = this@PixivAuthClient.storage
         }
-        ContentEncoding {
-            gzip()
-            deflate()
-            identity()
-        }
+        ContentEncoding()
         HttpResponseValidator {
             handleResponseException(block = TransferExceptionHandler)
         }
