@@ -1,13 +1,13 @@
 package xyz.cssxsh.pixiv.tool
 
 import io.ktor.http.*
+import kotlinx.coroutines.*
 import xyz.cssxsh.pixiv.apps.*
 import java.awt.image.*
 import java.io.*
 import java.util.zip.*
 import javax.imageio.*
 
-@Suppress("BlockingMethodInNonBlockingContext")
 abstract class PixivUgoiraEncoder {
     protected open val cache: File = File(".")
 
@@ -31,9 +31,12 @@ abstract class PixivUgoiraEncoder {
     }
 
     protected suspend fun <T> UgoiraMetadata.frame(block: (UgoiraFrame, BufferedImage) -> T): List<T> {
-        return ZipFile(download()).use { zip ->
-            frames.map { frame ->
-                block(frame, frame with zip)
+        val file = download()
+        return runBlocking(Dispatchers.IO) {
+            ZipFile(file).use { zip ->
+                frames.map { frame ->
+                    block(frame, frame with zip)
+                }
             }
         }
     }
