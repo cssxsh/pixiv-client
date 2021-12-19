@@ -63,6 +63,8 @@ const val NO_PROFILE_IMAGE = "https://s.pximg.net/common/images/no_profile.png"
 
 const val LIMIT_UNKNOWN_IMAGE = "https://s.pximg.net/common/images/limit_unknown_360.png"
 
+const val LIMIT_MYPIXIV_IMAGE = "https://s.pximg.net/common/images/limit_mypixiv_360.png"
+
 internal fun Url.toProxy(): Proxy {
     val type = when (protocol) {
         URLProtocol.SOCKS -> Proxy.Type.SOCKS
