@@ -1,6 +1,7 @@
 package xyz.cssxsh.pixiv.web
 
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.descriptors.*
@@ -14,9 +15,9 @@ class WebApiResult(
     @SerialName("body")
     val body: JsonElement,
     @SerialName("error")
-    val error: Boolean,
+    val error: Boolean = false,
     @SerialName("message")
-    val message: String,
+    val message: String = "",
 )
 
 suspend inline fun <reified T> PixivWebClient.ajax(api: String, crossinline block: HttpRequestBuilder.() -> Unit): T {
@@ -24,6 +25,15 @@ suspend inline fun <reified T> PixivWebClient.ajax(api: String, crossinline bloc
         val result = client.request<WebApiResult>(api, block)
         if (result.error) throw WebApiException(result)
         PixivJson.decodeFromJsonElement(result.body)
+    }
+}
+
+suspend fun PixivWebClient.location(url: Url): String? {
+    return useHttpClient { client ->
+        client.config {
+            expectSuccess = false
+            followRedirects = false
+        }.head<HttpMessage>(url).headers[HttpHeaders.Location]
     }
 }
 
