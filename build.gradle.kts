@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     implementation(kotlinx("coroutines-core", Versions.coroutines))
-    implementation(ktor("client-auth", "1.6.1")) {
+    implementation(ktor("client-auth", "1.6.5")) {
         exclude(group = "io.ktor")
     }
     implementation(ktor("client-core", Versions.ktor))
@@ -41,10 +41,10 @@ dependencies {
         println("请安装 OPENCV 并设置 环境变量 OPENCV_HOME 和 PATH")
         compileOnly("org.openpnp:opencv:4.5.1-2")
     }
-    compileOnly("org.seleniumhq.selenium:selenium-java:4.1.0")
+    compileOnly("org.seleniumhq.selenium:selenium-java:4.1.1")
 
     testImplementation(kotlin("test", "1.5.31"))
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.1.0")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.1.1")
 }
 
 kotlin {
