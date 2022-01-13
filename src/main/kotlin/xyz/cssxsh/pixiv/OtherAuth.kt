@@ -45,7 +45,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
     val redirect: HttpResponse = useHttpClient { it.get(link) }
     val location = redirect.request.url
 
-    check(location.toString().startsWith(POST_REDIRECT_URL)) { "$link To $location" }
+    check(location.toString().startsWith(POST_REDIRECT_URL)) { location }
 
     val account = redirect.account()
 
@@ -82,7 +82,8 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
     /**
      * Code by Url pixiv://...
      */
-    return requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }.parameters["code"]!!
+    return requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }.parameters["code"]
+        ?: throw NoSuchElementException("code")
 }
 
 /**
@@ -129,9 +130,9 @@ suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit) = login { 
     }
 
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
-    // transform Unicode
-    val unicode = """(?<=\\u)\d{4}""".toRegex()
-    val link = Url(sign.replace(unicode) { it.value.toInt(16).toChar().toString() })
+    // transform unicode
+    val unicode = """\\u(\d{4})""".toRegex()
+    val link = Url(sign.replace(unicode) { it.destructured.component1().toInt(16).toChar().toString() })
 
     /**
      * GiGya auto to [POST_REDIRECT_URL]
@@ -221,10 +222,7 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
 
         val result = PixivJson.decodeFromJsonElement<WebLoginResult>(attempt)
 
-        if ("captcha" in result.body.validationErrors) {
-            println(result)
-            continue
-        }
+        if ("captcha" in result.body.validationErrors) continue
 
         check(result.body.validationErrors.isNotEmpty()) { result.body }
 
@@ -270,5 +268,5 @@ suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver) = login { redirect
         .first { log -> "pixiv://account/login" in log.message.orEmpty() }
     val url = Url(log.message.substringAfter("'").substringBefore("'"))
 
-    url.parameters["code"]!!
+    url.parameters["code"] ?: throw NoSuchElementException("code")
 }
