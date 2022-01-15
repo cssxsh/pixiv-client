@@ -28,13 +28,13 @@ suspend inline fun <reified T> PixivWebClient.ajax(api: String, crossinline bloc
     }
 }
 
-suspend fun PixivWebClient.location(url: Url): String? {
+suspend fun PixivWebClient.location(url: Url): String {
     return useHttpClient { client ->
         client.config {
             expectSuccess = false
             followRedirects = false
         }.head<HttpMessage>(url).headers[HttpHeaders.Location]
-    }
+    } ?: throw IllegalStateException("redirect failure $url, Not Found Location.")
 }
 
 object WepApiSet : KSerializer<Set<Long>> {
