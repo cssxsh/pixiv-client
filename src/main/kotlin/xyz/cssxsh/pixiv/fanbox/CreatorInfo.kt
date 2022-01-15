@@ -7,11 +7,11 @@ data class CreatorInfo(
     @SerialName("comment")
     val comment: String? = null,
     @SerialName("iconUrl")
-    val iconUrl: String,
+    val iconUrl: String?,
     @SerialName("name")
     val name: String,
     @SerialName("role")
     val role: String? = null,
     @SerialName("userId")
-    val uid: Long
+    val userId: Long
 )

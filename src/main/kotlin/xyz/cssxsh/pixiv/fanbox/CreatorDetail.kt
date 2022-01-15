@@ -5,9 +5,9 @@ import kotlinx.serialization.*
 @Serializable
 data class CreatorDetail(
     @SerialName("coverImageUrl")
-    val coverImageUrl: String,
+    val coverImageUrl: String?,
     @SerialName("creatorId")
-    val id: String,
+    val creatorId: String,
     @SerialName("description")
     val description: String,
     @SerialName("hasAdultContent")
@@ -29,15 +29,33 @@ data class CreatorDetail(
     @SerialName("user")
     val user: CreatorInfo
 ) {
+
     @Serializable
-    data class ProfileItem(
+    sealed class ProfileItem(val type: String) {
+
         @SerialName("id")
-        val id: String,
-        @SerialName("imageUrl")
-        val imageUrl: String? = null,
-        @SerialName("thumbnailUrl")
-        val thumbnailUrl: String? = null,
-        @SerialName("type")
-        val type: String
-    )
+        abstract val id: String
+
+        @Serializable
+        @SerialName("image")
+        data class Image(
+            @SerialName("id")
+            override val id: String,
+            @SerialName("imageUrl")
+            val imageUrl: String,
+            @SerialName("thumbnailUrl")
+            val thumbnailUrl: String
+        ) : ProfileItem(type = "image")
+
+        @Serializable
+        @SerialName("video")
+        data class Video(
+            @SerialName("id")
+            override val id: String,
+            @SerialName("serviceProvider")
+            val serviceProvider: String,
+            @SerialName("videoId")
+            val videoId: String
+        ) : ProfileItem(type = "video")
+    }
 }

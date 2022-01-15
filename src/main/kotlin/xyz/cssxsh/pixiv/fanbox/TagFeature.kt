@@ -7,7 +7,7 @@ data class TagFeature(
     @SerialName("count")
     val count: Int,
     @SerialName("coverImageUrl")
-    val coverImageUrl: String,
+    val coverImageUrl: String?,
     @SerialName("tag")
     val tag: String
 )

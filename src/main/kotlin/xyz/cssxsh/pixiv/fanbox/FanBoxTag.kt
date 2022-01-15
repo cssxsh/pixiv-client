@@ -2,8 +2,8 @@ package xyz.cssxsh.pixiv.fanbox
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import xyz.cssxsh.pixiv.PixivWebClient
-import xyz.cssxsh.pixiv.web.ajax
+import xyz.cssxsh.pixiv.*
+import xyz.cssxsh.pixiv.web.*
 
 class FanBoxTag(val client: PixivWebClient) {
     companion object {

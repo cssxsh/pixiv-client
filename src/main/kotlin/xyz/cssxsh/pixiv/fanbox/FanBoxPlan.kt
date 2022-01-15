@@ -9,17 +9,19 @@ class FanBoxPlan(val client: PixivWebClient) {
     companion object {
         internal const val LIST_CREATOR = "https://api.fanbox.cc/plan.listCreator"
 
-        internal const val LIST_SUPPORTING = "https://api.fanbox.cc/plan.listSupportinstr"
+        internal const val LIST_SUPPORTING = "https://api.fanbox.cc/plan.listSupporting"
     }
 
-    suspend fun listCreator(creatorId: String): List<CreatorDetail> {
+    suspend fun listCreator(creatorId: String): List<PlanInfo> {
         return client.ajax(api = LIST_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("creatorId", creatorId)
         }
     }
 
-    suspend fun listSupportinstr(): List<CreatorDetail> {
+    suspend fun listSupporting(): List<PlanInfo> {
         return client.ajax(api = LIST_SUPPORTING) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")

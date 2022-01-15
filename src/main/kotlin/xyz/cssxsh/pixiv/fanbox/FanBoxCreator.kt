@@ -7,7 +7,7 @@ import xyz.cssxsh.pixiv.web.*
 
 class FanBoxCreator(val client: PixivWebClient) {
     companion object {
-        internal const val GET = "https://api.fanbox.cc/creator.get?creatorId=${"official"}"
+        internal const val GET = "https://api.fanbox.cc/creator.get"
 
         internal const val GET_START_COMMENTS = "https://api.fanbox.cc/creator.getStartComments"
 
@@ -17,22 +17,13 @@ class FanBoxCreator(val client: PixivWebClient) {
 
         internal const val LIST_PIXIV = "https://api.fanbox.cc/creator.listPixiv"
 
-        internal const val LIST_RELATED = "https://api.fanbox.cc/creator.listRelated?userId=${0}&limit=8&method=diverse"
+        internal const val LIST_RELATED = "https://api.fanbox.cc/creator.listRelated"
 
         /**
-         * * `https://official.fanbox.cc/@official`
+         * * `https://www.fanbox.cc/@official`
+         * * `https://official.fanbox.cc`
          */
-        val URL_FANBOX_CREATOR_REGEX_1 = """([\w-]{3,16})(?=\.fanbox\.cc)""".toRegex()
-
-        /**
-         * * `https://official.fanbox.cc/posts`
-         */
-        val URL_FANBOX_CREATOR_REGEX_2 = """(?<=\.fanbox\.cc/@)([\w-]{3,16})""".toRegex()
-
-        /**
-         * * `https://official.fanbox.cc/posts`
-         */
-        val URL_FANBOX_CREATOR_REGEX = """([\w-]{3,16})\.fanbox\.cc(?:/@)?([\w-]{3,16})?""".toRegex()
+        val URL_FANBOX_CREATOR_REGEX = """((?<=\.fanbox\.cc/@)[\w-]{3,16})|([\w-]{3,16}(?=\.fanbox\.cc))""".toRegex()
     }
 
     suspend fun get(creatorId: String): CreatorDetail {
@@ -47,7 +38,7 @@ class FanBoxCreator(val client: PixivWebClient) {
     suspend fun get(userId: Long): CreatorDetail {
         val url = Url("https://www.pixiv.net/fanbox/creator/$userId")
         val location = client.location(url = url)
-        val creatorId = URL_FANBOX_CREATOR_REGEX.find(location)?.groupValues?.last()
+        val creatorId = URL_FANBOX_CREATOR_REGEX.find(location)?.value
             ?: throw IllegalStateException("跳转失败 uid: ${userId}, url: ${location}.")
 
         return get(creatorId = creatorId)
