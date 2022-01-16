@@ -2,7 +2,6 @@ package xyz.cssxsh.pixiv.fanbox
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
@@ -23,7 +22,7 @@ class FanBoxNotification(override val client: PixivWebClient) : FanBoxApi() {
     suspend fun updateSettings(type: Notification, value: Boolean) {
         val metadata = getMetaData()
 
-        client.ajax<JsonElement?>(api = UPDATE_SETTINGS) {
+        client.ajax<String?>(api = UPDATE_SETTINGS) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
             header(HttpHeaders.XCsrfToken, metadata.csrfToken)

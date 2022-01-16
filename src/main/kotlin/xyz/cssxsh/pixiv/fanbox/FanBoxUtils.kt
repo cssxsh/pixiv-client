@@ -1,7 +1,6 @@
 package xyz.cssxsh.pixiv.fanbox
 
 import io.ktor.http.*
-import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 internal val HttpHeaders.XCsrfToken by lazy { "X-Csrf-Token" }
