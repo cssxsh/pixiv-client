@@ -18,4 +18,13 @@ class FanBoxTag(val client: PixivWebClient) {
             parameter("creatorId", creatorId)
         }
     }
+
+    suspend fun getFeatured(userId: Long): List<TagFeature> {
+        return client.ajax(api = GET_FEATURED) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("userId", userId)
+        }
+    }
 }

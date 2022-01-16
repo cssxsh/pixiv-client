@@ -5,7 +5,7 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxPayment(val client: PixivWebClient) {
+class FanBoxPayment(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val LIST_PAID = "https://api.fanbox.cc/payment.listPaid"
 

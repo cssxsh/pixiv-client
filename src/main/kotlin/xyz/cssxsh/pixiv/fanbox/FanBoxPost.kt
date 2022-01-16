@@ -2,9 +2,7 @@ package xyz.cssxsh.pixiv.fanbox
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
@@ -15,7 +13,7 @@ class FanBoxPost(val client: PixivWebClient) {
 
         internal const val LIST_CREATOR = "https://api.fanbox.cc/post.listCreator"
 
-        internal const val LIST_TAGGED = "https://api.fanbox.cc/post.listTagged?tag=${""}&userId=${11}"
+        internal const val LIST_TAGGED = "https://api.fanbox.cc/post.listTagged"
 
         internal const val LIST_HOME = "https://api.fanbox.cc/post.listHome"
 
@@ -32,6 +30,18 @@ class FanBoxPost(val client: PixivWebClient) {
         return client.ajax(api = GET_PROMOTION) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+        }
+    }
+
+    suspend fun listCreator(creatorId: String, maxPublishedDatetime: String?, maxId: Long?, limit: Int = 10): PostList {
+        return client.ajax(api = LIST_CREATOR) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("creatorId", creatorId)
+            parameter("maxPublishedDatetime", maxPublishedDatetime)
+            parameter("maxId", maxId)
+            parameter("limit", limit)
         }
     }
 
@@ -63,6 +73,16 @@ class FanBoxPost(val client: PixivWebClient) {
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
 
             parameter("limit", limit)
+        }
+    }
+
+    suspend fun listTagged(tag: String, creatorId: String): PostList {
+        return client.ajax(api = LIST_TAGGED) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("tag", tag)
+            parameter("creatorId", creatorId)
         }
     }
 
@@ -100,6 +120,22 @@ class FanBoxPost(val client: PixivWebClient) {
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
 
             parameter("creatorId", creatorId)
+        }
+
+        return pages.asFlow().map { page ->
+            client.ajax(api = page) {
+                header(HttpHeaders.Origin, "https://www.fanbox.cc")
+                header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+            }
+        }
+    }
+
+    suspend fun paginateCreator(userId: Long): Flow<PostList> {
+        val pages: List<String> = client.ajax(api = PAGINATE_CREATOR) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("userId", userId)
         }
 
         return pages.asFlow().map { page ->

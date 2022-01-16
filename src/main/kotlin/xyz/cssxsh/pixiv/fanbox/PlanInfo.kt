@@ -1,12 +1,11 @@
 package xyz.cssxsh.pixiv.fanbox
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 @Serializable
 data class PlanInfo(
     @SerialName("coverImageUrl")
-    val coverImageUrl: String,
+    val coverImageUrl: String?,
     @SerialName("creatorId")
     val creatorId: String,
     @SerialName("description")

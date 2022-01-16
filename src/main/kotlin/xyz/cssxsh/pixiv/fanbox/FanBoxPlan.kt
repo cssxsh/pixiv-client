@@ -21,6 +21,15 @@ class FanBoxPlan(val client: PixivWebClient) {
         }
     }
 
+    suspend fun listCreator(userId: Long): List<PlanInfo> {
+        return client.ajax(api = LIST_CREATOR) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("userId", userId)
+        }
+    }
+
     suspend fun listSupporting(): List<PlanInfo> {
         return client.ajax(api = LIST_SUPPORTING) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")

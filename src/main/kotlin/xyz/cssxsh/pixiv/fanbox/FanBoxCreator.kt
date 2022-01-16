@@ -17,6 +17,8 @@ class FanBoxCreator(val client: PixivWebClient) {
 
         internal const val LIST_PIXIV = "https://api.fanbox.cc/creator.listPixiv"
 
+        internal const val LIST_TWITTER = "https://api.fanbox.cc/creator.listTwitter"
+
         internal const val LIST_RELATED = "https://api.fanbox.cc/creator.listRelated"
 
         /**
@@ -60,6 +62,13 @@ class FanBoxCreator(val client: PixivWebClient) {
 
     suspend fun listPixiv(): List<CreatorDetail> {
         return client.ajax(api = LIST_PIXIV) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+        }
+    }
+
+    suspend fun listTwitter(): List<CreatorDetail> {
+        return client.ajax(api = LIST_TWITTER) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
