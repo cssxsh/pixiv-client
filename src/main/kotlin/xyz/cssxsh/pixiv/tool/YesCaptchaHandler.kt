@@ -33,7 +33,7 @@ class YesCaptchaHandler(private val clientKey: String, val host: String = "api.y
     private val type: String = "RecaptchaV2EnterpriseTaskProxylessM1"
 
     /**
-     * [查询帐户余额](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/229767/getBalance)
+     * [查询账户余额](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/229767/getBalance)
      * @return 余额
      */
     suspend fun getBalance(): Double {
