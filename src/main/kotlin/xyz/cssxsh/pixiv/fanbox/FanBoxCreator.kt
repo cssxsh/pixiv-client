@@ -36,12 +36,12 @@ class FanBoxCreator(val client: PixivWebClient) {
     }
 
     suspend fun get(userId: Long): CreatorDetail {
-        val url = Url("https://www.pixiv.net/fanbox/creator/$userId")
-        val location = client.location(url = url)
-        val creatorId = URL_FANBOX_CREATOR_REGEX.find(location)?.value
-            ?: throw IllegalStateException("跳转失败 uid: ${userId}, url: ${location}.")
+        return client.ajax(api = GET) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
 
-        return get(creatorId = creatorId)
+            parameter("userId", userId)
+        }
     }
 
     suspend fun listRecommended(): List<CreatorDetail> {
@@ -62,6 +62,17 @@ class FanBoxCreator(val client: PixivWebClient) {
         return client.ajax(api = LIST_PIXIV) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+        }
+    }
+
+    suspend fun listRelated(creatorId: String): List<CreatorDetail> {
+        return client.ajax(api = LIST_RELATED) {
+            header(HttpHeaders.Origin, "https://www.fanbox.cc")
+            header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
+
+            parameter("creatorId", creatorId)
+            parameter("limit", null)
+            parameter("method", "diverse")
         }
     }
 

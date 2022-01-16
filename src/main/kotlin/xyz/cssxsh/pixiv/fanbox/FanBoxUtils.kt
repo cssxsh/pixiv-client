@@ -19,3 +19,5 @@ val PixivWebClient.post get() = FanBoxPost(client = this)
 val PixivWebClient.tag get() = FanBoxTag(client = this)
 
 val PixivWebClient.user get() = FanBoxUser(client = this)
+
+val PostDetail.url get() = "https://www.fanbox.cc/@${creatorId}/posts/${id}"

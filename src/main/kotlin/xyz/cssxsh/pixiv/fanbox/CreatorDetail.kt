@@ -31,7 +31,7 @@ data class CreatorDetail(
 ) {
 
     @Serializable
-    sealed class ProfileItem(val type: String) {
+    sealed class ProfileItem {
 
         @SerialName("id")
         abstract val id: String
@@ -45,7 +45,7 @@ data class CreatorDetail(
             val imageUrl: String,
             @SerialName("thumbnailUrl")
             val thumbnailUrl: String
-        ) : ProfileItem(type = "image")
+        ) : ProfileItem()
 
         @Serializable
         @SerialName("video")
@@ -56,6 +56,6 @@ data class CreatorDetail(
             val serviceProvider: String,
             @SerialName("videoId")
             val videoId: String
-        ) : ProfileItem(type = "video")
+        ) : ProfileItem()
     }
 }

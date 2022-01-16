@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-sealed class PostDetail(val type: String) {
+sealed class PostDetail {
     abstract val body: Body?
     abstract val commentCount: Int
     abstract val commentList: CommentList
@@ -74,7 +74,7 @@ sealed class PostDetail(val type: String) {
         override val updatedDatetime: OffsetDateTime,
         @SerialName("user")
         override val user: CreatorInfo
-    ) : PostDetail(type = "article")
+    ) : PostDetail()
 
     @Serializable
     @SerialName("file")
@@ -86,7 +86,7 @@ sealed class PostDetail(val type: String) {
         @SerialName("commentList")
         override val commentList: CommentList = CommentList.Empty,
         @SerialName("coverImageUrl")
-        override val coverImageUrl: String,
+        override val coverImageUrl: String?,
         @SerialName("creatorId")
         override val creatorId: String,
         @SerialName("excerpt")
@@ -123,7 +123,7 @@ sealed class PostDetail(val type: String) {
         override val updatedDatetime: OffsetDateTime,
         @SerialName("user")
         override val user: CreatorInfo
-    ) : PostDetail(type = "file")
+    ) : PostDetail()
 
     @Serializable
     @SerialName("image")
@@ -172,7 +172,7 @@ sealed class PostDetail(val type: String) {
         override val updatedDatetime: OffsetDateTime,
         @SerialName("user")
         override val user: CreatorInfo
-    ) : PostDetail(type = "image")
+    ) : PostDetail()
 
     @Serializable
     @SerialName("text")
@@ -221,7 +221,56 @@ sealed class PostDetail(val type: String) {
         override val updatedDatetime: OffsetDateTime,
         @SerialName("user")
         override val user: CreatorInfo
-    ) : PostDetail(type = "text")
+    ) : PostDetail()
+
+    @Serializable
+    @SerialName("video")
+    data class Video(
+        @SerialName("body")
+        override val body: VideoBody?,
+        @SerialName("commentCount")
+        override val commentCount: Int,
+        @SerialName("commentList")
+        override val commentList: CommentList = CommentList.Empty,
+        @SerialName("coverImageUrl")
+        override val coverImageUrl: String?,
+        @SerialName("creatorId")
+        override val creatorId: String,
+        @SerialName("excerpt")
+        override val excerpt: String,
+        @SerialName("feeRequired")
+        override val feeRequired: Int,
+        @SerialName("hasAdultContent")
+        override val hasAdultContent: Boolean,
+        @SerialName("id")
+        override val id: Long,
+        @SerialName("imageForShare")
+        override val imageForShare: String? = null,
+        @SerialName("isLiked")
+        override val isLiked: Boolean,
+        @SerialName("isRestricted")
+        override val isRestricted: Boolean,
+        @SerialName("likeCount")
+        override val likeCount: Int,
+        @SerialName("nextPost")
+        override val nextPost: Link? = null,
+        @SerialName("prevPost")
+        override val prevPost: Link? = null,
+        @Contextual
+        @SerialName("publishedDatetime")
+        override val publishedDatetime: OffsetDateTime,
+        @SerialName("restrictedFor")
+        override val restrictedFor: Int?,
+        @SerialName("tags")
+        override val tags: List<String>,
+        @SerialName("title")
+        override val title: String,
+        @Contextual
+        @SerialName("updatedDatetime")
+        override val updatedDatetime: OffsetDateTime,
+        @SerialName("user")
+        override val user: CreatorInfo
+    ) : PostDetail()
 
     sealed interface Body
 
@@ -262,7 +311,15 @@ sealed class PostDetail(val type: String) {
     ) : Body
 
     @Serializable
-    sealed class ArticleBlock(val type: String) {
+    data class VideoBody(
+        @SerialName("videos")
+        val videos: List<EmbedItem>,
+        @SerialName("text")
+        val text: String
+    ) : Body
+
+    @Serializable
+    sealed class ArticleBlock {
 
         sealed interface RichText {
             val offset: Int
@@ -270,7 +327,7 @@ sealed class PostDetail(val type: String) {
         }
 
         @Serializable
-        sealed class Style(val type: String) : RichText {
+        sealed class Style : RichText {
 
             @Serializable
             @SerialName("bold")
@@ -279,7 +336,7 @@ sealed class PostDetail(val type: String) {
                 override val offset: Int,
                 @SerialName("length")
                 override val length: Int,
-            ) : Style(type = "bold")
+            ) : Style()
         }
 
         @Serializable
@@ -301,42 +358,42 @@ sealed class PostDetail(val type: String) {
             val styles: List<Style> = emptyList(),
             @SerialName("links")
             val links: List<Link> = emptyList()
-        ) : ArticleBlock(type = "p")
+        ) : ArticleBlock()
 
         @Serializable
         @SerialName("header")
         data class Header(
             @SerialName("text")
             val text: String
-        ) : ArticleBlock(type = "header")
+        ) : ArticleBlock()
 
         @Serializable
         @SerialName("embed")
         data class Embed(
             @SerialName("embedId")
             val embedId: String
-        ) : ArticleBlock(type = "embed")
+        ) : ArticleBlock()
 
         @Serializable
         @SerialName("url_embed")
         data class UrlEmbed(
             @SerialName("urlEmbedId")
             val urlEmbedId: String
-        ) : ArticleBlock(type = "url_embed")
+        ) : ArticleBlock()
 
         @Serializable
         @SerialName("image")
         data class Image(
             @SerialName("imageId")
             val imageId: String
-        ) : ArticleBlock(type = "image")
+        ) : ArticleBlock()
 
         @Serializable
         @SerialName("file")
         data class File(
             @SerialName("fileId")
             val fileId: String
-        ) : ArticleBlock(type = "file")
+        ) : ArticleBlock()
     }
 
     sealed interface Item {
@@ -384,7 +441,7 @@ sealed class PostDetail(val type: String) {
     ) : Item
 
     @Serializable
-    sealed class UrlEmbedItem(val type: String) : Item {
+    sealed class UrlEmbedItem : Item {
 
         @Serializable
         @SerialName("fanbox.creator")
@@ -393,7 +450,7 @@ sealed class PostDetail(val type: String) {
             val profile: CreatorDetail,
             @SerialName("id")
             override val id: String
-        ) : UrlEmbedItem(type = "fanbox.creator")
+        ) : UrlEmbedItem()
 
         @Serializable
         @SerialName("fanbox.post")
@@ -402,7 +459,7 @@ sealed class PostDetail(val type: String) {
             val postInfo: PostInfo,
             @SerialName("id")
             override val id: String
-        ) : UrlEmbedItem(type = "fanbox.post")
+        ) : UrlEmbedItem()
 
         @Serializable
         @SerialName("html")
@@ -411,7 +468,7 @@ sealed class PostDetail(val type: String) {
             val html: String,
             @SerialName("id")
             override val id: String
-        ) : UrlEmbedItem(type = "html")
+        ) : UrlEmbedItem()
 
         @Serializable
         @SerialName("html.card")
@@ -420,7 +477,19 @@ sealed class PostDetail(val type: String) {
             val card: String,
             @SerialName("id")
             override val id: String
-        ) : UrlEmbedItem(type = "html.card")
+        ) : UrlEmbedItem()
+
+
+        @Serializable
+        @SerialName("default")
+        data class Default(
+            @SerialName("url")
+            val url: String,
+            @SerialName("host")
+            val host: String,
+            @SerialName("id")
+            override val id: String
+        ) : UrlEmbedItem()
     }
 
     @Serializable
