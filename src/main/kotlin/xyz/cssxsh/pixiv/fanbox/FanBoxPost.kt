@@ -7,7 +7,7 @@ import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxPost(val client: PixivWebClient) {
+class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val LIST_SUPPORTING = "https://api.fanbox.cc/post.listSupporting"
 

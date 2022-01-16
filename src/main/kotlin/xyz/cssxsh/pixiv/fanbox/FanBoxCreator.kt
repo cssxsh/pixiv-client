@@ -5,7 +5,7 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxCreator(val client: PixivWebClient) {
+class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val GET = "https://api.fanbox.cc/creator.get"
 

@@ -6,7 +6,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxBell(val client: PixivWebClient) {
+class FanBoxBell(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val COUNT_UNREAD = "https://api.fanbox.cc/bell.countUnread"
     }

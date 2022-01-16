@@ -5,7 +5,7 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxPlan(val client: PixivWebClient) {
+class FanBoxPlan(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val LIST_CREATOR = "https://api.fanbox.cc/plan.listCreator"
 

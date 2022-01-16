@@ -5,7 +5,7 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxNotification(val client: PixivWebClient) {
+class FanBoxNotification(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val GET_SETTINGS = "https://api.fanbox.cc/notification.getSettings"
 

@@ -5,7 +5,7 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxNewsLetter(val client: PixivWebClient) {
+class FanBoxNewsLetter(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val COUNT_UNREAD = "https://api.fanbox.cc/newsletter.countUnread"
     }

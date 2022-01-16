@@ -5,7 +5,7 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxTag(val client: PixivWebClient) {
+class FanBoxTag(override val client: PixivWebClient) : FanBoxApi() {
     companion object {
         internal const val GET_FEATURED = "https://api.fanbox.cc/tag.getFeatured?creatorId=${"official"}"
     }
