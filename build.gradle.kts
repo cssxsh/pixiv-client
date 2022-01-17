@@ -19,16 +19,16 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlinx("coroutines-core", Versions.coroutines))
-    implementation(ktor("client-auth", "1.6.5")) {
+    api(kotlinx("coroutines-core", Versions.coroutines))
+    api(ktor("client-auth", "1.6.5")) {
         exclude(group = "io.ktor")
     }
-    implementation(ktor("client-core", Versions.ktor))
-    implementation(ktor("client-serialization", Versions.ktor))
-    implementation(ktor("client-encoding", Versions.ktor))
-    implementation(ktor("client-okhttp", Versions.ktor))
-    implementation(okhttp3("okhttp", Versions.okhttp))
-    implementation(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
+    api(ktor("client-core", Versions.ktor))
+    api(ktor("client-serialization", Versions.ktor))
+    api(ktor("client-encoding", Versions.ktor))
+    api(ktor("client-okhttp", Versions.ktor))
+    api(okhttp3("okhttp", Versions.okhttp))
+    api(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
     api(square("gifencoder", Versions.gifencoder))
     /**
      * $OPENCV_HOME = ...
