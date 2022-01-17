@@ -2,6 +2,10 @@ package xyz.cssxsh.pixiv.auth
 
 import kotlinx.serialization.*
 
+/**
+ * * `https://accounts.pixiv.net/`
+ * * `document.getElementById('init-config').value`
+ */
 @Serializable
 data class HtmlAccount(
     @SerialName("pixivAccount.continueWithCurrentAccountUrl")
@@ -9,7 +13,7 @@ data class HtmlAccount(
     @SerialName("pixivAccount.returnTo")
     val returnTo: String,
     @SerialName("pixivAccount.tt")
-    val tt: String,
+    val token: String,
     @SerialName("pixivAccount.userId")
     val uid: Long? = null,
     @SerialName("pixivAccount.ref")

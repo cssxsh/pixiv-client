@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package xyz.cssxsh.pixiv
 
 import io.ktor.client.call.*
@@ -79,11 +77,12 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
         }
     }
 
+    val scheme = requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }
+
     /**
      * Code by Url pixiv://...
      */
-    return requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }.parameters["code"]
-        ?: throw NoSuchElementException("code")
+    return scheme.parameters["code"] ?: throw NoSuchElementException("code, $scheme")
 }
 
 /**
@@ -167,7 +166,7 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { redirect 
             @OptIn(InternalAPI::class)
             body = FormDataContent(Parameters.build {
                 append("return_to", account.current)
-                append("tt", account.tt)
+                append("tt", account.token)
             })
         }
     }
@@ -215,7 +214,7 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
                     append("ref", account.ref)
                     append("return_to", account.returnTo)
                     append("recaptcha_enterprise_score_token", gRecaptchaResponse)
-                    append("tt", account.tt)
+                    append("tt", account.token)
                 })
             }
         }
@@ -242,7 +241,7 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
             @OptIn(InternalAPI::class)
             body = FormDataContent(Parameters.build {
                 append("return_to", account.current)
-                append("tt", account.tt)
+                append("tt", account.token)
             })
         }
     }
@@ -265,8 +264,8 @@ suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver) = login { redirect
     }
     // XXX: 通过错误日志获取 跳转URL
     val log = driver.manage().logs().get(LogType.BROWSER)
-        .first { log -> "pixiv://account/login" in log.message.orEmpty() }
+        .last { log -> "pixiv://account/login" in log.message.orEmpty() }
     val url = Url(log.message.substringAfter("'").substringBefore("'"))
 
-    url.parameters["code"] ?: throw NoSuchElementException("code")
+    url.parameters["code"] ?: throw NoSuchElementException("code, ${log.message}")
 }
