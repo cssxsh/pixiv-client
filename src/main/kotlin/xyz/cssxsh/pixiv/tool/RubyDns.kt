@@ -54,4 +54,8 @@ class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
             if (isEmpty()) throw UnknownHostException("$hostname and CNAME${other} ")
         }
     }
+
+    override fun toString(): String {
+        return "RubyDns(doh=${(dns as? DnsOverHttps)?.url}, hosts=${hosts})"
+    }
 }

@@ -27,6 +27,7 @@ dependencies {
     api(ktor("client-serialization", Versions.ktor))
     api(ktor("client-encoding", Versions.ktor))
     api(ktor("client-okhttp", Versions.ktor))
+    api(ktor("network", Versions.ktor))
     api(okhttp3("okhttp", Versions.okhttp))
     api(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
     api(square("gifencoder", Versions.gifencoder))
