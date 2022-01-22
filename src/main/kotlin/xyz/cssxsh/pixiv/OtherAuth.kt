@@ -24,12 +24,9 @@ const val WEIBO_QRCODE_TIMEOUT = 10 * 60 * 1000L
 
 const val WEIBO_QRCODE_INTERVAL = 3 * 1000L
 
-const val SELENIUM_TIMEOUT = 15 * 60 * 1000L
-
-const val SELENIUM_DELAY = 15 * 1000L
-
 private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
+@OptIn(ExperimentalSerializationApi::class)
 private suspend fun HttpResponse.account(): HtmlAccount {
     val html = receive<String>()
     val data = html.substringAfter("value='").substringBefore("'")
@@ -89,6 +86,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
  * 登录，通过新浪微博关联Pixiv
  * @param show handle qrcode image url
  */
+@OptIn(ExperimentalSerializationApi::class)
 suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit) = login { redirect ->
     /**
      * for [LOGIN_URL]
@@ -255,11 +253,11 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
  * 登录，通过 selenium 调用浏览器
  * @param driver 浏览器驱动器
  */
-suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver) = login { redirect ->
+suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver, timeout: Long = 900_000) = login { redirect ->
     driver.get(redirect.toString())
-    withTimeout(SELENIUM_TIMEOUT) {
+    withTimeout(timeout) {
         while (driver.currentUrl.orEmpty().startsWith(POST_REDIRECT_URL).not()) {
-            delay(SELENIUM_DELAY)
+            delay(10_000)
         }
     }
     // XXX: 通过错误日志获取 跳转URL
