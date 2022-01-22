@@ -14,8 +14,8 @@ open class RubyProxy(private val dns: Dns = RubyDns(doh = JAPAN_DNS, hosts = DEF
 
     override val coroutineContext: CoroutineContext = Dispatchers.IO
 
-    fun listen(host: String = "127.0.0.1", post: Int = 8080) = launch {
-        val server = aSocket(ActorSelectorManager(Dispatchers.IO))
+    fun listen(host: String = "127.0.0.1", post: Int = 8080) = launch(SupervisorJob()) {
+        val server = aSocket(ActorSelectorManager(coroutineContext))
             .tcp()
             .bind(host, post)
 
