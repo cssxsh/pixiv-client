@@ -32,7 +32,7 @@ abstract class PixivUgoiraEncoder {
 
     protected suspend fun <T> UgoiraMetadata.frame(block: (UgoiraFrame, BufferedImage) -> T): List<T> {
         val file = download()
-        return runBlocking(Dispatchers.IO) {
+        return withContext(Dispatchers.IO) {
             ZipFile(file).use { zip ->
                 frames.map { frame ->
                     block(frame, frame with zip)
