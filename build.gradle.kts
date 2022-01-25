@@ -20,9 +20,7 @@ repositories {
 
 dependencies {
     api(kotlinx("coroutines-core", Versions.coroutines))
-    api(ktor("client-auth", "1.6.5")) {
-        exclude(group = "io.ktor")
-    }
+    api(ktor("client-auth", Versions.ktor))
     api(ktor("client-core", Versions.ktor))
     api(ktor("client-serialization", Versions.ktor))
     api(ktor("client-encoding", Versions.ktor))
@@ -44,7 +42,7 @@ dependencies {
     }
     compileOnly("org.seleniumhq.selenium:selenium-java:4.1.1")
 
-    testImplementation(kotlin("test", "1.5.31"))
+    testImplementation(kotlin("test", kotlin.coreLibrariesVersion))
     testImplementation("org.seleniumhq.selenium:selenium-java:4.1.1")
 }
 
