@@ -11,6 +11,7 @@ import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.logging.*
 import org.openqa.selenium.remote.*
 import xyz.cssxsh.pixiv.auth.*
@@ -254,7 +255,11 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
  * @param driver 浏览器驱动器
  */
 suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver, timeout: Long = 900_000) = login { redirect ->
-    driver.get(redirect.toString())
+    try {
+        driver.get(redirect.toString())
+    } catch (_: WebDriverException) {
+        //
+    }
     withTimeout(timeout) {
         while (driver.currentUrl.orEmpty().startsWith(POST_REDIRECT_URL).not()) {
             delay(10_000)
