@@ -19,16 +19,18 @@ repositories {
 }
 
 dependencies {
-    api(kotlinx("coroutines-core", Versions.coroutines))
-    api(ktor("client-auth", Versions.ktor))
-    api(ktor("client-core", Versions.ktor))
-    api(ktor("client-serialization", Versions.ktor))
-    api(ktor("client-encoding", Versions.ktor))
-    api(ktor("client-okhttp", Versions.ktor))
-    api(ktor("network", Versions.ktor))
-    api(okhttp3("okhttp", Versions.okhttp))
-    api(okhttp3("okhttp-dnsoverhttps", Versions.okhttp))
-    api(square("gifencoder", Versions.gifencoder))
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    api("io.ktor:ktor-client-auth:1.6.5")
+    api("io.ktor:ktor-client-serialization:1.6.5") {
+        exclude("org.jetbrains.kotlinx", "kotlinx-serialization-json")
+    }
+    api("io.ktor:ktor-client-encoding:1.6.5")
+    api("io.ktor:ktor-client-okhttp:1.6.5")
+    api("io.ktor:ktor-network:1.6.5")
+    api("com.squareup.okhttp3:okhttp:4.9.2")
+    api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.9.2")
+    api("com.squareup:gifencoder:0.10.1")
     /**
      * $OPENCV_HOME = ...
      * $PATH = $PATH;OPENCV_HOME/build/bin;OPENCV_HOME/build/java/x64
@@ -37,7 +39,6 @@ dependencies {
     if (opencv != null) {
         compileOnly(fileTree(File(opencv).resolve("build/java")))
     } else {
-        println("请安装 OPENCV 并设置 环境变量 OPENCV_HOME 和 PATH")
         compileOnly("org.openpnp:opencv:4.5.1-2")
     }
     compileOnly("org.seleniumhq.selenium:selenium-java:4.1.1")
