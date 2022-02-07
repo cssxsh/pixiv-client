@@ -1,5 +1,3 @@
-import java.util.*
-
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -10,10 +8,6 @@ version = "1.0.0"
 
 repositories {
     mavenLocal()
-    if (Locale.getDefault() == Locale.SIMPLIFIED_CHINESE) {
-        maven(url = "https://maven.aliyun.com/repository/central")
-        maven(url = "https://maven.aliyun.com/repository/gradle-plugin")
-    }
     mavenCentral()
     gradlePluginPortal()
 }
@@ -43,7 +37,7 @@ dependencies {
     }
     compileOnly("org.seleniumhq.selenium:selenium-java:4.1.1")
 
-    testImplementation(kotlin("test", kotlin.coreLibrariesVersion))
+    testImplementation(kotlin("test", "1.6.0"))
     testImplementation("org.seleniumhq.selenium:selenium-java:4.1.1")
 }
 
@@ -56,28 +50,10 @@ kotlin {
 }
 
 tasks {
-
     test {
         useJUnitPlatform()
     }
-
-    compileJava {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-    }
-
-    compileTestJava {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-    }
-
     compileKotlin {
         kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
-        kotlinOptions.jvmTarget = "11"
-    }
-
-    compileTestKotlin {
-        kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
-        kotlinOptions.jvmTarget = "11"
     }
 }
