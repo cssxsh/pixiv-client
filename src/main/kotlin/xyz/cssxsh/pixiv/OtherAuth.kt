@@ -7,7 +7,6 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -162,7 +161,6 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { redirect 
             header(HttpHeaders.Origin, ORIGIN_URL)
             header(HttpHeaders.Referrer, LOGIN_URL)
 
-            @OptIn(InternalAPI::class)
             body = FormDataContent(Parameters.build {
                 append("return_to", account.current)
                 append("tt", account.token)
@@ -202,7 +200,6 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
 
                 parameter("lang", "zh")
 
-                @OptIn(InternalAPI::class)
                 body = FormDataContent(Parameters.build {
                     append("password", password)
                     append("pixiv_id", username)
@@ -237,7 +234,6 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
             header(HttpHeaders.Origin, ORIGIN_URL)
             header(HttpHeaders.Referrer, LOGIN_URL)
 
-            @OptIn(InternalAPI::class)
             body = FormDataContent(Parameters.build {
                 append("return_to", account.current)
                 append("tt", account.token)
