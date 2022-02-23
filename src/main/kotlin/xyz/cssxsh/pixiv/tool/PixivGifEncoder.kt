@@ -6,18 +6,18 @@ import java.awt.image.*
 import java.io.*
 import java.util.concurrent.*
 
-open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownloader()) : PixivUgoiraEncoder() {
+public open class PixivGifEncoder(override val downloader: PixivDownloader = PixivDownloader()) : PixivUgoiraEncoder() {
     protected open val quantizer: ColorQuantizer = MedianCutQuantizer.INSTANCE
 
     protected open val ditherer: Ditherer = FloydSteinbergDitherer.INSTANCE
 
-    protected open val disposalMethod = DisposalMethod.UNSPECIFIED
+    protected open val disposalMethod: DisposalMethod = DisposalMethod.UNSPECIFIED
 
-    protected open val bufferSize = 1 shl 22
+    protected open val bufferSize: Int = 1 shl 22
 
-    protected fun BufferedImage.readRGBs() = Array(height) { y -> IntArray(width) { x -> getRGB(x, y) } }
+    protected fun BufferedImage.readRGBs(): Array<IntArray> = Array(height) { y -> IntArray(width) { x -> getRGB(x, y) } }
 
-    protected fun UgoiraFrame.toImageOptions() = ImageOptions().apply {
+    protected fun UgoiraFrame.toImageOptions(): ImageOptions = ImageOptions().apply {
         setColorQuantizer(quantizer)
         setDitherer(ditherer)
         setDisposalMethod(disposalMethod)

@@ -7,8 +7,8 @@ import io.ktor.utils.io.core.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxUser(override val client: PixivWebClient) : FanBoxApi() {
-    companion object {
+public class FanBoxUser(override val client: PixivWebClient) : FanBoxApi() {
+    public companion object {
         internal const val COUNT_UNREAD_MESSAGES = "https://api.fanbox.cc/user.countUnreadMessages"
 
         internal const val GET_TWITTER_ACCOUNT_INFO = "https://api.fanbox.cc/user.getTwitterAccountInfo"
@@ -16,14 +16,14 @@ class FanBoxUser(override val client: PixivWebClient) : FanBoxApi() {
         internal const val UPDATE = "https://api.fanbox.cc/user.update"
     }
 
-    suspend fun countUnreadMessages(): Int {
+    public suspend fun countUnreadMessages(): Int {
         return client.ajax(api = COUNT_UNREAD_MESSAGES) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
     }
 
-    suspend fun getTwitterAccountInfo(): TwitterAccountInfo {
+    public suspend fun getTwitterAccountInfo(): TwitterAccountInfo {
         return client.ajax(api = GET_TWITTER_ACCOUNT_INFO) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -35,7 +35,7 @@ class FanBoxUser(override val client: PixivWebClient) : FanBoxApi() {
     /**
      * TODO: set twitter by https://www.fanbox.cc/twitter_oauth?source=account
      */
-    suspend fun update(setting: UserUpdate = UserUpdate(), icon: ByteArray? = null): UserSetting {
+    public suspend fun update(setting: UserUpdate = UserUpdate(), icon: ByteArray? = null): UserSetting {
         val metadata = getMetaData()
         val name = setting.name ?: metadata.context.user.name
         val showAdultContent = setting.showAdultContent ?: metadata.context.user.showAdultContent

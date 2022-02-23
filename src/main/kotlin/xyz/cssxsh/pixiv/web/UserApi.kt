@@ -9,7 +9,7 @@ private fun referer(uid: Long) = "https://www.pixiv.net/users/${uid}"
 
 private fun profile(uid: Long, type: String) = "https://www.pixiv.net/ajax/user/${uid}/profile/$type"
 
-suspend fun PixivWebClient.ajaxProfileAll(
+public suspend fun PixivWebClient.ajaxProfileAll(
     uid: Long,
     locale: Locale = Locale.CHINA,
 ): UserProfileAll = ajax(profile(uid = uid, type = "all")) {
@@ -18,7 +18,7 @@ suspend fun PixivWebClient.ajaxProfileAll(
     parameter("lang", locale.language)
 }
 
-suspend fun PixivWebClient.ajaxProfileTop(
+public suspend fun PixivWebClient.ajaxProfileTop(
     uid: Long,
     locale: Locale = Locale.CHINA,
 ): UserProfileTop = ajax(profile(uid = uid, type = "top")) {
@@ -27,7 +27,7 @@ suspend fun PixivWebClient.ajaxProfileTop(
     parameter("lang", locale.language)
 }
 
-suspend fun PixivWebClient.ajaxProfileIllusts(
+public suspend fun PixivWebClient.ajaxProfileIllusts(
     uid: Long,
     ids: Set<Long>,
     category: CategoryType,
@@ -45,7 +45,7 @@ suspend fun PixivWebClient.ajaxProfileIllusts(
 
 private fun following(uid: Long) = "https://www.pixiv.net/ajax/user/${uid}/following"
 
-suspend fun PixivWebClient.ajaxFollowing(
+public suspend fun PixivWebClient.ajaxFollowing(
     uid: Long,
     offset: Long,
     limit: Int,
@@ -64,7 +64,7 @@ suspend fun PixivWebClient.ajaxFollowing(
 
 private fun bookmarks(uid: Long, type: String) = "https://www.pixiv.net/ajax/user/${uid}/${type}/bookmarks"
 
-suspend fun PixivWebClient.ajaxBookmarks(
+public suspend fun PixivWebClient.ajaxBookmarks(
     uid: Long,
     offset: Long,
     limit: Int,

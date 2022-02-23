@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 
 @Serializable
 @Suppress("unused")
-enum class Notification {
+public enum class Notification {
     @SerialName("email_important_notices")
     EMAIL_IMPORTANT_NOTICES,
 

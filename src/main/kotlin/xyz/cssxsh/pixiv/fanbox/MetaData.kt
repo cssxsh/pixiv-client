@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MetaData(
+public data class MetaData(
     @SerialName("apiUrl")
     val apiUrl: String,
     @SerialName("context")
@@ -24,13 +24,13 @@ data class MetaData(
 ) {
 
     @Serializable
-    data class Context(
+    public data class Context(
         @SerialName("user")
         val user: UserSetting
     )
 
     @Serializable
-    data class UrlContext(
+    public data class UrlContext(
         @SerialName("creatorOriginPattern")
         val creatorOriginPattern: String,
         @SerialName("host")
@@ -41,13 +41,13 @@ data class MetaData(
         val user: User
     ) {
         @Serializable
-        data class Host(
+        public data class Host(
             @SerialName("creatorId")
             val creatorId: String?
         )
 
         @Serializable
-        data class User(
+        public data class User(
             @SerialName("creatorId")
             val creatorId: String?,
             @SerialName("isLoggedIn")

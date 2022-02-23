@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class UserInfo(
+public data class UserInfo(
     @SerialName("account")
     val account: String,
     @SerialName("id")

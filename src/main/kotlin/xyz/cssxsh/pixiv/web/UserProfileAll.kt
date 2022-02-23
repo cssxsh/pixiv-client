@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class UserProfileAll(
+public data class UserProfileAll(
     @SerialName("bookmarkCount")
     val bookmarkCount: Map<PublicityType, BookmarkCount>,
     @SerialName("externalSiteWorksStatus")

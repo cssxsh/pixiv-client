@@ -9,7 +9,7 @@ private fun referer(pid: Long) = "https://www.pixiv.net/artwork/${pid}"
 
 private fun illust(pid: Long) = "https://www.pixiv.net/ajax/illust/${pid}"
 
-suspend fun PixivWebClient.ajaxIllust(
+public suspend fun PixivWebClient.ajaxIllust(
     pid: Long,
     offset: Long,
     limit: Int,

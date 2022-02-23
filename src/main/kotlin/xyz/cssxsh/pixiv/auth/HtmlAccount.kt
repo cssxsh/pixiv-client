@@ -7,7 +7,7 @@ import kotlinx.serialization.*
  * * `document.getElementById('init-config').value`
  */
 @Serializable
-data class HtmlAccount(
+public data class HtmlAccount(
     @SerialName("pixivAccount.continueWithCurrentAccountUrl")
     val current: String = "",
     @SerialName("pixivAccount.returnTo")

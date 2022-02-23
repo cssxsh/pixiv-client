@@ -2,7 +2,7 @@ package xyz.cssxsh.pixiv.tool
 
 import com.squareup.gifencoder.*
 
-open class UniversalDitherer(private val distribution: List<ErrorComponent>) : Ditherer {
+public open class UniversalDitherer(private val distribution: List<ErrorComponent>) : Ditherer {
     override fun dither(image: Image, newColors: MutableSet<Color>): Image {
         val width = image.width
         val height = image.height
@@ -28,7 +28,7 @@ open class UniversalDitherer(private val distribution: List<ErrorComponent>) : D
         return Image.fromColors(colors)
     }
 
-    data class ErrorComponent(
+    public data class ErrorComponent(
         val deltaX: Int,
         val deltaY: Int,
         val power: Double

@@ -12,11 +12,11 @@ import xyz.cssxsh.pixiv.exception.*
 import java.net.*
 import java.util.*
 
-typealias HeadersMap = Map<String, String>
+public typealias HeadersMap = Map<String, String>
 
-typealias FileUrls = Map<String, String>
+public typealias FileUrls = Map<String, String>
 
-val PixivJson = Json {
+public val PixivJson: Json = Json {
     ignoreUnknownKeys = true
     allowSpecialFloatingPointValues = true
     serializersModule += SerializersModule {
@@ -24,31 +24,31 @@ val PixivJson = Json {
     }
 }
 
-const val HTTP_KILO = 1022
+public const val HTTP_KILO: Int = 1022
 
-const val CLIENT_ID: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
+public const val CLIENT_ID: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
 
-const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
+public const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
 
-const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
+public const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
 
-val IOS_HEADERS: HeadersMap = mapOf(
+public val IOS_HEADERS: HeadersMap = mapOf(
     HttpHeaders.AcceptLanguage to Locale.CHINA.language,
     HttpHeaders.UserAgent to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
     "App-OS-Version" to "14.6",
     "App-OS" to "ios"
 )
 
-val ANDROID_HEADERS: HeadersMap = mapOf(
+public val ANDROID_HEADERS: HeadersMap = mapOf(
     HttpHeaders.AcceptLanguage to Locale.CHINA.language,
     HttpHeaders.UserAgent to "PixivAndroidApp/5.0.64 (Android 6.0)",
     "App-OS-Version" to "6.0",
     "App-OS" to "android"
 )
 
-const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
+public const val JAPAN_DNS: String = "https://public.dns.iij.jp/dns-query"
 
-val DEFAULT_PIXIV_HOST = mapOf(
+public val DEFAULT_PIXIV_HOST: Map<String, List<String>> = mapOf(
     "*.pixiv.net" to listOf("api.fanbox.cc"),
     "sketch.pixiv.net" to listOf("pixivsketch.net"),
     "times.pixiv.net" to listOf("domains.tumblr.com"),
@@ -59,11 +59,11 @@ val DEFAULT_PIXIV_HOST = mapOf(
     "dev.pixiv.net" to listOf("s3-website-ap-northeast-1.amazonaws.com")
 )
 
-const val NO_PROFILE_IMAGE = "https://s.pximg.net/common/images/no_profile.png"
+public const val NO_PROFILE_IMAGE: String = "https://s.pximg.net/common/images/no_profile.png"
 
-const val LIMIT_UNKNOWN_IMAGE = "https://s.pximg.net/common/images/limit_unknown_360.png"
+public const val LIMIT_UNKNOWN_IMAGE: String = "https://s.pximg.net/common/images/limit_unknown_360.png"
 
-const val LIMIT_MYPIXIV_IMAGE = "https://s.pximg.net/common/images/limit_mypixiv_360.png"
+public const val LIMIT_MYPIXIV_IMAGE: String = "https://s.pximg.net/common/images/limit_mypixiv_360.png"
 
 internal fun Url.toProxy(): Proxy {
     val type = when (protocol) {
@@ -75,7 +75,7 @@ internal fun Url.toProxy(): Proxy {
 }
 
 @Suppress("FunctionName")
-inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {
+internal inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, SerialKind.ENUM)
@@ -89,7 +89,7 @@ inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {
 }
 
 @Suppress("FunctionName")
-inline fun <reified T : Enum<T>> EnumIndexSerializer(): KSerializer<T> {
+internal inline fun <reified T : Enum<T>> EnumIndexSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
             buildSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
@@ -103,21 +103,21 @@ inline fun <reified T : Enum<T>> EnumIndexSerializer(): KSerializer<T> {
 }
 
 @Serializable(with = OrderType.NameSerializer::class)
-enum class OrderType {
+public enum class OrderType {
     DESC,
     ASC;
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<OrderType> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<OrderType> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<OrderType> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<OrderType> by EnumIndexSerializer()
 
-    companion object : KSerializer<OrderType> by NameSerializer
+    public companion object : KSerializer<OrderType> by NameSerializer
 }
 
 @Serializable(with = SearchSort.NameSerializer::class)
-enum class SearchSort {
+public enum class SearchSort {
     DATE_DESC,
     DATE_ASC,
 
@@ -128,15 +128,15 @@ enum class SearchSort {
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<SearchSort> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<SearchSort> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<SearchSort> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<SearchSort> by EnumIndexSerializer()
 
-    companion object : KSerializer<SearchSort> by NameSerializer
+    public companion object : KSerializer<SearchSort> by NameSerializer
 }
 
 @Serializable(with = SearchDuration.NameSerializer::class)
-enum class SearchDuration {
+public enum class SearchDuration {
     CUSTOM_DURATION,
     ALL,
     WITHIN_LAST_DAY,
@@ -148,60 +148,60 @@ enum class SearchDuration {
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<SearchDuration> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<SearchDuration> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<SearchDuration> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<SearchDuration> by EnumIndexSerializer()
 
-    companion object : KSerializer<SearchDuration> by NameSerializer
+    public companion object : KSerializer<SearchDuration> by NameSerializer
 }
 
 @Serializable(with = PublicityType.NameSerializer::class)
-enum class PublicityType {
+public enum class PublicityType {
     PUBLIC,
     PRIVATE,
     MYPIXIV;
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<PublicityType> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<PublicityType> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<PublicityType> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<PublicityType> by EnumIndexSerializer()
 
-    companion object : KSerializer<PublicityType> by NameSerializer
+    public companion object : KSerializer<PublicityType> by NameSerializer
 }
 
 @Serializable(with = SearchTarget.NameSerializer::class)
-enum class SearchTarget {
+public enum class SearchTarget {
     PARTIAL_MATCH_FOR_TAGS,
     EXACT_MATCH_FOR_TAGS,
     TITLE_AND_CAPTION;
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<SearchTarget> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<SearchTarget> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<SearchTarget> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<SearchTarget> by EnumIndexSerializer()
 
-    companion object : KSerializer<SearchTarget> by NameSerializer
+    public companion object : KSerializer<SearchTarget> by NameSerializer
 }
 
 @Serializable(with = WorkContentType.NameSerializer::class)
-enum class WorkContentType {
+public enum class WorkContentType {
     ILLUST,
     UGOIRA,
     MANGA;
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<WorkContentType> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<WorkContentType> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<WorkContentType> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<WorkContentType> by EnumIndexSerializer()
 
-    companion object : KSerializer<WorkContentType> by NameSerializer
+    public companion object : KSerializer<WorkContentType> by NameSerializer
 }
 
 @Serializable(with = RankMode.NameSerializer::class)
-enum class RankMode {
+public enum class RankMode {
     // MONTH
     MONTH,
     MONTH_MANGA,
@@ -231,15 +231,15 @@ enum class RankMode {
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<RankMode> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<RankMode> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<RankMode> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<RankMode> by EnumIndexSerializer()
 
-    companion object : KSerializer<RankMode> by NameSerializer
+    public companion object : KSerializer<RankMode> by NameSerializer
 }
 
 @Serializable(with = SanityLevel.IndexSerializer::class)
-enum class SanityLevel {
+public enum class SanityLevel {
     UNCHECKED,
     TEMP1,
     WHITE,
@@ -251,15 +251,15 @@ enum class SanityLevel {
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<SanityLevel> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<SanityLevel> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<SanityLevel> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<SanityLevel> by EnumIndexSerializer()
 
-    companion object : KSerializer<SanityLevel> by IndexSerializer
+    public companion object : KSerializer<SanityLevel> by IndexSerializer
 }
 
 @Serializable(with = AgeLimit.IndexSerializer::class)
-enum class AgeLimit {
+public enum class AgeLimit {
     ALL {
         override fun toString(): String = "all-age"
     },
@@ -270,19 +270,19 @@ enum class AgeLimit {
         override fun toString(): String = "r18-g"
     };
 
-    object NameSerializer : KSerializer<AgeLimit> by EnumNameSerializer() {
+    public object NameSerializer : KSerializer<AgeLimit> by EnumNameSerializer() {
         override fun deserialize(decoder: Decoder): AgeLimit {
             val value = decoder.decodeString()
             return requireNotNull(values().find { it.toString() == value }) { "$value not in ${values().toList()}" }
         }
     }
 
-    object IndexSerializer : KSerializer<AgeLimit> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<AgeLimit> by EnumIndexSerializer()
 
-    companion object : KSerializer<AgeLimit> by IndexSerializer
+    public companion object : KSerializer<AgeLimit> by IndexSerializer
 }
 
-enum class FilterType {
+public enum class FilterType {
     FOR_ANDROID,
     FOR_ISO;
 
@@ -290,28 +290,28 @@ enum class FilterType {
 }
 
 @Serializable(with = CategoryType.NameSerializer::class)
-enum class CategoryType {
+public enum class CategoryType {
     ALL,
     ILLUST,
     MANGA;
 
     override fun toString(): String = name.lowercase()
 
-    object NameSerializer : KSerializer<CategoryType> by EnumNameSerializer()
+    public object NameSerializer : KSerializer<CategoryType> by EnumNameSerializer()
 
-    object IndexSerializer : KSerializer<CategoryType> by EnumIndexSerializer()
+    public object IndexSerializer : KSerializer<CategoryType> by EnumIndexSerializer()
 
-    companion object : KSerializer<CategoryType> by NameSerializer
+    public companion object : KSerializer<CategoryType> by NameSerializer
 }
 
-enum class FollowType {
+public enum class FollowType {
     SHOW,
     HIDE;
 
     override fun toString(): String = name.lowercase()
 }
 
-object RegexSerializer : KSerializer<Regex> {
+public object RegexSerializer : KSerializer<Regex> {
     override val descriptor: SerialDescriptor = buildSerialDescriptor("kotlin.text.Regex", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): Regex {
@@ -323,4 +323,4 @@ object RegexSerializer : KSerializer<Regex> {
     }
 }
 
-fun Regex.Companion.serializer(): KSerializer<Regex> = RegexSerializer
+public fun Regex.Companion.serializer(): KSerializer<Regex> = RegexSerializer

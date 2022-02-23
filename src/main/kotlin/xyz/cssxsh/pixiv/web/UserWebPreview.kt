@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class UserWebPreview(
+public data class UserWebPreview(
     @SerialName("acceptRequest")
     val acceptRequest: Boolean,
     @SerialName("followed")

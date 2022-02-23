@@ -4,12 +4,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AppApiError(
+public data class AppApiError(
     @SerialName("error")
     val error: ErrorInfo,
 ) {
     @Serializable
-    data class ErrorInfo(
+    public data class ErrorInfo(
         @SerialName("user_message")
         val userMessage: String,
         @SerialName("message")

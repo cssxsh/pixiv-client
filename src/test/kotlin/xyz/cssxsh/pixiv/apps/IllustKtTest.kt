@@ -88,7 +88,7 @@ internal class IllustKtTest : ApiTest() {
 
     @Test
     fun illustRelated(): Unit = runBlocking {
-        client.illustRelated(pid = 52594107, seeds = setOf(52594107)).illusts.let {
+        client.illustRelated(pid = 52594107).illusts.let {
             assertTrue(it.isNotEmpty())
         }
     }

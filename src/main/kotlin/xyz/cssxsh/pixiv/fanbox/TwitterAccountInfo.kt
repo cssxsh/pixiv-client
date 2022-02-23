@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class TwitterAccountInfo(
+public data class TwitterAccountInfo(
     @SerialName("id")
     val id: String,
     @SerialName("name")

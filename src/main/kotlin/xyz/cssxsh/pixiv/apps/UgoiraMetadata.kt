@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class UgoiraMetadata(
+public data class UgoiraMetadata(
     @SerialName("frames")
     val frames: List<UgoiraFrame>,
     @SerialName("zip_urls")

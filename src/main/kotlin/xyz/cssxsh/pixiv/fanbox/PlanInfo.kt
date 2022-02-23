@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class PlanInfo(
+public data class PlanInfo(
     @SerialName("coverImageUrl")
     val coverImageUrl: String?,
     @SerialName("creatorId")

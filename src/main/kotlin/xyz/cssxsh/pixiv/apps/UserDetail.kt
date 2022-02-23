@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class UserDetail(
+public data class UserDetail(
     @SerialName("profile")
     val profile: Profile,
     @SerialName("profile_publicity")
@@ -15,7 +15,7 @@ data class UserDetail(
     val workspace: Workspace,
 ) {
     @Serializable
-    data class Profile(
+    public data class Profile(
         @SerialName("address_id")
         val addressId: Int,
         @SerialName("background_image_url")
@@ -65,11 +65,11 @@ data class UserDetail(
         @SerialName("webpage")
         val webpage: String?,
     ) {
-        val totalArtwork get() = totalIllusts + totalManga
+        public val totalArtwork: Long get() = totalIllusts + totalManga
     }
 
     @Serializable
-    data class ProfilePublicity(
+    public data class ProfilePublicity(
         @SerialName("birth_day")
         val birthDay: PublicityType,
         @SerialName("birth_year")
@@ -85,7 +85,7 @@ data class UserDetail(
     )
 
     @Serializable
-    data class Workspace(
+    public data class Workspace(
         @SerialName("chair")
         val chair: String,
         @SerialName("comment")

@@ -6,7 +6,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
-data class WebIllust(
+public data class WebIllust(
     @SerialName("alt")
     val alt: String,
     @SerialName("bookmarkData")

@@ -6,9 +6,9 @@ import kotlinx.serialization.encoding.*
 import java.time.*
 import java.time.format.*
 
-interface OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
+public interface OffsetDateTimeSerializer : KSerializer<OffsetDateTime> {
 
-    val formatter: DateTimeFormatter
+    public val formatter: DateTimeFormatter
 
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor(OffsetDateTime::class.qualifiedName!!, PrimitiveKind.STRING)

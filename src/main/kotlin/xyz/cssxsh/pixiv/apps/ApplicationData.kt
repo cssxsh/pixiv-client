@@ -3,12 +3,12 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class ApplicationData(
+public data class ApplicationData(
     @SerialName("application_info")
     val applicationInfo: ApplicationInfo
 ) {
     @Serializable
-    data class ApplicationInfo(
+    public data class ApplicationInfo(
         @SerialName("latest_version")
         val latestVersion: String,
         @SerialName("notice_exists")

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AuthError(
+public data class AuthError(
     @SerialName("has_error")
     val hasError: Boolean,
     @SerialName("error")
@@ -13,7 +13,7 @@ data class AuthError(
     val errors: Map<String, ErrorInfo>,
 ) {
     @Serializable
-    data class ErrorInfo(
+    public data class ErrorInfo(
         @SerialName("message")
         val message: String,
         @SerialName("code")

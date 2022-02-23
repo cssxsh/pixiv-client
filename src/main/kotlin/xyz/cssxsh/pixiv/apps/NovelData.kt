@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class NovelData(
+public data class NovelData(
     @SerialName("novels")
     val novels: List<NovelInfo>,
     @SerialName("next_url")

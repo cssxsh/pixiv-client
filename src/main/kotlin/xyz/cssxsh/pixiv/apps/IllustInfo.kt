@@ -6,7 +6,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
-data class IllustInfo(
+public data class IllustInfo(
     @SerialName("caption")
     val caption: String,
     @SerialName("create_date")
@@ -59,15 +59,15 @@ data class IllustInfo(
     val age: AgeLimit,
 ) {
     @Serializable
-    data class MetaPageData(
+    public data class MetaPageData(
         @SerialName("image_urls")
         val imageUrls: FileUrls,
     )
 
-    fun getImageUrls(): List<FileUrls> =
+    public fun getImageUrls(): List<FileUrls> =
         if (pageCount == 1) listOf(metaSinglePage + imageUrls) else metaPages.map { it.imageUrls }
 
-    fun getOriginImageUrls(): List<Url> = getImageUrls().map { urls ->
+    public fun getOriginImageUrls(): List<Url> = getImageUrls().map { urls ->
         Url(requireNotNull(urls.entries.find { "origin" in it.key }) { "Not Found origin $urls" }.value)
     }
 }

@@ -5,7 +5,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
-data class NovelInfo(
+public data class NovelInfo(
     @SerialName("caption")
     val caption: String,
     @SerialName("create_date")

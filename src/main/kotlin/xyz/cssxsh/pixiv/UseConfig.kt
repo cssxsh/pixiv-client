@@ -1,8 +1,8 @@
 package xyz.cssxsh.pixiv
 
-interface UseConfig {
+public interface UseConfig {
 
-    val config: PixivConfig
+    public val config: PixivConfig
 
-    fun config(block: PixivConfig.() -> Unit) = config.apply(block)
+    public fun config(block: PixivConfig.() -> Unit): PixivConfig = config.apply(block)
 }

@@ -19,7 +19,7 @@ import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
 import java.time.*
 
-abstract class PixivAuthClient : PixivAppClient, Closeable {
+public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open var authInfo: AuthResult? = null
 
@@ -27,11 +27,11 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected abstract val ignore: suspend (Throwable) -> Boolean
 
-    open val storage = AcceptAllCookiesStorage()
+    public open val storage: AcceptAllCookiesStorage = AcceptAllCookiesStorage()
 
-    protected open val timeout = 30_000L
+    protected open val timeout: Long = 30_000L
 
-    protected open fun client() = HttpClient(OkHttp) {
+    protected open fun client(): HttpClient = HttpClient(OkHttp) {
         Json {
             serializer = KotlinxSerializer(PixivJson)
         }
@@ -88,11 +88,11 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         }
     }
 
-    protected open val clients by lazy { MutableList(3) { client() } }
+    protected open val clients: MutableList<HttpClient> by lazy { MutableList(3) { client() } }
 
-    protected open var index = 0
+    protected open var index: Int = 0
 
-    override fun close() = clients.forEach { it.close() }
+    override fun close(): Unit = clients.forEach { it.close() }
 
     override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = supervisorScope {
         while (isActive) {
@@ -109,7 +109,7 @@ abstract class PixivAuthClient : PixivAppClient, Closeable {
         throw CancellationException()
     }
 
-    protected open val mutex = Mutex()
+    protected open val mutex: Mutex = Mutex()
 
     private val refreshToken get() = requireNotNull(config.refreshToken) { "Not Found RefreshToken" }
 

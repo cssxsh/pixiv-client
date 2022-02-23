@@ -7,25 +7,25 @@ import okio.ByteString.Companion.encode
 import xyz.cssxsh.pixiv.*
 import java.time.*
 
-const val OAUTH_TOKEN_URL = "https://oauth.secure.pixiv.net/auth/token"
+public const val OAUTH_TOKEN_URL: String = "https://oauth.secure.pixiv.net/auth/token"
 
-const val OAUTH_AUTHORIZE_URL = "https://oauth.secure.pixiv.net/auth/authorize"
+public const val OAUTH_AUTHORIZE_URL: String = "https://oauth.secure.pixiv.net/auth/authorize"
 
-const val REDIRECT_LOGIN_URL = "https://app-api.pixiv.net/web/v1/login"
+public const val REDIRECT_LOGIN_URL: String = "https://app-api.pixiv.net/web/v1/login"
 
-const val START_URL = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/start"
+public const val START_URL: String = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/start"
 
-const val REDIRECT_URL = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"
+public const val REDIRECT_URL: String = "https://app-api.pixiv.net/web/v1/users/auth/pixiv/callback"
 
-const val ORIGIN_URL = "https://accounts.pixiv.net"
+public const val ORIGIN_URL: String = "https://accounts.pixiv.net"
 
-const val LOGIN_URL = "https://accounts.pixiv.net/login"
+public const val LOGIN_URL: String = "https://accounts.pixiv.net/login"
 
-const val LOGIN_API_URL = "https://accounts.pixiv.net/api/login"
+public const val LOGIN_API_URL: String = "https://accounts.pixiv.net/api/login"
 
-const val POST_SELECTED_URL = "https://accounts.pixiv.net/account-selected"
+public const val POST_SELECTED_URL: String = "https://accounts.pixiv.net/account-selected"
 
-const val POST_REDIRECT_URL = "https://accounts.pixiv.net/post-redirect"
+public const val POST_REDIRECT_URL: String = "https://accounts.pixiv.net/post-redirect"
 
 internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
     val origin = time.toString().encode().sha512().base64Url().replace("=", "")

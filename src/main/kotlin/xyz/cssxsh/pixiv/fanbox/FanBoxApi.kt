@@ -4,18 +4,17 @@ import io.ktor.client.features.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.sync.*
-import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 import java.util.*
 
-abstract class FanBoxApi {
-    companion object {
+public abstract class FanBoxApi {
+    public companion object {
         internal val contexts = WeakHashMap<String, MetaData>()
 
         internal val mutex = Mutex()
     }
 
-    abstract val client: PixivWebClient
+    public abstract val client: PixivWebClient
 
     /**
      * @see [FanBoxUser.getMetaData]
@@ -30,19 +29,17 @@ abstract class FanBoxApi {
         val text = html.substringAfter("metadata")
             .substringAfter("content='").substringBeforeLast("'>")
 
-        return PixivJson.decodeFromString(text)
+        return PixivJson.decodeFromString(MetaData.serializer(), text)
     }
 
     protected open suspend fun getMetaData(): MetaData {
-        val sessid = requireNotNull(
-            client.storage
-                .get(Url(urlString = "https://www.fanbox.cc/"))
-                .get(name = "FANBOXSESSID")
-        ) { "Not Found FANBOXSESSID" }
-            .value
+        val cookie = client.storage
+            .get(Url(urlString = "https://www.fanbox.cc/"))
+            .get(name = "FANBOXSESSID")
+        val session = requireNotNull(cookie) { "Not Found FANBOXSESSID" }.value
 
         return mutex.withLock {
-            contexts.getOrPut(sessid) { getMetaData(url = "https://www.fanbox.cc/") }
+            contexts.getOrPut(session) { getMetaData(url = "https://www.fanbox.cc/") }
         }
     }
 }

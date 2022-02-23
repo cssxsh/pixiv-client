@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class TagFeature(
+public data class TagFeature(
     @SerialName("count")
     val count: Int,
     @SerialName("coverImageUrl")

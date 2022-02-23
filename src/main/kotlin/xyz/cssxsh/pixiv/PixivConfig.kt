@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv
 import kotlinx.serialization.*
 
 @Serializable
-data class PixivConfig(
+public data class PixivConfig(
     @SerialName("headers")
     var headers: HeadersMap = IOS_HEADERS,
     @SerialName("proxy")

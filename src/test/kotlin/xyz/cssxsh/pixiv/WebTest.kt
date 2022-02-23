@@ -15,46 +15,49 @@ import javax.net.ssl.SSLSocket
 
 abstract class WebTest {
 
-    protected val client = object : PixivWebClient {
+    protected val storage = AcceptAllCookiesStorage()
 
-        private val cookiesStorage = AcceptAllCookiesStorage()
 
-        private fun client(): HttpClient = HttpClient(OkHttp) {
-            Json {
-                serializer = KotlinxSerializer()
-            }
-            install(HttpTimeout) {
-                socketTimeoutMillis = 15_000
-                connectTimeoutMillis = 15_000
-                requestTimeoutMillis = 15_000
-            }
-            install(HttpCookies) {
-                storage = cookiesStorage
-            }
-            ContentEncoding {
-                gzip()
-                deflate()
-                identity()
-            }
-            HttpResponseValidator {
-                handleResponseException(block = TransferExceptionHandler)
-            }
+    protected val client by lazy {
+        object : PixivWebClient {
 
-            engine {
-                config {
-//                    config.proxy?.let {
-//                        proxySelector(ProxySelector(proxy = it, cname = config.cname))
-//                    }
+            override val storage get() = this@WebTest.storage
 
-                    sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
-                    hostnameVerifier { _, _ -> true }
+            private fun client(): HttpClient = HttpClient(OkHttp) {
+                Json {
+                    serializer = KotlinxSerializer()
+                }
+                install(HttpTimeout) {
+                    socketTimeoutMillis = 15_000
+                    connectTimeoutMillis = 15_000
+                    requestTimeoutMillis = null
+                }
+                install(HttpCookies) {
+                    storage = this@WebTest.storage
+                }
+                ContentEncoding {
+                    gzip()
+                    deflate()
+                    identity()
+                }
+                HttpResponseValidator {
+                    handleResponseException(block = TransferExceptionHandler)
+                }
+
+                engine {
+                    config {
+                        sslSocketFactory(RubySSLSocketFactory, RubyX509TrustManager)
+                        hostnameVerifier { _, _ -> true }
+                    }
                 }
             }
+
+            override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = client().use { block(it) }
+
+            override val config: PixivConfig = PixivConfig()
+
+            override fun config(block: PixivConfig.() -> Unit): PixivConfig = config.apply(block)
         }
-
-        override suspend fun <R> useHttpClient(block: suspend (HttpClient) -> R): R = client().use { block(it) }
-
-        override val config: PixivConfig = PixivConfig()
     }
 
     @Test

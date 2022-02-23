@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class PostList(
+public data class PostList(
     @SerialName("items")
     override val items: List<PostDetail>,
     @SerialName("nextUrl")

@@ -5,7 +5,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
-data class NovelSeries(
+public data class NovelSeries(
     @SerialName("caption")
     val caption: String,
     @SerialName("createDate")
@@ -61,7 +61,7 @@ data class NovelSeries(
     val age: AgeLimit
 ) {
     @Serializable
-    data class Episode(
+    public data class Episode(
         @SerialName("url")
         val url: String
     )

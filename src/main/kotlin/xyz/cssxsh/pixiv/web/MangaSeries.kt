@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-data class MangaSeries(
+public data class MangaSeries(
     @SerialName("caption")
     val caption: String,
     @SerialName("content_order")

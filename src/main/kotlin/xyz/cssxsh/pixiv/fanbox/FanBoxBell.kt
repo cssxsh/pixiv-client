@@ -6,18 +6,18 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxBell(override val client: PixivWebClient) : FanBoxApi() {
-    companion object {
+public class FanBoxBell(override val client: PixivWebClient) : FanBoxApi() {
+    public companion object {
         internal const val COUNT_UNREAD = "https://api.fanbox.cc/bell.countUnread"
     }
 
     @Serializable
-    data class CountUnread(
+    public data class CountUnread(
         @SerialName("count")
         val count: Int
     )
 
-    suspend fun countUnread(): Int {
+    public suspend fun countUnread(): Int {
         return client.ajax<CountUnread>(api = COUNT_UNREAD) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")

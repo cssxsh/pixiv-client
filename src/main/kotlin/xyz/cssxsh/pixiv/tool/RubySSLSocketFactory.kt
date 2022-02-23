@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.tool
 import java.net.*
 import javax.net.ssl.*
 
-object RubySSLSocketFactory : SSLSocketFactory() {
+public object RubySSLSocketFactory : SSLSocketFactory() {
 
     internal val regexes = mutableListOf("""(pixiv|pximg)\.net""".toRegex())
 

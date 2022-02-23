@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.auth
 import kotlinx.serialization.*
 
 @Serializable
-data class WeiboQrcodeStatus(
+public data class WeiboQrcodeStatus(
     @SerialName("status")
     val code: Int,
     @SerialName("url")

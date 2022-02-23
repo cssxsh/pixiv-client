@@ -3,13 +3,13 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class CommentList(
+public data class CommentList(
     @SerialName("items")
     override val items: List<CommentInfo>,
     @SerialName("nextUrl")
     override val nextUrl: String?
 ) : ItemList, List<CommentInfo> by items {
-    companion object {
-        val Empty = CommentList(items = emptyList(), nextUrl = null)
+    public companion object {
+        public val Empty: CommentList = CommentList(items = emptyList(), nextUrl = null)
     }
 }

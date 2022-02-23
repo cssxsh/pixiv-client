@@ -13,7 +13,7 @@ import xyz.cssxsh.pixiv.*
 /**
  * [2captcha-api](https://2captcha.com/2captcha-api#solving_recaptchav2_new)
  */
-class TwoCaptchaHandler(private val clientKey: String) : CaptchaHandler {
+public class TwoCaptchaHandler(private val clientKey: String) : CaptchaHandler {
     private val client = HttpClient(OkHttp) {
         Json {
             serializer = KotlinxSerializer(PixivJson)
@@ -22,7 +22,7 @@ class TwoCaptchaHandler(private val clientKey: String) : CaptchaHandler {
     }
 
     @Serializable
-    data class Result(
+    public data class Result(
         @SerialName("status")
         val status: Int,
         @SerialName("request")

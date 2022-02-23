@@ -4,7 +4,7 @@ import java.security.*
 import java.security.cert.*
 import javax.net.ssl.*
 
-object RubyX509TrustManager : X509TrustManager {
+public object RubyX509TrustManager : X509TrustManager {
 
     private val delegate: X509TrustManager by lazy {
         val factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
@@ -12,9 +12,9 @@ object RubyX509TrustManager : X509TrustManager {
         factory.trustManagers.filterIsInstance<X509TrustManager>().first()
     }
 
-    override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
+    override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
 
-    override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) = Unit
+    override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
 
     override fun getAcceptedIssuers(): Array<X509Certificate> = delegate.acceptedIssuers
 }

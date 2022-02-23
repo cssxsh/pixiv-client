@@ -1,3 +1,3 @@
 package xyz.cssxsh.pixiv.web
 
-sealed interface WebWorkInfo
+public sealed interface WebWorkInfo

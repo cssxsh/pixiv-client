@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class UserFollowing(
+public data class UserFollowing(
     @SerialName("followUserTags")
     val tags: List<String>,
     @SerialName("total")

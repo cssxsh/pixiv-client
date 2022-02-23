@@ -6,7 +6,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 
 @Serializable
-data class WebNovel(
+public data class WebNovel(
     @SerialName("bookmarkCount")
     val bookmarkCount: Int,
     @SerialName("bookmarkData")

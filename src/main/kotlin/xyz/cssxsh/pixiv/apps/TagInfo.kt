@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class TagInfo(
+public data class TagInfo(
     @SerialName("name")
     val name: String,
     @SerialName("translated_name")

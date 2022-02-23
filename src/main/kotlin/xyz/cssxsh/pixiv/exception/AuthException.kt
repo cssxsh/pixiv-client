@@ -5,9 +5,9 @@ import io.ktor.client.statement.*
 import io.ktor.util.*
 import kotlinx.serialization.json.*
 
-class AuthException(response: HttpResponse, content: String) : ResponseException(response, content) {
+public class AuthException(response: HttpResponse, content: String) : ResponseException(response, content) {
 
-    val json: AuthError = Json.decodeFromString(AuthError.serializer(), content)
+    public val json: AuthError = Json.decodeFromString(AuthError.serializer(), content)
 
     override val message: String = json.errors["system"]?.message ?: json.error
 

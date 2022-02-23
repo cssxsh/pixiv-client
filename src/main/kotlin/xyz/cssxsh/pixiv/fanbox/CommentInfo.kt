@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-data class CommentInfo(
+public data class CommentInfo(
     @SerialName("body")
     val body: String,
     @Contextual

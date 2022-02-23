@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class UserPreview(
+public data class UserPreview(
     @SerialName("user")
     val user: UserInfo,
     @SerialName("illusts")

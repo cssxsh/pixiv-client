@@ -3,21 +3,21 @@ package xyz.cssxsh.pixiv.tool
 import com.squareup.gifencoder.*
 import org.opencv.core.*
 
-class OpenCVQuantizer private constructor() : ColorQuantizer {
+public class OpenCVQuantizer private constructor() : ColorQuantizer {
     init {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME)
     }
 
-    companion object {
+    public companion object {
         @JvmField
-        val INSTANCE = OpenCVQuantizer()
+        public val INSTANCE: OpenCVQuantizer = OpenCVQuantizer()
 
-        const val MAX_COUNT = "xyz.cssxsh.pixiv.tool.quantizer.max_count"
+        internal const val MAX_COUNT = "xyz.cssxsh.pixiv.tool.quantizer.max_count"
     }
 
     private var last: Mat? = null
 
-    fun reset() {
+    public fun reset() {
         last = null
     }
 

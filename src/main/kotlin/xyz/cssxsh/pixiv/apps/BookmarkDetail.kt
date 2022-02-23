@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class BookmarkDetail(
+public data class BookmarkDetail(
     @SerialName("is_bookmarked")
     val isBookmarked: Boolean,
     @SerialName("tags")

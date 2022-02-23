@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class UserSetting(
+public data class UserSetting(
     @SerialName("creatorId")
     val creatorId: String?,
     @SerialName("fanboxUserStatus")
@@ -32,7 +32,7 @@ data class UserSetting(
     val userId: Long
 ) {
     @Serializable
-    data class SocialConnectStatus(
+    public data class SocialConnectStatus(
         @SerialName("twitter")
         val twitter: Boolean
     )

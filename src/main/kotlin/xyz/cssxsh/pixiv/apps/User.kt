@@ -6,13 +6,13 @@ import io.ktor.http.*
 import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 
-suspend fun PixivAppClient.userBlacklist(
+public suspend fun PixivAppClient.userBlacklist(
     url: String = USER_BLACKLIST,
 ): Blacklist = useHttpClient { client ->
     client.get(url)
 }
 
-suspend fun PixivAppClient.userBookmarksIllust(
+public suspend fun PixivAppClient.userBookmarksIllust(
     uid: Long,
     tag: String? = null,
     restrict: PublicityType = PublicityType.PUBLIC,
@@ -29,7 +29,7 @@ suspend fun PixivAppClient.userBookmarksIllust(
     }
 }
 
-suspend fun PixivAppClient.userBookmarksNovel(
+public suspend fun PixivAppClient.userBookmarksNovel(
     uid: Long,
     restrict: PublicityType = PublicityType.PUBLIC,
     max: Long? = null,
@@ -44,7 +44,7 @@ suspend fun PixivAppClient.userBookmarksNovel(
     }
 }
 
-suspend fun PixivAppClient.userBookmarksTagsIllust(
+public suspend fun PixivAppClient.userBookmarksTagsIllust(
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0,
     url: String = USER_BOOKMARKS_TAGS_ILLUST,
@@ -55,7 +55,7 @@ suspend fun PixivAppClient.userBookmarksTagsIllust(
     }
 }
 
-suspend fun PixivAppClient.userBookmarksTagsNovel(
+public suspend fun PixivAppClient.userBookmarksTagsNovel(
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long = 0,
     url: String = USER_BOOKMARKS_TAGS_NOVEL,
@@ -66,7 +66,7 @@ suspend fun PixivAppClient.userBookmarksTagsNovel(
     }
 }
 
-suspend fun PixivAppClient.userDetail(
+public suspend fun PixivAppClient.userDetail(
     uid: Long,
     filter: FilterType? = null,
     url: String = USER_DETAIL,
@@ -77,7 +77,7 @@ suspend fun PixivAppClient.userDetail(
     }
 }
 
-suspend fun PixivAppClient.userFollowAdd(
+public suspend fun PixivAppClient.userFollowAdd(
     uid: Long,
     restrict: PublicityType = PublicityType.PUBLIC,
     url: String = USER_FOLLOW_ADD,
@@ -90,7 +90,7 @@ suspend fun PixivAppClient.userFollowAdd(
     }
 }
 
-suspend fun PixivAppClient.userFollowDelete(
+public suspend fun PixivAppClient.userFollowDelete(
     uid: Long,
     url: String = USER_FOLLOW_DELETE,
 ): JsonElement = useHttpClient { client ->
@@ -101,7 +101,7 @@ suspend fun PixivAppClient.userFollowDelete(
     }
 }
 
-suspend fun PixivAppClient.userFollower(
+public suspend fun PixivAppClient.userFollower(
     uid: Long,
     filter: FilterType? = null,
     offset: Long = 0,
@@ -114,7 +114,7 @@ suspend fun PixivAppClient.userFollower(
     }
 }
 
-suspend fun PixivAppClient.userFollowing(
+public suspend fun PixivAppClient.userFollowing(
     uid: Long,
     filter: FilterType? = null,
     offset: Long = 0,
@@ -127,7 +127,7 @@ suspend fun PixivAppClient.userFollowing(
     }
 }
 
-suspend fun PixivAppClient.userIllusts(
+public suspend fun PixivAppClient.userIllusts(
     uid: Long,
     type: WorkContentType? = null,
     filter: FilterType? = null,
@@ -142,7 +142,7 @@ suspend fun PixivAppClient.userIllusts(
     }
 }
 
-suspend fun PixivAppClient.userMyPixiv(
+public suspend fun PixivAppClient.userMyPixiv(
     uid: Long,
     filter: FilterType? = null,
     offset: Long = 0,
@@ -155,7 +155,7 @@ suspend fun PixivAppClient.userMyPixiv(
     }
 }
 
-suspend fun PixivAppClient.userRecommended(
+public suspend fun PixivAppClient.userRecommended(
     filter: FilterType? = null,
     offset: Long = 0,
     url: String = USER_RECOMMENDED,

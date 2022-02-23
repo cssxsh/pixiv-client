@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class CreatorInfo(
+public data class CreatorInfo(
     @SerialName("comment")
     val comment: String? = null,
     @SerialName("iconUrl")

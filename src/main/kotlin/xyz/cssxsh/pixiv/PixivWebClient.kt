@@ -2,6 +2,6 @@ package xyz.cssxsh.pixiv
 
 import io.ktor.client.features.cookies.*
 
-interface PixivWebClient : UseHttpClient, UseConfig {
-    val storage: CookiesStorage
+public interface PixivWebClient : UseHttpClient, UseConfig {
+    public val storage: CookiesStorage
 }

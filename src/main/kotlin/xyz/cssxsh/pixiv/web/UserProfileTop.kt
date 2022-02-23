@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class UserProfileTop(
+public data class UserProfileTop(
     @SerialName("illusts")
     @Serializable(WebApiMap.Illust::class)
     val illusts: Map<Long, WebIllust>,
@@ -18,7 +18,7 @@ data class UserProfileTop(
 ) {
 
     @Serializable
-    data class RequestPostWorks(
+    public data class RequestPostWorks(
         @SerialName("artworks")
         val artworks: List<WebIllust>,
         @SerialName("novels")

@@ -16,7 +16,7 @@ import xyz.cssxsh.pixiv.exception.*
 import java.net.*
 import java.util.concurrent.*
 
-open class PixivDownloader(
+public open class PixivDownloader(
     async: Int = 32,
     protected open val blockSize: Int = 512 * HTTP_KILO, // HTTP use 1022 no 1024,
     protected open val proxy: Proxy? = null,
@@ -30,9 +30,9 @@ open class PixivDownloader(
         it is IOException || it is HttpRequestTimeoutException
     }
 
-    protected open val channel = Channel<Int>(async)
+    protected open val channel: Channel<Int> = Channel(async)
 
-    protected open fun client() = HttpClient(OkHttp) {
+    protected open fun client(): HttpClient = HttpClient(OkHttp) {
         ContentEncoding {
             gzip()
             deflate()
@@ -59,7 +59,7 @@ open class PixivDownloader(
         }
     }
 
-    protected open val clients by lazy { MutableList(8) { client() } }
+    protected open val clients: MutableList<HttpClient> by lazy { MutableList(8) { client() } }
 
     private suspend fun <T> withHttpClient(client: HttpClient, block: suspend HttpClient.() -> T): T = supervisorScope {
         while (isActive) {
@@ -156,7 +156,7 @@ open class PixivDownloader(
         bytes
     }
 
-    open suspend fun download(url: Url): ByteArray = supervisorScope {
+    public open suspend fun download(url: Url): ByteArray = supervisorScope {
         var client = clients.random()
         var length = 0
         while (isActive && length == 0) {
@@ -172,7 +172,7 @@ open class PixivDownloader(
         downloadRangesOrAll(client = client, url = url, length = length)
     }
 
-    open suspend fun <R> downloadImageUrls(
+    public open suspend fun <R> downloadImageUrls(
         urls: List<Url>,
         block: suspend (url: Url, deferred: Deferred<ByteArray>) -> R,
     ): List<R> = supervisorScope {

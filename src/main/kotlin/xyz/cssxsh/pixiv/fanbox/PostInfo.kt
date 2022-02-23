@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-data class PostInfo(
+public data class PostInfo(
     @SerialName("coverImageUrl")
     val coverImageUrl: String?,
     @SerialName("creatorId")

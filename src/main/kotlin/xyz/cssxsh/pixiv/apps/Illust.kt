@@ -8,7 +8,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 import java.time.format.*
 
-suspend fun PixivAppClient.illustBookmarkAdd(
+public suspend fun PixivAppClient.illustBookmarkAdd(
     pid: Long,
     tags: Set<String>,
     restrict: PublicityType = PublicityType.PUBLIC,
@@ -25,7 +25,7 @@ suspend fun PixivAppClient.illustBookmarkAdd(
     }
 }
 
-suspend fun PixivAppClient.illustBookmarkDelete(
+public suspend fun PixivAppClient.illustBookmarkDelete(
     pid: Long,
     url: String = ILLUST_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
@@ -36,7 +36,7 @@ suspend fun PixivAppClient.illustBookmarkDelete(
     }
 }
 
-suspend fun PixivAppClient.illustBookmarkDetail(
+public suspend fun PixivAppClient.illustBookmarkDetail(
     pid: Long,
     url: String = ILLUST_BOOKMARK_DETAIL,
 ): BookmarkDetailSingle = useHttpClient { client ->
@@ -45,7 +45,7 @@ suspend fun PixivAppClient.illustBookmarkDetail(
     }
 }
 
-suspend fun PixivAppClient.illustComments(
+public suspend fun PixivAppClient.illustComments(
     pid: Long,
     offset: Long? = null,
     includeTotalComments: Boolean? = null,
@@ -58,7 +58,7 @@ suspend fun PixivAppClient.illustComments(
     }
 }
 
-suspend fun PixivAppClient.illustDetail(
+public suspend fun PixivAppClient.illustDetail(
     pid: Long,
     url: String = ILLUST_DETAIL,
 ): IllustSingle = useHttpClient { client ->
@@ -67,7 +67,7 @@ suspend fun PixivAppClient.illustDetail(
     }
 }
 
-suspend fun PixivAppClient.illustFollow(
+public suspend fun PixivAppClient.illustFollow(
     restrict: PublicityType = PublicityType.PUBLIC,
     offset: Long? = null,
     url: String = ILLUST_FOLLOW,
@@ -78,7 +78,7 @@ suspend fun PixivAppClient.illustFollow(
     }
 }
 
-suspend fun PixivAppClient.illustMyPixiv(
+public suspend fun PixivAppClient.illustMyPixiv(
     offset: Long? = null,
     url: String = ILLUST_MYPIXIV,
 ): IllustData = useHttpClient { client ->
@@ -87,7 +87,7 @@ suspend fun PixivAppClient.illustMyPixiv(
     }
 }
 
-suspend fun PixivAppClient.illustNew(
+public suspend fun PixivAppClient.illustNew(
     type: WorkContentType? = null,
     max: Long? = null,
     url: String = ILLUST_NEW,
@@ -98,7 +98,7 @@ suspend fun PixivAppClient.illustNew(
     }
 }
 
-suspend fun PixivAppClient.illustRanking(
+public suspend fun PixivAppClient.illustRanking(
     date: LocalDate? = null,
     mode: RankMode? = null,
     filter: FilterType? = null,
@@ -113,7 +113,7 @@ suspend fun PixivAppClient.illustRanking(
     }
 }
 
-suspend fun PixivAppClient.illustRecommended(
+public suspend fun PixivAppClient.illustRecommended(
     filter: FilterType? = null,
     includeRankingLabel: Boolean? = null,
     includePrivacyPolicy: Boolean? = null,
@@ -132,7 +132,7 @@ suspend fun PixivAppClient.illustRecommended(
     }
 }
 
-suspend fun PixivAppClient.illustRelated(
+public suspend fun PixivAppClient.illustRelated(
     pid: Long,
     filter: FilterType? = null,
     offset: Long? = null,
@@ -145,7 +145,7 @@ suspend fun PixivAppClient.illustRelated(
     }
 }
 
-suspend fun PixivAppClient.illustWalkThrough(
+public suspend fun PixivAppClient.illustWalkThrough(
     url: String = WALK_THROUGH_ILLUSTS,
 ): IllustData = useHttpClient { client ->
     client.get(url)

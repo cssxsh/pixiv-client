@@ -3,12 +3,12 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class EmojiDefinitionData(
+public data class EmojiDefinitionData(
     @SerialName("emoji_definitions")
     val emoticons: List<EmojiDefinition>
 ) {
     @Serializable
-    data class EmojiDefinition(
+    public data class EmojiDefinition(
         @SerialName("id")
         val id: Int,
         @SerialName("image_url_medium")

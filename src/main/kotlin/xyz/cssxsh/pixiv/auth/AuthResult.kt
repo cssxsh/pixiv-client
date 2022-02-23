@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
-data class AuthResult(
+public data class AuthResult(
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("device_token")
@@ -26,7 +26,7 @@ data class AuthResult(
 ) {
 
     @Serializable
-    data class User(
+    public data class User(
         @SerialName("account")
         val account: String,
         @SerialName("id")

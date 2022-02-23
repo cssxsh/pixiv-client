@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class WebTitleCaption(
+public data class WebTitleCaption(
     @SerialName("workCaption")
     val caption: String?,
     @SerialName("workTitle")

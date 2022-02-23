@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class RecommendedData(
+public data class RecommendedData(
     @SerialName("illusts")
     val illusts: List<IllustInfo>,
     @SerialName("ranking_illusts")

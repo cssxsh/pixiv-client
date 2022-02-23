@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class UserPickupInfo(
+public data class UserPickupInfo(
     @SerialName("contentUrl")
     val contentUrl: String,
     @SerialName("deletable")

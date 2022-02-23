@@ -7,11 +7,11 @@ import xyz.cssxsh.pixiv.auth.*
 /**
  * PixivClient，Multiplatform interface
  */
-interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
+public interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
 
-    suspend fun login(block: suspend (Url) -> String): AuthResult
+    public suspend fun login(block: suspend (Url) -> String): AuthResult
 
-    suspend fun refresh(): AuthResult
+    public suspend fun refresh(): AuthResult
 
-    suspend fun info(): AuthResult
+    public suspend fun info(): AuthResult
 }

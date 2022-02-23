@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-data class SpotlightArticle(
+public data class SpotlightArticle(
     @SerialName("article_url")
     val url: String,
     @SerialName("category")

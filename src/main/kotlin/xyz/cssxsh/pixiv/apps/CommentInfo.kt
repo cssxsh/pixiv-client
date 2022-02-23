@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-data class CommentInfo(
+public data class CommentInfo(
     @SerialName("comment")
     val comment: String,
     @SerialName("date")

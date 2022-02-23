@@ -1,9 +1,9 @@
 package xyz.cssxsh.pixiv.tool
 
-class StuckiDitherer private constructor() : UniversalDitherer(DISTRIBUTION) {
-    companion object {
+public class StuckiDitherer private constructor() : UniversalDitherer(DISTRIBUTION) {
+    public companion object {
         @JvmField
-        val DISTRIBUTION: List<ErrorComponent> = listOf(
+        public val DISTRIBUTION: List<ErrorComponent> = listOf(
             ErrorComponent(1, 0, 8 / 48.0),
             ErrorComponent(2, 0, 4 / 48.0),
 
@@ -21,6 +21,6 @@ class StuckiDitherer private constructor() : UniversalDitherer(DISTRIBUTION) {
         )
 
         @JvmField
-        val INSTANCE: StuckiDitherer = StuckiDitherer()
+        public val INSTANCE: StuckiDitherer = StuckiDitherer()
     }
 }

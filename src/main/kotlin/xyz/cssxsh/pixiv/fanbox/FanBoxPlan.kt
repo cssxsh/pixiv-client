@@ -5,14 +5,14 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxPlan(override val client: PixivWebClient) : FanBoxApi() {
-    companion object {
+public class FanBoxPlan(override val client: PixivWebClient) : FanBoxApi() {
+    public companion object {
         internal const val LIST_CREATOR = "https://api.fanbox.cc/plan.listCreator"
 
         internal const val LIST_SUPPORTING = "https://api.fanbox.cc/plan.listSupporting"
     }
 
-    suspend fun listCreator(creatorId: String): List<PlanInfo> {
+    public suspend fun listCreator(creatorId: String): List<PlanInfo> {
         return client.ajax(api = LIST_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -21,7 +21,7 @@ class FanBoxPlan(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listCreator(userId: Long): List<PlanInfo> {
+    public suspend fun listCreator(userId: Long): List<PlanInfo> {
         return client.ajax(api = LIST_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -30,7 +30,7 @@ class FanBoxPlan(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listSupporting(): List<PlanInfo> {
+    public suspend fun listSupporting(): List<PlanInfo> {
         return client.ajax(api = LIST_SUPPORTING) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")

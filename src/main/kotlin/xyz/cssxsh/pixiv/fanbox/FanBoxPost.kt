@@ -7,8 +7,8 @@ import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
-    companion object {
+public class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
+    public companion object {
         internal const val LIST_SUPPORTING = "https://api.fanbox.cc/post.listSupporting"
 
         internal const val LIST_CREATOR = "https://api.fanbox.cc/post.listCreator"
@@ -26,14 +26,14 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         internal const val PAGINATE_CREATOR = "https://api.fanbox.cc/post.paginateCreator"
     }
 
-    suspend fun getPromotion(): JsonElement {// TODO: ...
+    public suspend fun getPromotion(): JsonElement {// TODO: ...
         return client.ajax(api = GET_PROMOTION) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
     }
 
-    suspend fun listCreator(creatorId: String, maxPublishedDatetime: String?, maxId: Long?, limit: Int = 10): PostList {
+    public suspend fun listCreator(creatorId: String, maxPublishedDatetime: String?, maxId: Long?, limit: Int = 10): PostList {
         return client.ajax(api = LIST_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -45,7 +45,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listCreator(userId: Long, maxPublishedDatetime: String?, maxId: Long?, limit: Int = 10): PostList {
+    public suspend fun listCreator(userId: Long, maxPublishedDatetime: String?, maxId: Long?, limit: Int = 10): PostList {
         return client.ajax(api = LIST_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -57,7 +57,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listComments(postId: Long, limit: Int = 10): CommentList {
+    public suspend fun listComments(postId: Long, limit: Int = 10): CommentList {
         return client.ajax(api = LIST_COMMENTS) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -67,7 +67,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listHome(limit: Int = 10): PostList {
+    public suspend fun listHome(limit: Int = 10): PostList {
         return client.ajax(api = LIST_HOME) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -76,7 +76,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listTagged(tag: String, creatorId: String): PostList {
+    public suspend fun listTagged(tag: String, creatorId: String): PostList {
         return client.ajax(api = LIST_TAGGED) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -86,7 +86,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listTagged(tag: String, userId: Long): PostList {
+    public suspend fun listTagged(tag: String, userId: Long): PostList {
         return client.ajax(api = LIST_TAGGED) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -96,7 +96,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listSupporting(limit: Int = 10): PostList {
+    public suspend fun listSupporting(limit: Int = 10): PostList {
         return client.ajax(api = LIST_SUPPORTING) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -105,7 +105,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun info(postId: Long): PostDetail {
+    public suspend fun info(postId: Long): PostDetail {
         return client.ajax(api = INFO) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -114,7 +114,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun paginateCreator(creatorId: String): Flow<PostList> {
+    public suspend fun paginateCreator(creatorId: String): Flow<PostList> {
         val pages: List<String> = client.ajax(api = PAGINATE_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -130,7 +130,7 @@ class FanBoxPost(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun paginateCreator(userId: Long): Flow<PostList> {
+    public suspend fun paginateCreator(userId: Long): Flow<PostList> {
         val pages: List<String> = client.ajax(api = PAGINATE_CREATOR) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")

@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class TrendIllust(
+public data class TrendIllust(
     @SerialName("translated_name")
     val translatedName: String? = null,
     @SerialName("tag")

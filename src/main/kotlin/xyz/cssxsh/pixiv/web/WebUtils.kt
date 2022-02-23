@@ -11,24 +11,25 @@ import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.exception.*
 
 @Serializable
-class WebApiResult(
+public class WebApiResult(
     @SerialName("body")
-    val body: JsonElement,
+    public val body: JsonElement,
     @SerialName("error")
-    val error: Boolean = false,
+    public val error: Boolean = false,
     @SerialName("message")
-    val message: String = "",
+    public val message: String = "",
 )
 
-suspend inline fun <reified T> PixivWebClient.ajax(api: String, crossinline block: HttpRequestBuilder.() -> Unit): T {
-    return useHttpClient { client ->
-        val result = client.request<WebApiResult>(api, block)
-        if (result.error) throw WebApiException(result)
-        PixivJson.decodeFromJsonElement(result.body)
-    }
+public suspend inline fun <reified T> PixivWebClient.ajax(
+    api: String,
+    crossinline block: HttpRequestBuilder.() -> Unit
+): T = useHttpClient { client ->
+    val result = client.request<WebApiResult>(api, block)
+    if (result.error) throw WebApiException(result)
+    PixivJson.decodeFromJsonElement(result.body)
 }
 
-suspend fun PixivWebClient.location(url: Url): String {
+public suspend fun PixivWebClient.location(url: Url): String {
     return useHttpClient { client ->
         client.config {
             expectSuccess = false
@@ -37,7 +38,7 @@ suspend fun PixivWebClient.location(url: Url): String {
     } ?: throw IllegalStateException("redirect failure $url, Not Found Location.")
 }
 
-object WepApiSet : KSerializer<Set<Long>> {
+public object WepApiSet : KSerializer<Set<Long>> {
     private val serializer = SetSerializer(Long.serializer())
 
     override val descriptor: SerialDescriptor
@@ -61,7 +62,7 @@ object WepApiSet : KSerializer<Set<Long>> {
     }
 }
 
-sealed class WebApiMap<V : WebWorkInfo>(valueSerializer: KSerializer<V>) : KSerializer<Map<Long, V>> {
+public sealed class WebApiMap<V : WebWorkInfo>(valueSerializer: KSerializer<V>) : KSerializer<Map<Long, V>> {
     private val serializer: KSerializer<Map<Long, V>> = MapSerializer(Long.serializer(), valueSerializer)
 
     override val descriptor: SerialDescriptor get() = serializer.descriptor
@@ -84,9 +85,9 @@ sealed class WebApiMap<V : WebWorkInfo>(valueSerializer: KSerializer<V>) : KSeri
     }
 
 
-    object Illust : WebApiMap<WebIllust>(WebIllust.serializer())
+    public object Illust : WebApiMap<WebIllust>(WebIllust.serializer())
 
-    object Novel : WebApiMap<WebNovel>(WebNovel.serializer())
+    public object Novel : WebApiMap<WebNovel>(WebNovel.serializer())
 }
 
 // https://www.pixiv.net/ajax/tags/frequent/illust?lang=zh

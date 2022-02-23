@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.web
 import kotlinx.serialization.*
 
 @Serializable
-data class UserRequestInfo(
+public data class UserRequestInfo(
     @SerialName("postWorks")
     val postWorks: PostWorks,
     @SerialName("showRequestSentTab")
@@ -12,7 +12,7 @@ data class UserRequestInfo(
     val showRequestTab: Boolean
 ) {
     @Serializable
-    data class PostWorks(
+    public data class PostWorks(
         @SerialName("artworks")
         @Serializable(WepApiSet::class)
         val artworks: Set<Long>,

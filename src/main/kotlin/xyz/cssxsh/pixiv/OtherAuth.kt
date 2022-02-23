@@ -16,13 +16,13 @@ import org.openqa.selenium.remote.*
 import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.tool.*
 
-const val WEIBO_QRCODE_GENERATE = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
+public const val WEIBO_QRCODE_GENERATE: String = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
 
-const val WEIBO_QRCODE_QUERY = "https://api.weibo.com/oauth2/qrcode_authorize/query"
+public const val WEIBO_QRCODE_QUERY: String = "https://api.weibo.com/oauth2/qrcode_authorize/query"
 
-const val WEIBO_QRCODE_TIMEOUT = 10 * 60 * 1000L
+public const val WEIBO_QRCODE_TIMEOUT: Long = 10 * 60 * 1000L
 
-const val WEIBO_QRCODE_INTERVAL = 3 * 1000L
+public const val WEIBO_QRCODE_INTERVAL: Long = 3 * 1000L
 
 private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
@@ -87,7 +87,7 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
  * @param show handle qrcode image url
  */
 @OptIn(ExperimentalSerializationApi::class)
-suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit) = login { redirect ->
+public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): AuthResult = login { redirect ->
     /**
      * for [LOGIN_URL]
      */
@@ -141,7 +141,7 @@ suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit) = login { 
  * 登录，通过 Web Cookies
  * @param load get pixiv web cookie
  */
-suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { redirect ->
+public suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>): AuthResult = login { redirect ->
     for (cookie in load()) {
         storage.addCookie(ORIGIN_URL, cookie)
     }
@@ -175,22 +175,23 @@ suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>) = login { redirect 
 
 /**
  * 登录，通过 账户密码
- * @param username Pixiv ID 或者 Email
- * @param password 密码
+ * @param id Pixiv ID 或者 Email
+ * @param pwd 密码
  * @param handler 人机验证处理
  */
-suspend fun PixivAuthClient.password(username: String, password: String, handler: CaptchaHandler) = login { redirect ->
+public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: CaptchaHandler): AuthResult = login { r ->
     /**
      * for [LOGIN_URL]
      */
-    val login: HttpResponse = useHttpClient { it.get(redirect) }
+    val login: HttpResponse = useHttpClient { it.get(r) }
     val account = login.account()
 
     while (isActive) {
         /**
          * 实际上 SiteKey 是固定值 6LfF1dcZAAAAAOHQX8v16MX5SktDwmQINVD_6mBF
          */
-        val gRecaptchaResponse = handler.handle(siteKey = account.scoreSiteKey, referer = login.request.url.toString())
+        val gRecaptchaResponse =
+            handler.handle(siteKey = account.scoreSiteKey, referer = login.request.url.toString())
 
         val attempt: JsonObject = useHttpClient {
             it.post(LOGIN_API_URL) {
@@ -201,8 +202,8 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
                 parameter("lang", "zh")
 
                 body = FormDataContent(Parameters.build {
-                    append("password", password)
-                    append("pixiv_id", username)
+                    append("password", pwd)
+                    append("pixiv_id", id)
                     append("captcha", "")
                     append("g-recaptcha-response", gRecaptchaResponse)
                     append("post_key", account.postKey)
@@ -250,7 +251,7 @@ suspend fun PixivAuthClient.password(username: String, password: String, handler
  * 登录，通过 selenium 调用浏览器
  * @param driver 浏览器驱动器
  */
-suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver, timeout: Long = 900_000) = login { redirect ->
+public suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver, timeout: Long): AuthResult = login { redirect ->
     try {
         driver.get(redirect.toString())
     } catch (_: WebDriverException) {

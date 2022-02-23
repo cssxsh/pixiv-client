@@ -8,7 +8,7 @@ import xyz.cssxsh.pixiv.*
 import java.time.*
 import java.time.format.*
 
-suspend fun PixivAppClient.novelBookmarkAdd(
+public suspend fun PixivAppClient.novelBookmarkAdd(
     pid: Long,
     tags: List<String>,
     restrict: PublicityType = PublicityType.PUBLIC,
@@ -23,7 +23,7 @@ suspend fun PixivAppClient.novelBookmarkAdd(
     }
 }
 
-suspend fun PixivAppClient.novelBookmarkDelete(
+public suspend fun PixivAppClient.novelBookmarkDelete(
     pid: Long,
     url: String = NOVEL_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
@@ -34,7 +34,7 @@ suspend fun PixivAppClient.novelBookmarkDelete(
     }
 }
 
-suspend fun PixivAppClient.novelBookmarkDetail(
+public suspend fun PixivAppClient.novelBookmarkDetail(
     pid: Long,
     url: String = NOVEL_BOOKMARK_DETAIL,
 ): BookmarkDetailSingle = useHttpClient { client ->
@@ -44,7 +44,7 @@ suspend fun PixivAppClient.novelBookmarkDetail(
 }
 
 
-suspend fun PixivAppClient.novelComments(
+public suspend fun PixivAppClient.novelComments(
     pid: Long,
     offset: Long = 0,
     includeTotalComments: Boolean? = null,
@@ -57,7 +57,7 @@ suspend fun PixivAppClient.novelComments(
     }
 }
 
-suspend fun PixivAppClient.novelDetail(
+public suspend fun PixivAppClient.novelDetail(
     pid: Long,
     url: String = NOVEL_DETAIL,
 ): IllustSingle = useHttpClient { client ->
@@ -66,7 +66,7 @@ suspend fun PixivAppClient.novelDetail(
     }
 }
 
-suspend fun PixivAppClient.novelFollow(
+public suspend fun PixivAppClient.novelFollow(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: FilterType = FilterType.FOR_ANDROID,
     offset: Long = 0,
@@ -79,7 +79,7 @@ suspend fun PixivAppClient.novelFollow(
     }
 }
 
-suspend fun PixivAppClient.novelMyPixiv(
+public suspend fun PixivAppClient.novelMyPixiv(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: FilterType = FilterType.FOR_ANDROID,
     offset: Long = 0,
@@ -92,7 +92,7 @@ suspend fun PixivAppClient.novelMyPixiv(
     }
 }
 
-suspend fun PixivAppClient.novelNew(
+public suspend fun PixivAppClient.novelNew(
     restrict: PublicityType = PublicityType.PUBLIC,
     filter: FilterType = FilterType.FOR_ANDROID,
     offset: Long = 0,
@@ -105,7 +105,7 @@ suspend fun PixivAppClient.novelNew(
     }
 }
 
-suspend fun PixivAppClient.novelRanking(
+public suspend fun PixivAppClient.novelRanking(
     date: String? = null,
     mode: RankMode? = null,
     filter: FilterType = FilterType.FOR_ANDROID,
@@ -120,7 +120,7 @@ suspend fun PixivAppClient.novelRanking(
     }
 }
 
-suspend fun PixivAppClient.novelRanking(
+public suspend fun PixivAppClient.novelRanking(
     date: LocalDate,
     mode: RankMode? = null,
     filter: FilterType = FilterType.FOR_ANDROID,
@@ -134,7 +134,7 @@ suspend fun PixivAppClient.novelRanking(
     url = url,
 )
 
-suspend fun PixivAppClient.novelRecommended(
+public suspend fun PixivAppClient.novelRecommended(
     filter: FilterType? = null,
     includeRankingLabel: Boolean = true,
     includePrivacyPolicy: Boolean = true,

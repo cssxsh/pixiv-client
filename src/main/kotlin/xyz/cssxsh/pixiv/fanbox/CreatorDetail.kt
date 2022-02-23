@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.fanbox
 import kotlinx.serialization.*
 
 @Serializable
-data class CreatorDetail(
+public data class CreatorDetail(
     @SerialName("coverImageUrl")
     val coverImageUrl: String?,
     @SerialName("creatorId")
@@ -31,14 +31,14 @@ data class CreatorDetail(
 ) {
 
     @Serializable
-    sealed class ProfileItem {
+    public sealed class ProfileItem {
 
         @SerialName("id")
-        abstract val id: String
+        public abstract val id: String
 
         @Serializable
         @SerialName("image")
-        data class Image(
+        public data class Image(
             @SerialName("id")
             override val id: String,
             @SerialName("imageUrl")
@@ -49,7 +49,7 @@ data class CreatorDetail(
 
         @Serializable
         @SerialName("video")
-        data class Video(
+        public data class Video(
             @SerialName("id")
             override val id: String,
             @SerialName("serviceProvider")

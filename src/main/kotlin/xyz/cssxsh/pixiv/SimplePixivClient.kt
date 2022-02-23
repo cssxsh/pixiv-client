@@ -5,7 +5,7 @@ import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
 
-open class SimplePixivClient(
+public open class SimplePixivClient(
     parentCoroutineContext: CoroutineContext = EmptyCoroutineContext,
     coroutineName: String = "SimplePixivClient",
     override val config: PixivConfig,

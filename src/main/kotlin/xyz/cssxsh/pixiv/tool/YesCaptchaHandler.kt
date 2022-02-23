@@ -17,7 +17,8 @@ import xyz.cssxsh.pixiv.*
  *
  * @param host 国内: api.yescaptcha.com 香港: hk.yescaptcha.com
  */
-class YesCaptchaHandler(private val clientKey: String, val host: String = "api.yescaptcha.com") : CaptchaHandler {
+public class YesCaptchaHandler(private val clientKey: String, public val host: String = "api.yescaptcha.com") :
+    CaptchaHandler {
     private val client = HttpClient(OkHttp) {
         Json {
             serializer = KotlinxSerializer(PixivJson)
@@ -36,7 +37,7 @@ class YesCaptchaHandler(private val clientKey: String, val host: String = "api.y
      * [查询账户余额](https://yescaptcha.atlassian.net/wiki/spaces/YESCAPTCHA/pages/229767/getBalance)
      * @return 余额
      */
-    suspend fun getBalance(): Double {
+    public suspend fun getBalance(): Double {
         val result = client.post<JsonObject>("https://$host/getBalance") {
             body = buildJsonObject {
                 put("clientKey", clientKey)

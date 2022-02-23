@@ -6,7 +6,7 @@ import okhttp3.dnsoverhttps.*
 import okhttp3.internal.*
 import java.net.*
 
-class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
+public class RubyDns(doh: String, private val hosts: Map<String, List<String>>) : Dns {
     private val dns: Dns = (if (doh.isNotBlank()) DnsOverHttps(doh) else Dns.SYSTEM)
 
     private fun DnsOverHttps(url: String): DnsOverHttps {

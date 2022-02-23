@@ -3,7 +3,7 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.serialization.*
 
 @Serializable
-data class IllustData(
+public data class IllustData(
     @SerialName("illusts")
     val illusts: List<IllustInfo>,
     @SerialName("next_url")

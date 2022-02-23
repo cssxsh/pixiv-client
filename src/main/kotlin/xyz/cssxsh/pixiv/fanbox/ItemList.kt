@@ -1,7 +1,7 @@
 package xyz.cssxsh.pixiv.fanbox
 
 
-interface ItemList {
-    val items: List<*>
-    val nextUrl: String?
+public interface ItemList {
+    public val items: List<*>
+    public val nextUrl: String?
 }

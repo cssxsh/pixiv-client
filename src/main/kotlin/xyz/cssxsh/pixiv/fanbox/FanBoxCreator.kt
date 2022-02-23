@@ -5,8 +5,8 @@ import io.ktor.http.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
-class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
-    companion object {
+public class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
+    public companion object {
         internal const val GET = "https://api.fanbox.cc/creator.get"
 
         internal const val GET_START_COMMENTS = "https://api.fanbox.cc/creator.getStartComments"
@@ -25,10 +25,11 @@ class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
          * * `https://www.fanbox.cc/@official`
          * * `https://official.fanbox.cc`
          */
-        val URL_FANBOX_CREATOR_REGEX = """((?<=\.fanbox\.cc/@)[\w-]{3,16})|([\w-]{3,16}(?=\.fanbox\.cc))""".toRegex()
+        public val URL_FANBOX_CREATOR_REGEX: Regex =
+            """((?<=\.fanbox\.cc/@)[\w-]{3,16})|([\w-]{3,16}(?=\.fanbox\.cc))""".toRegex()
     }
 
-    suspend fun get(creatorId: String): CreatorDetail {
+    public suspend fun get(creatorId: String): CreatorDetail {
         return client.ajax(api = GET) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -37,7 +38,7 @@ class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun get(userId: Long): CreatorDetail {
+    public suspend fun get(userId: Long): CreatorDetail {
         return client.ajax(api = GET) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -46,35 +47,35 @@ class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listRecommended(): List<CreatorDetail> {
+    public suspend fun listRecommended(): List<CreatorDetail> {
         return client.ajax(api = LIST_RECOMMENDED) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
     }
 
-    suspend fun listFollowing(): List<CreatorDetail> {
+    public suspend fun listFollowing(): List<CreatorDetail> {
         return client.ajax(api = LIST_FOLLOWING) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
     }
 
-    suspend fun listPixiv(): List<CreatorDetail> {
+    public suspend fun listPixiv(): List<CreatorDetail> {
         return client.ajax(api = LIST_PIXIV) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
     }
 
-    suspend fun listTwitter(): List<CreatorDetail> {
+    public suspend fun listTwitter(): List<CreatorDetail> {
         return client.ajax(api = LIST_TWITTER) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
         }
     }
 
-    suspend fun listRelated(creatorId: String): List<CreatorDetail> {
+    public suspend fun listRelated(creatorId: String): List<CreatorDetail> {
         return client.ajax(api = LIST_RELATED) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -85,7 +86,7 @@ class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun listRelated(userId: Long): List<CreatorDetail> {
+    public suspend fun listRelated(userId: Long): List<CreatorDetail> {
         return client.ajax(api = LIST_RELATED) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
@@ -96,7 +97,7 @@ class FanBoxCreator(override val client: PixivWebClient) : FanBoxApi() {
         }
     }
 
-    suspend fun getStartComments(): Map<String, List<CreatorInfo>> {
+    public suspend fun getStartComments(): Map<String, List<CreatorInfo>> {
         return client.ajax(api = GET_START_COMMENTS) {
             header(HttpHeaders.Origin, "https://www.fanbox.cc")
             header(HttpHeaders.Referrer, "https://www.fanbox.cc/")

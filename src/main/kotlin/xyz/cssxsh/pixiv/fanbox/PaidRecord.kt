@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import java.time.*
 
 @Serializable
-data class PaidRecord(
+public data class PaidRecord(
     @SerialName("creator")
     val creator: CreatorActive,
     @SerialName("id")
