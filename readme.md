@@ -20,6 +20,6 @@ repositories {
 }
 
 dependencies {
-    implementation("xzy.cssxsh.pixiv:pixiv-client:${version}")
+    implementation("xyz.cssxsh.pixiv:pixiv-client:${version}")
 }
 ```
