@@ -46,7 +46,7 @@ public object WepApiSet : KSerializer<Set<Long>> {
 
     override fun deserialize(decoder: Decoder): Set<Long> {
         val element = decoder.decodeSerializableValue(JsonElement.serializer())
-        return if (element is JsonObject) element.mapTo(mutableSetOf()) { it.key.toLong() } else emptySet()
+        return if (element is JsonObject) element.mapTo(HashSet()) { it.key.toLong() } else emptySet()
     }
 
     override fun serialize(encoder: Encoder, value: Set<Long>) {
