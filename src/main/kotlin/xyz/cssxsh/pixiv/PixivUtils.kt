@@ -109,11 +109,9 @@ public enum class OrderType {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<OrderType> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<OrderType> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<OrderType> by EnumIndexSerializer()
-
-    public companion object : KSerializer<OrderType> by NameSerializer
 }
 
 @Serializable(with = SearchSort.NameSerializer::class)
@@ -128,11 +126,9 @@ public enum class SearchSort {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<SearchSort> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<SearchSort> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<SearchSort> by EnumIndexSerializer()
-
-    public companion object : KSerializer<SearchSort> by NameSerializer
 }
 
 @Serializable(with = SearchDuration.NameSerializer::class)
@@ -148,11 +144,9 @@ public enum class SearchDuration {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<SearchDuration> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<SearchDuration> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<SearchDuration> by EnumIndexSerializer()
-
-    public companion object : KSerializer<SearchDuration> by NameSerializer
 }
 
 @Serializable(with = PublicityType.NameSerializer::class)
@@ -163,11 +157,9 @@ public enum class PublicityType {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<PublicityType> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<PublicityType> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<PublicityType> by EnumIndexSerializer()
-
-    public companion object : KSerializer<PublicityType> by NameSerializer
 }
 
 @Serializable(with = SearchTarget.NameSerializer::class)
@@ -178,11 +170,9 @@ public enum class SearchTarget {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<SearchTarget> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<SearchTarget> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<SearchTarget> by EnumIndexSerializer()
-
-    public companion object : KSerializer<SearchTarget> by NameSerializer
 }
 
 @Serializable(with = WorkContentType.NameSerializer::class)
@@ -193,11 +183,9 @@ public enum class WorkContentType {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<WorkContentType> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<WorkContentType> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<WorkContentType> by EnumIndexSerializer()
-
-    public companion object : KSerializer<WorkContentType> by NameSerializer
 }
 
 @Serializable(with = RankMode.NameSerializer::class)
@@ -231,11 +219,9 @@ public enum class RankMode {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<RankMode> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<RankMode> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<RankMode> by EnumIndexSerializer()
-
-    public companion object : KSerializer<RankMode> by NameSerializer
 }
 
 @Serializable(with = SanityLevel.IndexSerializer::class)
@@ -253,9 +239,7 @@ public enum class SanityLevel {
 
     public object NameSerializer : KSerializer<SanityLevel> by EnumNameSerializer()
 
-    public object IndexSerializer : KSerializer<SanityLevel> by EnumIndexSerializer()
-
-    public companion object : KSerializer<SanityLevel> by IndexSerializer
+    public companion object IndexSerializer : KSerializer<SanityLevel> by EnumIndexSerializer()
 }
 
 @Serializable(with = AgeLimit.IndexSerializer::class)
@@ -277,9 +261,7 @@ public enum class AgeLimit {
         }
     }
 
-    public object IndexSerializer : KSerializer<AgeLimit> by EnumIndexSerializer()
-
-    public companion object : KSerializer<AgeLimit> by IndexSerializer
+    public companion object IndexSerializer : KSerializer<AgeLimit> by EnumIndexSerializer()
 }
 
 public enum class FilterType {
@@ -297,11 +279,9 @@ public enum class CategoryType {
 
     override fun toString(): String = name.lowercase()
 
-    public object NameSerializer : KSerializer<CategoryType> by EnumNameSerializer()
+    public companion object NameSerializer : KSerializer<CategoryType> by EnumNameSerializer()
 
     public object IndexSerializer : KSerializer<CategoryType> by EnumIndexSerializer()
-
-    public companion object : KSerializer<CategoryType> by NameSerializer
 }
 
 public enum class FollowType {
