@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.0.0"
+version = "1.0.1"
 
 mavenCentralPublish {
     useCentralS01()
@@ -16,7 +16,6 @@ mavenCentralPublish {
 repositories {
     mavenLocal()
     mavenCentral()
-    gradlePluginPortal()
 }
 
 dependencies {
@@ -28,24 +27,14 @@ dependencies {
     }
     api("io.ktor:ktor-client-encoding:1.6.5")
     api("io.ktor:ktor-client-okhttp:1.6.5")
-    api("io.ktor:ktor-network:1.6.5")
     api("com.squareup.okhttp3:okhttp:4.9.2")
     api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.9.2")
     api("com.squareup:gifencoder:0.10.1")
-    /**
-     * $OPENCV_HOME = ...
-     * $PATH = $PATH;OPENCV_HOME/build/bin;OPENCV_HOME/build/java/x64
-     */
-    val opencv: String? = System.getenv("OPENCV_HOME")
-    if (opencv != null) {
-        compileOnly(fileTree(File(opencv).resolve("build/java")))
-    } else {
-        compileOnly("org.openpnp:opencv:4.5.1-2")
-    }
-    compileOnly("org.seleniumhq.selenium:selenium-java:4.1.2")
+    compileOnly("org.openpnp:opencv:4.5.1-2")
+    compileOnly("org.seleniumhq.selenium:selenium-java:4.1.4")
 
     testImplementation(kotlin("test", "1.6.0"))
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.1.2")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.1.4")
 }
 
 kotlin {
