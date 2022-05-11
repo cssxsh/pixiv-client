@@ -11,9 +11,9 @@ public data class HtmlAccount(
     @SerialName("pixivAccount.continueWithCurrentAccountUrl")
     val current: String = "",
     @SerialName("pixivAccount.returnTo")
-    val returnTo: String,
+    val returnTo: String = "",
     @SerialName("pixivAccount.tt")
-    val token: String,
+    val token: String = "",
     @SerialName("pixivAccount.userId")
     val uid: Long? = null,
     @SerialName("pixivAccount.ref")

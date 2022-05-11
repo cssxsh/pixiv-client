@@ -8,7 +8,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.logging.*
@@ -26,11 +25,10 @@ public const val WEIBO_QRCODE_INTERVAL: Long = 3 * 1000L
 
 private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
-@OptIn(ExperimentalSerializationApi::class)
-private suspend fun HttpResponse.account(): HtmlAccount {
+private suspend inline fun HttpResponse.account(): HtmlAccount {
     val html = receive<String>()
     val data = html.substringAfter("value='").substringBefore("'")
-    return PixivJson.decodeFromString(data)
+    return PixivJson.decodeFromString(HtmlAccount.serializer(), data)
 }
 
 /**
@@ -86,7 +84,6 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
  * 登录，通过新浪微博关联Pixiv
  * @param show handle qrcode image url
  */
-@OptIn(ExperimentalSerializationApi::class)
 public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): AuthResult = login { redirect ->
     /**
      * for [LOGIN_URL]
@@ -100,7 +97,7 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
     val temp: HttpResponse = useHttpClient { it.head(sina) }
     // 为了直接继承参数 ↓
     val generate = Url(WEIBO_QRCODE_GENERATE).copy(parameters = temp.request.url.parameters)
-    val qrcode: WeiboQrcode = PixivJson.decodeFromString(useHttpClient { it.get(generate) })
+    val qrcode = PixivJson.decodeFromString(WeiboQrcode.serializer(), useHttpClient { it.get(generate) })
 
     supervisorScope {
         show(Url(qrcode.url))
@@ -110,7 +107,7 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
         lateinit var auto: String
         while (isActive) {
             delay(WEIBO_QRCODE_INTERVAL)
-            val status: WeiboQrcodeStatus = PixivJson.decodeFromString(useHttpClient {
+            val status = PixivJson.decodeFromString(WeiboQrcodeStatus.serializer(), useHttpClient {
                 it.get(WEIBO_QRCODE_QUERY) {
                     parameter("vcode", qrcode.vcode)
                 }
@@ -129,7 +126,7 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
     val sign = gigya.substringAfter("redirect('").substringBefore("');")
     // transform unicode
     val unicode = """\\u(\d{4})""".toRegex()
-    val link = Url(sign.replace(unicode) { it.destructured.component1().toInt(16).toChar().toString() })
+    val link = Url(sign.replace(unicode) { it.groupValues[1].toInt(16).toChar().toString() })
 
     /**
      * GiGya auto to [POST_REDIRECT_URL]
