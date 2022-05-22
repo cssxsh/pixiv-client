@@ -27,6 +27,10 @@ public const val POST_SELECTED_URL: String = "https://accounts.pixiv.net/account
 
 public const val POST_REDIRECT_URL: String = "https://accounts.pixiv.net/post-redirect"
 
+public const val GIGYA_AUTH_URL: String = "https://accounts.pixiv.net/gigya-auth"
+
+public const val SOCIALIZE_LOGIN_URL: String = "https://socialize.gigya.com/socialize.login"
+
 internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
     val origin = time.toString().encode().sha512().base64Url().replace("=", "")
 

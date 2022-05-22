@@ -25,8 +25,7 @@ public const val WEIBO_QRCODE_INTERVAL: Long = 3 * 1000L
 
 private fun HttpMessage.location() = headers[HttpHeaders.Location]?.let(::Url)
 
-private suspend inline fun HttpResponse.account(): HtmlAccount {
-    val html = receive<String>()
+private fun account(html: String): HtmlAccount {
     val data = html.substringAfter("value='").substringBefore("'")
     return PixivJson.decodeFromString(HtmlAccount.serializer(), data)
 }
@@ -38,13 +37,11 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
     val redirect: HttpResponse = useHttpClient { it.get(link) }
     val location = redirect.request.url
 
-    check(location.toString().startsWith(POST_REDIRECT_URL)) { location }
-
-    val account = redirect.account()
+    val account = account(html = redirect.receive())
 
     checkNotNull(account.uid) { "未登录" }
 
-    val current = Url(account.returnTo)
+    val current = Url(location.parameters["return_to"]?.decodeURLPart() ?: account.returnTo)
 
     /**
      * current for [START_URL]
@@ -52,6 +49,8 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
     val response: HttpMessage = useHttpClient {
         it.post(current) {
             expectSuccess = false
+
+            parameter("via", "login")
 
             header(HttpHeaders.Origin, ORIGIN_URL)
             header(HttpHeaders.Referrer, LOGIN_URL)
@@ -88,13 +87,35 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
     /**
      * for [LOGIN_URL]
      */
-    val html: String = useHttpClient { it.get(redirect) }
+    val account = account(html = useHttpClient { it.get(redirect) })
 
-    val all = html.let("""gigya-auth[^"]+""".toRegex()::findAll).map { it.value.replace("&amp;", "&") }
-    val sina = Url(ORIGIN_URL).copy(encodedPath = all.first { "sina" in it })
+    /**
+     * for [GIGYA_AUTH_URL]
+     */
+    val response: HttpMessage = useHttpClient {
+        it.post(GIGYA_AUTH_URL) {
+            expectSuccess = false
+
+            header(HttpHeaders.Origin, ORIGIN_URL)
+            header(HttpHeaders.Referrer, LOGIN_URL)
+
+            body = FormDataContent(Parameters.build {
+                append("tt", account.token)
+                append("mode", "signin")
+                append("provider", "sina")
+                append("lang", "zh")
+                append("ref_sns_button", "login")
+                append("return_to", redirect.toString())
+                append("source", "pixiv-android")
+                append("view_type", "page")
+            })
+        }
+    }
+
+    val socialize = requireNotNull(response.location()) { "跳转到 $SOCIALIZE_LOGIN_URL 失败" }
 
     // Jump to Sina Weibo
-    val temp: HttpResponse = useHttpClient { it.head(sina) }
+    val temp: HttpResponse = useHttpClient { it.head(socialize) }
     // 为了直接继承参数 ↓
     val generate = Url(WEIBO_QRCODE_GENERATE).copy(parameters = temp.request.url.parameters)
     val qrcode = PixivJson.decodeFromString(WeiboQrcode.serializer(), useHttpClient { it.get(generate) })
@@ -143,8 +164,7 @@ public suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>): AuthResult 
         storage.addCookie(ORIGIN_URL, cookie)
     }
     requireNotNull(storage.get(Url(ORIGIN_URL))["PHPSESSID"]) { "PHPSESSID is null" }
-    val login: HttpResponse = useHttpClient { it.get(redirect) }
-    val account = login.account()
+    val account = account(html = useHttpClient { it.get(redirect) })
 
     checkNotNull(account.uid) { "未登录" }
 
@@ -159,7 +179,7 @@ public suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>): AuthResult 
             header(HttpHeaders.Referrer, LOGIN_URL)
 
             body = FormDataContent(Parameters.build {
-                append("return_to", account.current)
+                append("return_to", account.current.ifEmpty { redirect.toString() })
                 append("tt", account.token)
             })
         }
@@ -181,7 +201,7 @@ public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: Ca
      * for [LOGIN_URL]
      */
     val login: HttpResponse = useHttpClient { it.get(r) }
-    val account = login.account()
+    val account = account(html = login.receive())
 
     while (isActive) {
         /**
@@ -261,7 +281,8 @@ public suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver, timeout: Lo
     }
     // XXX: 通过错误日志获取 跳转URL
     val log = driver.manage().logs().get(LogType.BROWSER)
-        .last { log -> "pixiv://account/login" in log.message.orEmpty() }
+        .findLast { log -> "pixiv://account/login" in log.message.orEmpty() }
+        ?: throw NoSuchElementException("No Found pixiv://account/login")
     val url = Url(log.message.substringAfter("'").substringBefore("'"))
 
     url.parameters["code"] ?: throw NoSuchElementException("code, ${log.message}")
