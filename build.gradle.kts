@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.0.2"
+version = "1.1.0"
 
 mavenCentralPublish {
     useCentralS01()
