@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
 import java.time.*
@@ -11,7 +12,7 @@ public suspend fun PixivAppClient.searchAutoCompleteOld(
 ): KeywordsData = useHttpClient { client ->
     client.get(url) {
         parameter("word", word)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.searchAutoComplete(
@@ -22,7 +23,7 @@ public suspend fun PixivAppClient.searchAutoComplete(
     client.get(url) {
         parameter("word", word)
         parameter("merge_plain_keyword_results", merge)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.searchBookmarkRangesIllust(
@@ -45,7 +46,7 @@ public suspend fun PixivAppClient.searchBookmarkRangesIllust(
         parameter("merge_plain_keyword_results", merge)
         parameter("offset", offset)
         parameter("filter", filter)
-    }
+    }.body()
 }
 
 /**
@@ -79,7 +80,7 @@ public suspend fun PixivAppClient.searchIllust(
         parameter("merge_plain_keyword_results", merge)
         parameter("offset", offset)
         parameter("filter", filter)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.searchUser(
@@ -92,5 +93,5 @@ public suspend fun PixivAppClient.searchUser(
         parameter("word", word)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }

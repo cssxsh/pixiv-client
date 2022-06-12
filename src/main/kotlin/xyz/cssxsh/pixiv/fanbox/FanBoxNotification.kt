@@ -29,10 +29,10 @@ public class FanBoxNotification(override val client: PixivWebClient) : FanBoxApi
 
             method = HttpMethod.Post
 
-            body = mapOf(
+            setBody(mapOf(
                 "type" to type.name.lowercase(),
                 "value" to if (value) "1" else "0"
-            )
+            ))
 
             contentType(ContentType.Application.Json)
         }

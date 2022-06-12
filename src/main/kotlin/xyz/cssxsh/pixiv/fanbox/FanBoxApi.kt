@@ -1,6 +1,7 @@
 package xyz.cssxsh.pixiv.fanbox
 
-import io.ktor.client.features.cookies.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.sync.*
@@ -20,11 +21,11 @@ public abstract class FanBoxApi {
      * @see [FanBoxUser.getMetaData]
      */
     protected suspend fun getMetaData(url: String): MetaData {
-        val html = client.useHttpClient { http ->
-            http.get<String>(url) {
+        val html: String = client.useHttpClient { client ->
+            client.get(url) {
                 header(HttpHeaders.Origin, "https://www.fanbox.cc")
                 header(HttpHeaders.Referrer, "https://www.fanbox.cc/")
-            }
+            }.body()
         }
         val text = html.substringAfter("metadata")
             .substringAfter("content='").substringBeforeLast("'>")

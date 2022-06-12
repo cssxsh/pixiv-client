@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -14,24 +15,20 @@ public suspend fun PixivAppClient.novelBookmarkAdd(
     restrict: PublicityType = PublicityType.PUBLIC,
     url: String = NOVEL_BOOKMARK_ADD,
 ): JsonElement = useHttpClient { client ->
-    client.post(url) {
-        body = FormDataContent(Parameters.build {
-            append("novel_id", pid.toString())
-            append("tags", tags.joinToString(separator = " ", postfix = " "))
-            append("restrict", restrict.toString())
-        })
-    }
+    client.submitForm(url, Parameters.build {
+        append("novel_id", pid.toString())
+        append("tags", tags.joinToString(separator = " ", postfix = " "))
+        append("restrict", restrict.toString())
+    }).body()
 }
 
 public suspend fun PixivAppClient.novelBookmarkDelete(
     pid: Long,
     url: String = NOVEL_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
-    client.post(url) {
-        body = FormDataContent(Parameters.build {
-            append("novel_id", pid.toString())
-        })
-    }
+    client.submitForm(url, Parameters.build {
+        append("novel_id", pid.toString())
+    }).body()
 }
 
 public suspend fun PixivAppClient.novelBookmarkDetail(
@@ -40,7 +37,7 @@ public suspend fun PixivAppClient.novelBookmarkDetail(
 ): BookmarkDetailSingle = useHttpClient { client ->
     client.get(url) {
         parameter("novel_id", pid)
-    }
+    }.body()
 }
 
 
@@ -54,7 +51,7 @@ public suspend fun PixivAppClient.novelComments(
         parameter("novel_id", pid.toString())
         parameter("offset", offset)
         parameter("include_total_comments", includeTotalComments)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.novelDetail(
@@ -63,7 +60,7 @@ public suspend fun PixivAppClient.novelDetail(
 ): IllustSingle = useHttpClient { client ->
     client.get(url) {
         parameter("novel_id", pid.toString())
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.novelFollow(
@@ -76,7 +73,7 @@ public suspend fun PixivAppClient.novelFollow(
         parameter("restrict", restrict)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.novelMyPixiv(
@@ -89,7 +86,7 @@ public suspend fun PixivAppClient.novelMyPixiv(
         parameter("restrict", restrict)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.novelNew(
@@ -102,7 +99,7 @@ public suspend fun PixivAppClient.novelNew(
         parameter("restrict", restrict)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.novelRanking(
@@ -117,7 +114,7 @@ public suspend fun PixivAppClient.novelRanking(
         parameter("mode", mode)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.novelRanking(
@@ -148,5 +145,5 @@ public suspend fun PixivAppClient.novelRecommended(
         parameter("include_privacy_policy", includePrivacyPolicy)
         parameter("min_bookmark_id_for_recent_illust", minBookmarkIdForRecentIllust)
         parameter("max_bookmark_id_for_recommend", maxBookmarkIdForRecommend)
-    }
+    }.body()
 }

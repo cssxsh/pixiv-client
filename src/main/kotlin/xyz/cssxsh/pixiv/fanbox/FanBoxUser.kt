@@ -48,13 +48,13 @@ public class FanBoxUser(override val client: PixivWebClient) : FanBoxApi() {
 
             method = HttpMethod.Post
 
-            body = MultiPartFormDataContent(parts = formData {
+            setBody(MultiPartFormDataContent(parts = formData {
                 append(key = "name", value = name)
                 append(key = "showAdultContent", value = if (showAdultContent) 1 else 0)
                 append(key = "socialConnectTwitter", value = if (socialConnectTwitter) 1 else 0)
                 if (icon != null) append(key = "icon", filename = "blob") { writeFully(src = icon) }
                 append(key = "tt", value = metadata.csrfToken)
-            })
+            }))
         }
     }
 }

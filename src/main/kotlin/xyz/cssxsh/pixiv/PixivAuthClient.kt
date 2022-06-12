@@ -2,16 +2,16 @@ package xyz.cssxsh.pixiv
 
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.*
-import io.ktor.client.features.auth.*
-import io.ktor.client.features.compression.*
-import io.ktor.client.features.cookies.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.plugins.compression.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.http.auth.*
 import io.ktor.utils.io.core.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
 import xyz.cssxsh.pixiv.auth.*
@@ -21,7 +21,7 @@ import java.time.*
 
 public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
-    protected open var authInfo: AuthResult? = null
+    protected open var auth: AuthResult? = null
 
     protected open var expires: OffsetDateTime = OffsetDateTime.MIN
 
@@ -32,8 +32,8 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
     protected open val timeout: Long = 30_000L
 
     protected open fun client(): HttpClient = HttpClient(OkHttp) {
-        Json {
-            serializer = KotlinxSerializer(PixivJson)
+        install(ContentNegotiation) {
+            json(json = PixivJson)
         }
         install(HttpTimeout) {
             socketTimeoutMillis = timeout
@@ -44,32 +44,37 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
             storage = this@PixivAuthClient.storage
         }
         ContentEncoding()
+        expectSuccess = true
         HttpResponseValidator {
-            handleResponseException(block = TransferExceptionHandler)
+            handleResponseExceptionWithRequest(block = TransferExceptionHandler)
         }
         defaultRequest {
             header(HttpHeaders.CacheControl, "no-cache")
             header(HttpHeaders.Connection, "keep-alive")
             header(HttpHeaders.Pragma, "no-cache")
             config.headers.forEach(::header)
+            url("https://www.pixiv.net")
         }
         Auth {
-            providers.add(object : AuthProvider {
-                override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean {
-                    return request.url.host in listOf("app-api.pixiv.net", "public-api.secure.pixiv.net") &&
-                        request.url.encodedPath.startsWith("/web").not()
+            bearer {
+                sendWithoutRequest { request ->
+                    request.url.host == "app-api.pixiv.net" &&  request.url.encodedPath.startsWith("/web").not()
                 }
-
-                @Deprecated("Please use sendWithoutRequest function instead")
-                override val sendWithoutRequest: Boolean = true
-
-                override suspend fun addRequestHeaders(request: HttpRequestBuilder) {
-                    request.header(HttpHeaders.Authorization, "Bearer ${info().accessToken}")
+                loadTokens {
+                    mutex.withLock {
+                        auth?.takeIf { expires > OffsetDateTime.now() }?.toBearerTokens() ?: useHttpClient { client ->
+                            val start = OffsetDateTime.now()
+                            client.refresh(refreshToken).save(start = start).toBearerTokens()
+                        }
+                    }
                 }
-
-                override fun isApplicable(auth: HttpAuthHeader): Boolean = false
-
-            })
+                refreshTokens {
+                    mutex.withLock {
+                        val start = OffsetDateTime.now()
+                        client.refresh(refreshToken).save(start = start).toBearerTokens()
+                    }
+                }
+            }
         }
         engine {
             config {
@@ -115,7 +120,9 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     override suspend fun info(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        authInfo?.takeIf { expires > start } ?: refresh(token = refreshToken).save(start = start)
+        auth?.takeIf { expires > OffsetDateTime.now() } ?: useHttpClient { client ->
+            client.refresh(token = refreshToken).save(start = start)
+        }
     }
 
     /**
@@ -129,19 +136,23 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
         val start = OffsetDateTime.now()
         val (verifier, url) = verifier(time = start)
         val code = block(url)
-        authorize(code = code, verifier = verifier).save(start = start)
+        useHttpClient { client ->
+            client.authorize(code = code, verifier = verifier).save(start = start)
+        }
     }
 
     override suspend fun refresh(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        refresh(token = refreshToken).save(start = start)
+        useHttpClient { client ->
+            client.refresh(token = refreshToken).save(start = start)
+        }
     }
 
-    protected open suspend fun AuthResult.save(start: OffsetDateTime): AuthResult = also {
-        expires = start.withNano(0).plusSeconds(it.expiresIn)
-        authInfo = it
+    protected open suspend fun AuthResult.save(start: OffsetDateTime): AuthResult = also { result ->
+        expires = start.withNano(0).plusSeconds(result.expiresIn)
+        auth = result
         config {
-            refreshToken = it.refreshToken
+            refreshToken = result.refreshToken
         }
     }
 }

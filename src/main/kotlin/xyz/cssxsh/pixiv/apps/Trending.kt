@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
 
@@ -9,5 +10,5 @@ public suspend fun PixivAppClient.trendingTagsIllust(
 ): TrendIllustData = useHttpClient { client ->
     client.get(url) {
         parameter("filter", filter)
-    }
+    }.body()
 }

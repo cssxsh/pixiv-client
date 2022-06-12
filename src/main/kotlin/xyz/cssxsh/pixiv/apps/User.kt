@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -10,6 +11,7 @@ public suspend fun PixivAppClient.userBlacklist(
     url: String = USER_BLACKLIST,
 ): Blacklist = useHttpClient { client ->
     client.get(url)
+        .body()
 }
 
 public suspend fun PixivAppClient.userBookmarksIllust(
@@ -26,7 +28,7 @@ public suspend fun PixivAppClient.userBookmarksIllust(
         parameter("restrict", restrict)
         parameter("max_bookmark_id", max)
         parameter("filter", filter)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userBookmarksNovel(
@@ -41,7 +43,7 @@ public suspend fun PixivAppClient.userBookmarksNovel(
         parameter("restrict", restrict)
         parameter("max_bookmark_id", max)
         parameter("filter", filter)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userBookmarksTagsIllust(
@@ -52,7 +54,7 @@ public suspend fun PixivAppClient.userBookmarksTagsIllust(
     client.get(url) {
         parameter("restrict", restrict)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userBookmarksTagsNovel(
@@ -63,7 +65,7 @@ public suspend fun PixivAppClient.userBookmarksTagsNovel(
     client.get(url) {
         parameter("restrict", restrict)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userDetail(
@@ -74,7 +76,7 @@ public suspend fun PixivAppClient.userDetail(
     client.get(url) {
         parameter("user_id", uid)
         parameter("filter", filter)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userFollowAdd(
@@ -82,23 +84,19 @@ public suspend fun PixivAppClient.userFollowAdd(
     restrict: PublicityType = PublicityType.PUBLIC,
     url: String = USER_FOLLOW_ADD,
 ): JsonElement = useHttpClient { client ->
-    client.post(url) {
-        body = FormDataContent(Parameters.build {
-            append("user_id", uid.toString())
-            append("restrict", restrict.toString())
-        })
-    }
+    client.submitForm(url, Parameters.build {
+        append("user_id", uid.toString())
+        append("restrict", restrict.toString())
+    }).body()
 }
 
 public suspend fun PixivAppClient.userFollowDelete(
     uid: Long,
     url: String = USER_FOLLOW_DELETE,
 ): JsonElement = useHttpClient { client ->
-    client.post(url) {
-        body = FormDataContent(Parameters.build {
-            append("user_id", uid.toString())
-        })
-    }
+    client.submitForm(url, Parameters.build {
+        append("user_id", uid.toString())
+    }).body()
 }
 
 public suspend fun PixivAppClient.userFollower(
@@ -111,7 +109,7 @@ public suspend fun PixivAppClient.userFollower(
         parameter("user_id", uid)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userFollowing(
@@ -124,7 +122,7 @@ public suspend fun PixivAppClient.userFollowing(
         parameter("user_id", uid)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userIllusts(
@@ -139,7 +137,7 @@ public suspend fun PixivAppClient.userIllusts(
         parameter("type", type)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userMyPixiv(
@@ -152,7 +150,7 @@ public suspend fun PixivAppClient.userMyPixiv(
         parameter("user_id", uid)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.userRecommended(
@@ -163,5 +161,5 @@ public suspend fun PixivAppClient.userRecommended(
     client.get(url) {
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }

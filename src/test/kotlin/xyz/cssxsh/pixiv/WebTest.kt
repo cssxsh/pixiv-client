@@ -2,12 +2,12 @@ package xyz.cssxsh.pixiv
 
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.*
-import io.ktor.client.features.compression.*
-import io.ktor.client.features.cookies.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.compression.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.cookies.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import org.junit.jupiter.api.Test
 import xyz.cssxsh.pixiv.exception.*
 import xyz.cssxsh.pixiv.tool.*
@@ -24,8 +24,8 @@ abstract class WebTest {
             override val storage get() = this@WebTest.storage
 
             private fun client(): HttpClient = HttpClient(OkHttp) {
-                Json {
-                    serializer = KotlinxSerializer()
+                install(ContentNegotiation) {
+                    json(json = PixivJson)
                 }
                 install(HttpTimeout) {
                     socketTimeoutMillis = 15_000
@@ -35,13 +35,9 @@ abstract class WebTest {
                 install(HttpCookies) {
                     storage = this@WebTest.storage
                 }
-                ContentEncoding {
-                    gzip()
-                    deflate()
-                    identity()
-                }
+                ContentEncoding()
                 HttpResponseValidator {
-                    handleResponseException(block = TransferExceptionHandler)
+                    handleResponseExceptionWithRequest(block = TransferExceptionHandler)
                 }
 
                 engine {

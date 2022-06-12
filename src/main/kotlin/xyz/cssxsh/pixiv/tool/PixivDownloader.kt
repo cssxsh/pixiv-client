@@ -2,8 +2,8 @@ package xyz.cssxsh.pixiv.tool
 
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.*
-import io.ktor.client.features.compression.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.compression.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -80,7 +80,7 @@ public open class PixivDownloader(
     }
 
     private suspend fun length(client: HttpClient, url: Url): Int = withHttpClient(client) {
-        val response = head<HttpResponse>(url) {
+        val response = head(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, "bytes=0-")
@@ -100,7 +100,7 @@ public open class PixivDownloader(
         val length = minOf(dst.size - offset, blockSize)
         val range = "bytes=${offset}-${offset + length - 1}"
 
-        val response = get<HttpResponse>(url) {
+        val response = get(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
             header(HttpHeaders.Range, range)
@@ -117,11 +117,11 @@ public open class PixivDownloader(
             throw MatchContentLengthException(response)
         }
 
-        response.content.readFully(dst, offset, length)
+        response.bodyAsChannel().readFully(dst, offset, length)
     }
 
     private suspend fun all(client: HttpClient, url: Url, dst: ByteArray) = withHttpClient(client) {
-        val response = get<HttpResponse>(url) {
+        val response = get(url) {
             header(HttpHeaders.Host, url.host)
             header(HttpHeaders.Referrer, url)
         }
@@ -134,7 +134,7 @@ public open class PixivDownloader(
             throw MatchContentLengthException(response)
         }
 
-        response.content.readFully(dst, 0, dst.size)
+        response.bodyAsChannel().readFully(dst, 0, dst.size)
     }
 
     private suspend fun downloadRangesOrAll(client: HttpClient, url: Url, length: Int): ByteArray = supervisorScope {

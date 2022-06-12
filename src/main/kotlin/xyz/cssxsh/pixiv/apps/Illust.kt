@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -14,26 +15,22 @@ public suspend fun PixivAppClient.illustBookmarkAdd(
     restrict: PublicityType = PublicityType.PUBLIC,
     url: String = ILLUST_BOOKMARK_ADD,
 ): JsonElement = useHttpClient { client ->
-    client.post(url) {
-        body = FormDataContent(Parameters.build {
-            append("illust_id", pid.toString())
-            for ((index, item) in tags.withIndex()) {
-                append("tags[$index]", item)
-            }
-            append("restrict", restrict.toString())
-        })
-    }
+    client.submitForm(url, Parameters.build {
+        append("illust_id", pid.toString())
+        for ((index, item) in tags.withIndex()) {
+            append("tags[$index]", item)
+        }
+        append("restrict", restrict.toString())
+    }).body()
 }
 
 public suspend fun PixivAppClient.illustBookmarkDelete(
     pid: Long,
     url: String = ILLUST_BOOKMARK_DELETE,
 ): JsonElement = useHttpClient { client ->
-    client.post(url) {
-        body = FormDataContent(Parameters.build {
-            append("illust_id", pid.toString())
-        })
-    }
+    client.submitForm(url, Parameters.build {
+        append("illust_id", pid.toString())
+    }).body()
 }
 
 public suspend fun PixivAppClient.illustBookmarkDetail(
@@ -42,7 +39,7 @@ public suspend fun PixivAppClient.illustBookmarkDetail(
 ): BookmarkDetailSingle = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustComments(
@@ -55,7 +52,7 @@ public suspend fun PixivAppClient.illustComments(
         parameter("illust_id", pid.toString())
         parameter("offset", offset)
         parameter("include_total_comments", includeTotalComments)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustDetail(
@@ -64,7 +61,7 @@ public suspend fun PixivAppClient.illustDetail(
 ): IllustSingle = useHttpClient { client ->
     client.get(url) {
         parameter("illust_id", pid.toString())
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustFollow(
@@ -75,7 +72,7 @@ public suspend fun PixivAppClient.illustFollow(
     client.get(url) {
         parameter("restrict", restrict)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustMyPixiv(
@@ -84,7 +81,7 @@ public suspend fun PixivAppClient.illustMyPixiv(
 ): IllustData = useHttpClient { client ->
     client.get(url) {
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustNew(
@@ -95,7 +92,7 @@ public suspend fun PixivAppClient.illustNew(
     client.get(url) {
         parameter("content_type", type)
         parameter("max_illust_id", max)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustRanking(
@@ -110,7 +107,7 @@ public suspend fun PixivAppClient.illustRanking(
         parameter("mode", mode)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustRecommended(
@@ -129,7 +126,7 @@ public suspend fun PixivAppClient.illustRecommended(
         parameter("min_bookmark_id_for_recent_illust", minBookmarkIdForRecentIllust)
         parameter("max_bookmark_id_for_recommend", maxBookmarkIdForRecommend)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustRelated(
@@ -142,11 +139,11 @@ public suspend fun PixivAppClient.illustRelated(
         parameter("illust_id", pid)
         parameter("filter", filter)
         parameter("offset", offset)
-    }
+    }.body()
 }
 
 public suspend fun PixivAppClient.illustWalkThrough(
     url: String = WALK_THROUGH_ILLUSTS,
 ): IllustData = useHttpClient { client ->
-    client.get(url)
+    client.get(url).body()
 }

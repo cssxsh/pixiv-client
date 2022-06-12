@@ -1,6 +1,5 @@
 package xyz.cssxsh.pixiv
 
-import io.ktor.client.features.*
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.*
@@ -15,5 +14,5 @@ public open class SimplePixivClient(
         parentCoroutineContext + CoroutineName(coroutineName) + SupervisorJob()
     }
 
-    override val ignore: suspend (Throwable) -> Boolean = { it is IOException || it is HttpRequestTimeoutException }
+    override val ignore: suspend (Throwable) -> Boolean = { it is IOException }
 }

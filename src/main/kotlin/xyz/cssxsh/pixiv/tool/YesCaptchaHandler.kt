@@ -1,13 +1,14 @@
 package xyz.cssxsh.pixiv.tool
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.network.sockets.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.network.sockets.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
@@ -20,8 +21,8 @@ import xyz.cssxsh.pixiv.*
 public class YesCaptchaHandler(private val clientKey: String, public val host: String = "api.yescaptcha.com") :
     CaptchaHandler {
     private val client = HttpClient(OkHttp) {
-        Json {
-            serializer = KotlinxSerializer(PixivJson)
+        install(ContentNegotiation) {
+            json(PixivJson)
         }
         defaultRequest {
             contentType(ContentType.Application.Json)
@@ -38,11 +39,11 @@ public class YesCaptchaHandler(private val clientKey: String, public val host: S
      * @return 余额
      */
     public suspend fun getBalance(): Double {
-        val result = client.post<JsonObject>("https://$host/getBalance") {
-            body = buildJsonObject {
+        val result: JsonObject = client.post("https://$host/getBalance") {
+            setBody(buildJsonObject {
                 put("clientKey", clientKey)
-            }
-        }
+            })
+        }.body()
 
         return requireNotNull(result["balance"]?.jsonPrimitive?.doubleOrNull) { result }
     }
@@ -56,12 +57,12 @@ public class YesCaptchaHandler(private val clientKey: String, public val host: S
      * @return 识别结果
      */
     private suspend fun getTaskResult(taskId: String): Pair<Boolean, JsonObject> {
-        val result = client.post<JsonObject>("https://$host/getTaskResult") {
-            body = buildJsonObject {
+        val result: JsonObject = client.post("https://$host/getTaskResult") {
+            setBody(buildJsonObject {
                 put("clientKey", clientKey)
                 put("taskId", taskId)
-            }
-        }
+            })
+        }.body()
 
         val status = requireNotNull(result["status"]?.jsonPrimitive?.contentOrNull) { result }
 
@@ -75,12 +76,12 @@ public class YesCaptchaHandler(private val clientKey: String, public val host: S
      * @return TaskId
      */
     private suspend fun createTask(builderTask: JsonObjectBuilder.() -> Unit): String {
-        val result = client.post<JsonObject>("https://$host/createTask") {
-            body = buildJsonObject {
+        val result: JsonObject = client.post("https://$host/createTask") {
+            setBody(buildJsonObject {
                 put("clientKey", clientKey)
                 putJsonObject("task", builderTask)
-            }
-        }
+            })
+        }.body()
 
         return requireNotNull(result["taskId"]?.jsonPrimitive?.contentOrNull) { result }
     }

@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.web
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.*
@@ -24,7 +25,7 @@ public suspend inline fun <reified T> PixivWebClient.ajax(
     api: String,
     crossinline block: HttpRequestBuilder.() -> Unit
 ): T = useHttpClient { client ->
-    val result = client.request<WebApiResult>(api, block)
+    val result: WebApiResult = client.request(api, block).body()
     if (result.error) throw WebApiException(result)
     PixivJson.decodeFromJsonElement(result.body)
 }
@@ -34,7 +35,7 @@ public suspend fun PixivWebClient.location(url: Url): String {
         client.config {
             expectSuccess = false
             followRedirects = false
-        }.head<HttpMessage>(url).headers[HttpHeaders.Location]
+        }.head(url).headers[HttpHeaders.Location]
     } ?: throw IllegalStateException("redirect failure $url, Not Found Location.")
 }
 

@@ -1,10 +1,12 @@
 package xyz.cssxsh.pixiv.auth
 
-import io.ktor.client.request.*
+import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import okio.ByteString.Companion.encode
+import io.ktor.util.*
 import xyz.cssxsh.pixiv.*
+import java.security.*
 import java.time.*
 
 public const val OAUTH_TOKEN_URL: String = "https://oauth.secure.pixiv.net/auth/token"
@@ -31,38 +33,47 @@ public const val GIGYA_AUTH_URL: String = "https://accounts.pixiv.net/gigya-auth
 
 public const val SOCIALIZE_LOGIN_URL: String = "https://socialize.gigya.com/socialize.login"
 
+internal fun String.sha256(): ByteArray {
+    return MessageDigest.getInstance("SHA-512")
+        .digest(toByteArray())
+}
+
 internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
-    val origin = time.toString().encode().sha512().base64Url().replace("=", "")
+    val origin = time.toString()
+        .sha256()
+        .encodeBase64()
+        .replace("=", "")
+    val challenge = origin
+        .sha256()
+        .encodeBase64()
+        .replace("=", "")
+    val url = URLBuilder(REDIRECT_LOGIN_URL).apply {
+        parameters.append("code_challenge", challenge)
+        parameters.append("code_challenge_method", "S256")
+        parameters.append("client", "pixiv-android")
+    }.build()
 
-    return origin to Url(REDIRECT_LOGIN_URL).copy(parameters = Parameters.build {
-        append("code_challenge", origin.encode().sha256().base64Url().replace("=", ""))
-        append("code_challenge_method", "S256")
-        append("client", "pixiv-android")
-    })
+    return origin to url
 }
 
-internal suspend fun UseHttpClient.authorize(code: String, verifier: String): AuthResult = useHttpClient {
-    it.post(OAUTH_TOKEN_URL) {
-        body = FormDataContent(Parameters.build {
-            append("client_id", CLIENT_ID)
-            append("client_secret", CLIENT_SECRET)
-            append("grant_type", "authorization_code")
-            append("include_policy", "true")
-            append("code", code)
-            append("code_verifier", verifier)
-            append("redirect_uri", REDIRECT_URL)
-        })
-    }
+internal suspend fun HttpClient.authorize(code: String, verifier: String): AuthResult {
+    return submitForm(url = OAUTH_TOKEN_URL, formParameters = Parameters.build {
+        append("client_id", CLIENT_ID)
+        append("client_secret", CLIENT_SECRET)
+        append("grant_type", "authorization_code")
+        append("include_policy", "true")
+        append("code", code)
+        append("code_verifier", verifier)
+        append("redirect_uri", REDIRECT_URL)
+    }).body()
 }
 
-internal suspend fun UseHttpClient.refresh(token: String): AuthResult = useHttpClient {
-    it.post(OAUTH_TOKEN_URL) {
-        body = FormDataContent(Parameters.build {
-            append("client_id", CLIENT_ID)
-            append("client_secret", CLIENT_SECRET)
-            append("grant_type", "refresh_token")
-            append("include_policy", "true")
-            append("refresh_token", token)
-        })
-    }
+internal suspend fun HttpClient.refresh(token: String): AuthResult {
+    return submitForm(url = OAUTH_TOKEN_URL, formParameters = Parameters.build {
+        append("client_id", CLIENT_ID)
+        append("client_secret", CLIENT_SECRET)
+        append("grant_type", "refresh_token")
+        append("include_policy", "true")
+        append("refresh_token", token)
+    }).body()
 }

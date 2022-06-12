@@ -2,12 +2,14 @@
 
 package xyz.cssxsh.pixiv
 
+import io.ktor.client.plugins.auth.providers.*
 import io.ktor.http.*
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.*
+import xyz.cssxsh.pixiv.auth.*
 import xyz.cssxsh.pixiv.exception.*
 import java.net.*
 import java.util.*
@@ -73,6 +75,8 @@ internal fun Url.toProxy(): Proxy {
     }
     return Proxy(type, InetSocketAddress(host, port))
 }
+
+internal fun AuthResult.toBearerTokens(): BearerTokens = BearerTokens(accessToken, refreshToken)
 
 @Suppress("FunctionName")
 internal inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {

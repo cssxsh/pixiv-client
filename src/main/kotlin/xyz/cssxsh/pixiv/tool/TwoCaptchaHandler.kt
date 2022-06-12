@@ -1,11 +1,12 @@
 package xyz.cssxsh.pixiv.tool
 
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.compression.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.plugins.compression.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import xyz.cssxsh.pixiv.*
@@ -15,8 +16,8 @@ import xyz.cssxsh.pixiv.*
  */
 public class TwoCaptchaHandler(private val clientKey: String) : CaptchaHandler {
     private val client = HttpClient(OkHttp) {
-        Json {
-            serializer = KotlinxSerializer(PixivJson)
+        install(ContentNegotiation) {
+            json(PixivJson)
         }
         ContentEncoding()
     }
@@ -32,7 +33,7 @@ public class TwoCaptchaHandler(private val clientKey: String) : CaptchaHandler {
     )
 
     private suspend fun start(siteKey: String, referer: String): Long {
-        val result = client.get<Result>("https://2captcha.com/in.php") {
+        val result: Result = client.get("https://2captcha.com/in.php") {
             parameter("key", clientKey)
             parameter("method", "userrecaptcha")
             parameter("enterprise", 1)
@@ -42,20 +43,20 @@ public class TwoCaptchaHandler(private val clientKey: String) : CaptchaHandler {
             parameter("invisible", 1)
             parameter("json", 1)
             parameter("lang", "zh")
-        }
+        }.body()
         check(result.status == 1) { result }
 
         return result.request.toLong()
     }
 
     private suspend fun check(id: Long): String {
-        val result = client.get<Result>("https://2captcha.com/res.php") {
+        val result: Result = client.get("https://2captcha.com/res.php") {
             parameter("key", clientKey)
             parameter("action", "get")
             parameter("id", id)
             parameter("json", 1)
             parameter("lang", "zh")
-        }
+        }.body()
         check(result.status == 1) { result }
 
         return result.request

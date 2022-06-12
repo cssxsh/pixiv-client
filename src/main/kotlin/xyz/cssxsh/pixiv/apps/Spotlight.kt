@@ -1,5 +1,6 @@
 package xyz.cssxsh.pixiv.apps
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import xyz.cssxsh.pixiv.*
 
@@ -13,5 +14,5 @@ public suspend fun UseHttpClient.spotlightArticles(
         parameter("category", category)
         parameter("offset", offset)
         parameter("filter", filter)
-    }
+    }.body()
 }
