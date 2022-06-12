@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.1.0"
+version = "1.2.0"
 
 mavenCentralPublish {
     useCentralS01()
@@ -33,7 +33,7 @@ dependencies {
     compileOnly("org.seleniumhq.selenium:selenium-java:4.2.2")
 
     testImplementation(kotlin("test", "1.6.21"))
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.1.4")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.2.2")
 }
 
 kotlin {
@@ -41,15 +41,15 @@ kotlin {
     target.compilations {
         all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "11"
             }
         }
     }
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks {

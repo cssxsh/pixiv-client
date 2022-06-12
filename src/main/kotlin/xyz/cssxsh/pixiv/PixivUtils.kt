@@ -1,5 +1,3 @@
-@file:OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
-
 package xyz.cssxsh.pixiv
 
 import io.ktor.client.plugins.auth.providers.*
@@ -82,7 +80,7 @@ internal fun AuthResult.toBearerTokens(): BearerTokens = BearerTokens(accessToke
 internal inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
-            buildSerialDescriptor(T::class.qualifiedName!!, SerialKind.ENUM)
+            PrimitiveSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.STRING)
 
         override fun serialize(encoder: Encoder, value: T) =
             encoder.encodeString(value.name.lowercase())
@@ -96,7 +94,7 @@ internal inline fun <reified T : Enum<T>> EnumNameSerializer(): KSerializer<T> {
 internal inline fun <reified T : Enum<T>> EnumIndexSerializer(): KSerializer<T> {
     return object : KSerializer<T> {
         override val descriptor: SerialDescriptor =
-            buildSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
+            PrimitiveSerialDescriptor(T::class.qualifiedName!!, PrimitiveKind.INT)
 
         override fun serialize(encoder: Encoder, value: T) =
             encoder.encodeInt(value.ordinal)
@@ -296,7 +294,9 @@ public enum class FollowType {
 }
 
 public object RegexSerializer : KSerializer<Regex> {
-    override val descriptor: SerialDescriptor = buildSerialDescriptor("kotlin.text.Regex", PrimitiveKind.STRING)
+
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("kotlin.text.Regex", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): Regex {
         return Regex(decoder.decodeString())
