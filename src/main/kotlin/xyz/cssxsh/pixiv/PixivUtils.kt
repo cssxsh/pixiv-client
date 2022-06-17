@@ -100,7 +100,7 @@ internal inline fun <reified T : Enum<T>> EnumIndexSerializer(): KSerializer<T> 
             encoder.encodeInt(value.ordinal)
 
         override fun deserialize(decoder: Decoder): T =
-            requireNotNull(enumValues<T>().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in ${enumValues<T>()}" }
+            requireNotNull(enumValues<T>().getOrNull(decoder.decodeInt())) { "index: ${decoder.decodeInt()} not in ${enumValues<T>().asList()}" }
     }
 }
 
