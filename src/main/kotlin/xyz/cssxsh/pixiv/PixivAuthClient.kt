@@ -116,7 +116,9 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open val mutex: Mutex = Mutex()
 
-    public val refreshToken: String get() = requireNotNull(auth?.refreshToken ?: config.refreshToken) { "Not Found RefreshToken" }
+    override val refreshToken: String get() = requireNotNull(auth?.refreshToken ?: config.refreshToken) { "Not Found RefreshToken" }
+
+    override val ageLimit: AgeLimit get() = auth?.user?.age ?: AgeLimit.ALL
 
     override suspend fun info(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()

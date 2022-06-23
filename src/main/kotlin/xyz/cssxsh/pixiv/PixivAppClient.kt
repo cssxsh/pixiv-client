@@ -14,4 +14,8 @@ public interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
     public suspend fun refresh(): AuthResult
 
     public suspend fun info(): AuthResult
+
+    public val refreshToken: String
+
+    public val ageLimit: AgeLimit
 }
