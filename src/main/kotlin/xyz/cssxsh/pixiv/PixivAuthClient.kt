@@ -59,9 +59,7 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
             bearer {
                 sendWithoutRequest { request ->
                     // XXX: flush
-                    if (expires > OffsetDateTime.now()) {
-                        this@Auth.providers.forEach { (it as? BearerAuthProvider)?.clearToken() }
-                    }
+                    this@Auth.providers.forEach { (it as? BearerAuthProvider)?.clearToken() }
 
                     request.url.host == "app-api.pixiv.net" &&  request.url.encodedPath.startsWith("/web").not()
                 }
