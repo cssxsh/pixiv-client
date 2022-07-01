@@ -58,6 +58,11 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
         Auth {
             bearer {
                 sendWithoutRequest { request ->
+                    // XXX: flush
+                    if (expires > OffsetDateTime.now()) {
+                        this@Auth.providers.forEach { (it as? BearerAuthProvider)?.clearToken() }
+                    }
+
                     request.url.host == "app-api.pixiv.net" &&  request.url.encodedPath.startsWith("/web").not()
                 }
                 loadTokens {
@@ -103,11 +108,11 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
         while (isActive) {
             try {
                 return@supervisorScope block(clients[index])
-            } catch (e: Throwable) {
-                if (isActive && ignore(e)) {
+            } catch (cause: Throwable) {
+                if (isActive && ignore(cause)) {
                     index = (index + 1) % clients.size
                 } else {
-                    throw e
+                    throw cause
                 }
             }
         }
