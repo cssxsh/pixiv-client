@@ -4,12 +4,12 @@ import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.compression.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.http.auth.*
 import io.ktor.utils.io.core.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
@@ -56,28 +56,40 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
             url("https://www.pixiv.net")
         }
         Auth {
-            bearer {
-                sendWithoutRequest { request ->
-                    // XXX: flush
-                    this@Auth.providers.forEach { (it as? BearerAuthProvider)?.clearToken() }
+            providers.add(object : AuthProvider {
 
-                    request.url.host == "app-api.pixiv.net" &&  request.url.encodedPath.startsWith("/web").not()
+                @Suppress("OverridingDeprecatedMember")
+                @Deprecated("Please use sendWithoutRequest function instead")
+                override val sendWithoutRequest: Boolean = false
+
+                override fun sendWithoutRequest(request: HttpRequestBuilder): Boolean {
+                    return request.url.host == "app-api.pixiv.net" && request.url.encodedPath.startsWith("/web").not()
                 }
-                loadTokens {
-                    mutex.withLock {
-                        auth?.takeIf { expires > OffsetDateTime.now() }?.toBearerTokens() ?: useHttpClient { client ->
+
+                override suspend fun addRequestHeaders(request: HttpRequestBuilder, authHeader: HttpAuthHeader?) {
+                    val info = mutex.withLock {
+                        auth?.takeIf { expires > OffsetDateTime.now() } ?: useHttpClient { client ->
                             val start = OffsetDateTime.now()
-                            client.refresh(refreshToken).save(start = start).toBearerTokens()
+                            client.refresh(refreshToken).save(start = start)
                         }
                     }
-                }
-                refreshTokens {
-                    mutex.withLock {
-                        val start = OffsetDateTime.now()
-                        client.refresh(refreshToken).save(start = start).toBearerTokens()
+
+                    request.headers {
+                        val tokenValue = "Bearer ${info.accessToken}"
+                        if (contains(HttpHeaders.Authorization)) {
+                            remove(HttpHeaders.Authorization)
+                        }
+                        append(HttpHeaders.Authorization, tokenValue)
                     }
                 }
-            }
+
+                override fun isApplicable(auth: HttpAuthHeader): Boolean {
+                    if (auth.authScheme != AuthScheme.Bearer) return false
+                    if (auth !is HttpAuthHeader.Parameterized) return false
+
+                    return auth.parameter("realm") == null
+                }
+            })
         }
         engine {
             config {
@@ -119,7 +131,8 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open val mutex: Mutex = Mutex()
 
-    override val refreshToken: String get() = requireNotNull(auth?.refreshToken ?: config.refreshToken) { "Not Found RefreshToken" }
+    override val refreshToken: String
+        get() = requireNotNull(auth?.refreshToken ?: config.refreshToken) { "Not Found RefreshToken" }
 
     override val ageLimit: AgeLimit get() = auth?.user?.age ?: AgeLimit.ALL
 
