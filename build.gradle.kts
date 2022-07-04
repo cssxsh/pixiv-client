@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.2.1"
+version = "1.2.2-RC"
 
 mavenCentralPublish {
     useCentralS01()
@@ -21,11 +21,11 @@ repositories {
 dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-    api("io.ktor:ktor-client-auth:2.0.2")
-    api("io.ktor:ktor-client-encoding:2.0.2")
-    api("io.ktor:ktor-client-okhttp:2.0.2")
-    api("io.ktor:ktor-client-content-negotiation:2.0.2")
-    api("io.ktor:ktor-serialization-kotlinx-json:2.0.2")
+    api("io.ktor:ktor-client-auth:2.0.3")
+    api("io.ktor:ktor-client-encoding:2.0.3")
+    api("io.ktor:ktor-client-okhttp:2.0.3")
+    api("io.ktor:ktor-client-content-negotiation:2.0.3")
+    api("io.ktor:ktor-serialization-kotlinx-json:2.0.3")
     api("com.squareup.okhttp3:okhttp:4.10.0")
     api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
     api("com.squareup:gifencoder:0.10.1")
