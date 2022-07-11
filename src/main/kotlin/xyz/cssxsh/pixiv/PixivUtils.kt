@@ -26,23 +26,25 @@ public val PixivJson: Json = Json {
 
 public const val HTTP_KILO: Int = 1022
 
-public const val CLIENT_ID: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
+public const val IOS_CLIENT_ID: String = "KzEZED7aC0vird8jWyHM38mXjNTY"
 
-public const val CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
-
-public const val HASH_SECRET: String = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
+public const val IOS_CLIENT_SECRET: String = "W9JZoJe00qPvJsiyCGT3CCtC6ZUtdpKpzMbNlUGP"
 
 public val IOS_HEADERS: HeadersMap = mapOf(
     HttpHeaders.AcceptLanguage to Locale.CHINA.language,
-    HttpHeaders.UserAgent to "PixivIOSApp/6.0.4 (iOS 9.0.2; iPhone6,1)",
+    HttpHeaders.UserAgent to "PixivIOSApp/7.13.3 (iOS 14.6; iPhone13,2)",
     "App-OS-Version" to "14.6",
     "App-OS" to "ios"
 )
 
+public const val ANDROID_CLIENT_ID: String = "MOBrBDS8blbauoSck0ZfDbtuzpyT"
+
+public const val ANDROID_CLIENT_SECRET: String = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj"
+
 public val ANDROID_HEADERS: HeadersMap = mapOf(
     HttpHeaders.AcceptLanguage to Locale.CHINA.language,
-    HttpHeaders.UserAgent to "PixivAndroidApp/5.0.64 (Android 6.0)",
-    "App-OS-Version" to "6.0",
+    HttpHeaders.UserAgent to "PixivAndroidApp/6.45.0 (Android 8.0)",
+    "App-OS-Version" to "8.0",
     "App-OS" to "android"
 )
 

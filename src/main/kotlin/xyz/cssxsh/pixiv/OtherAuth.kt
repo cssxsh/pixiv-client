@@ -8,7 +8,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import kotlinx.serialization.json.*
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.logging.*
 import org.openqa.selenium.remote.*
@@ -34,7 +33,7 @@ private fun account(html: String): HtmlAccount {
  * @param link for [POST_REDIRECT_URL]
  */
 private suspend fun PixivAuthClient.redirect(link: Url): String {
-    val redirect: HttpResponse = useHttpClient { it.get(link) }
+    val redirect = useHttpClient { it.get(link) }
     val location = redirect.request.url
 
     val account = account(html = redirect.body())
@@ -43,10 +42,36 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
 
     val current = Url(location.parameters["return_to"]?.decodeURLPart() ?: account.returnTo)
 
+    if (location.host == "accounts.pixiv.net") {
+        val selected = useHttpClient { client ->
+            client.submitForm(url = POST_SELECTED_URL, formParameters = Parameters.build {
+                append("tt", account.token)
+                append("return_to", URLBuilder(POST_REDIRECT_URL).apply {
+                    parameters.append("return_to", current.toString())
+                }.buildString())
+            }) {
+                expectSuccess = false
+
+                header(HttpHeaders.Origin, ORIGIN_URL)
+                header(HttpHeaders.Referrer, location)
+            }
+        }
+        selected.location()?.let { url ->
+            val message = useHttpClient { client ->
+                client.get(url) {
+
+                    header(HttpHeaders.Origin, ORIGIN_URL)
+                    header(HttpHeaders.Referrer, location)
+                }
+            }
+            message.bodyAsText()
+        }
+    }
+
     /**
      * current for [START_URL]
      */
-    val response: HttpMessage = useHttpClient { client ->
+    val response = useHttpClient { client ->
         client.post(current) {
             expectSuccess = false
 
@@ -62,13 +87,20 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
     /**
      * authorize for [OAUTH_AUTHORIZE_URL]
      */
-    val code: HttpMessage = useHttpClient { client ->
+    val code = useHttpClient { client ->
         client.get(authorize) {
             expectSuccess = false
 
             header(HttpHeaders.Origin, ORIGIN_URL)
             header(HttpHeaders.Referrer, LOGIN_URL)
         }
+    }
+
+    code.contentType()?.let { type ->
+        java.io.File("pixiv.login.error.${type.contentSubtype}")
+            .writeBytes(code.body())
+        java.io.File("pixiv.login.cookies")
+            .writeText(storage.get(authorize).joinToString("\n", transform = ::renderCookieHeader))
     }
 
     val scheme = requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }
@@ -92,7 +124,7 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
     /**
      * for [GIGYA_AUTH_URL]
      */
-    val response: HttpMessage = useHttpClient { client ->
+    val response = useHttpClient { client ->
         client.submitForm(url = GIGYA_AUTH_URL, formParameters = Parameters.build {
             append("tt", account.token)
             append("mode", "signin")
@@ -113,7 +145,7 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
     val socialize = requireNotNull(response.location()) { "跳转到 $SOCIALIZE_LOGIN_URL 失败" }
 
     // Jump to Sina Weibo
-    val temp: HttpResponse = useHttpClient { it.head(socialize) }
+    val temp = useHttpClient { it.head(socialize) }
     // 为了直接继承参数 ↓
     val qrcode = PixivJson.decodeFromString(WeiboQrcode.serializer(), useHttpClient { client ->
         client.get {
@@ -128,8 +160,7 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
         show(Url(qrcode.url))
     }
 
-    val jump = withTimeout(WEIBO_QRCODE_TIMEOUT) {
-        lateinit var auto: String
+    val jump: String = withTimeout(WEIBO_QRCODE_TIMEOUT) {
         while (isActive) {
             delay(WEIBO_QRCODE_INTERVAL)
             val status = PixivJson.decodeFromString(WeiboQrcodeStatus.serializer(), useHttpClient { client ->
@@ -137,13 +168,12 @@ public suspend fun PixivAuthClient.sina(show: suspend (qrcode: Url) -> Unit): Au
                     parameter("vcode", qrcode.vcode)
                 }.body()
             })
-            auto = status.url ?: continue
-            break
+            return@withTimeout status.url ?: continue
         }
-        auto
+        throw CancellationException("WEIBO_QRCODE_TIMEOUT")
     }
 
-    // replace protocol for ssl with g-client-proxy.phttnet
+    // replace protocol for ssl with g-client-proxy.net
     val gigya: String = useHttpClient { client ->
         client.get(jump) {
             url {
@@ -181,8 +211,8 @@ public suspend fun PixivAuthClient.cookie(load: () -> List<Cookie>): AuthResult 
     /**
      * for [POST_SELECTED_URL]
      */
-    val response: HttpMessage = useHttpClient { client ->
-        client.submitForm(POST_SELECTED_URL, Parameters.build {
+    val response = useHttpClient { client ->
+        client.submitForm(url = POST_SELECTED_URL, formParameters = Parameters.build {
             append("return_to", account.current.ifEmpty { redirect.toString() })
             append("tt", account.token)
         }) {
@@ -208,7 +238,7 @@ public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: Ca
     /**
      * for [LOGIN_URL]
      */
-    val login: HttpResponse = useHttpClient { it.get(r) }
+    val login = useHttpClient { it.get(r) }
     val account = account(html = login.body())
 
     while (isActive) {
@@ -218,8 +248,8 @@ public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: Ca
         val gRecaptchaResponse =
             handler.handle(siteKey = account.scoreSiteKey, referer = login.request.url.toString())
 
-        val attempt: JsonObject = useHttpClient { client ->
-            client.submitForm(LOGIN_API_URL, Parameters.build {
+        val result: WebLoginResult = useHttpClient { client ->
+            client.submitForm(url = LOGIN_API_URL, formParameters = Parameters.build {
                 append("password", pwd)
                 append("pixiv_id", id)
                 append("captcha", "")
@@ -238,8 +268,6 @@ public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: Ca
             }.body()
         }
 
-        val result = PixivJson.decodeFromJsonElement<WebLoginResult>(attempt)
-
         if ("captcha" in result.body.validationErrors) continue
 
         check(result.body.validationErrors.isNotEmpty()) { result.body }
@@ -250,8 +278,8 @@ public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: Ca
     /**
      * for [POST_SELECTED_URL]
      */
-    val message: HttpMessage = useHttpClient { client ->
-        client.submitForm(POST_SELECTED_URL, Parameters.build {
+    val message = useHttpClient { client ->
+        client.submitForm(url = POST_SELECTED_URL, formParameters = Parameters.build {
             append("return_to", account.current)
             append("tt", account.token)
         }) {

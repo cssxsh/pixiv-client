@@ -8,6 +8,7 @@ import io.ktor.util.*
 import xyz.cssxsh.pixiv.*
 import java.security.*
 import java.time.*
+import kotlin.random.Random
 
 public const val OAUTH_TOKEN_URL: String = "https://oauth.secure.pixiv.net/auth/token"
 
@@ -33,33 +34,39 @@ public const val GIGYA_AUTH_URL: String = "https://accounts.pixiv.net/gigya-auth
 
 public const val SOCIALIZE_LOGIN_URL: String = "https://socialize.gigya.com/socialize.login"
 
-internal fun String.sha256(): ByteArray {
-    return MessageDigest.getInstance("SHA-512")
-        .digest(toByteArray())
+private fun String.sha256(): ByteArray {
+    return MessageDigest.getInstance("SHA-256")
+        .digest(toByteArray(Charsets.US_ASCII))
 }
 
-internal fun verifier(time: OffsetDateTime): Pair<String, Url> {
-    val origin = time.toString()
-        .sha256()
-        .encodeBase64()
-        .replace("=", "")
+private const val VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
+
+private const val VERIFIER_LENGTH = 128
+
+internal fun verifier(time: OffsetDateTime): Pair<String, Parameters> {
+    val random = Random(time.toEpochSecond())
+    val origin = buildString(VERIFIER_LENGTH) {
+        repeat(VERIFIER_LENGTH) {
+            append(VERIFIER_CHARS[random.nextInt(VERIFIER_CHARS.length)])
+        }
+    }
     val challenge = origin
         .sha256()
         .encodeBase64()
         .replace("=", "")
-    val url = URLBuilder(REDIRECT_LOGIN_URL).apply {
-        parameters.append("code_challenge", challenge)
-        parameters.append("code_challenge_method", "S256")
-        parameters.append("client", "pixiv-android")
+    val parameters = ParametersBuilder().apply {
+        append("code_challenge", challenge)
+        append("code_challenge_method", "S256")
+        append("client", "pixiv-android")
     }.build()
 
-    return origin to url
+    return origin to parameters
 }
 
 internal suspend fun HttpClient.authorize(code: String, verifier: String): AuthResult {
     return submitForm(url = OAUTH_TOKEN_URL, formParameters = Parameters.build {
-        append("client_id", CLIENT_ID)
-        append("client_secret", CLIENT_SECRET)
+        append("client_id", ANDROID_CLIENT_ID)
+        append("client_secret", ANDROID_CLIENT_SECRET)
         append("grant_type", "authorization_code")
         append("include_policy", "true")
         append("code", code)
@@ -70,8 +77,8 @@ internal suspend fun HttpClient.authorize(code: String, verifier: String): AuthR
 
 internal suspend fun HttpClient.refresh(token: String): AuthResult {
     return submitForm(url = OAUTH_TOKEN_URL, formParameters = Parameters.build {
-        append("client_id", CLIENT_ID)
-        append("client_secret", CLIENT_SECRET)
+        append("client_id", ANDROID_CLIENT_ID)
+        append("client_secret", ANDROID_CLIENT_SECRET)
         append("grant_type", "refresh_token")
         append("include_policy", "true")
         append("refresh_token", token)

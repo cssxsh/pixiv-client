@@ -7,3 +7,6 @@
 
 # Temp
 /run
+
+*.html
+*.cookies

@@ -17,5 +17,7 @@ public interface PixivAppClient : UseHttpClient, UseConfig, CoroutineScope {
 
     public val refreshToken: String
 
+    public val deviceToken: String
+
     public val ageLimit: AgeLimit
 }

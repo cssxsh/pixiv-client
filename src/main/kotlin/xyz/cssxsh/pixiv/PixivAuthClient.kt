@@ -27,7 +27,10 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected abstract val ignore: suspend (Throwable) -> Boolean
 
-    public open val storage: AcceptAllCookiesStorage = AcceptAllCookiesStorage()
+    /**
+     * CookiesStorage, 存储Cookie
+     */
+    public open val storage: CookiesStorage = AcceptAllCookiesStorage()
 
     protected open val timeout: Long = 30_000L
 
@@ -131,11 +134,31 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open val mutex: Mutex = Mutex()
 
+    /**
+     * RefreshToken, 用于刷新状态
+     * @see auth
+     * @see refresh
+     */
     override val refreshToken: String
         get() = requireNotNull(auth?.refreshToken ?: config.refreshToken) { "Not Found RefreshToken" }
 
-    override val ageLimit: AgeLimit get() = auth?.user?.age ?: AgeLimit.ALL
+    /**
+     * DeviceToken
+     * @see auth
+     */
+    override val deviceToken: String
+        get() = requireNotNull(auth?.deviceToken) { "Not Found DeviceToken" }
 
+    /**
+     * 年龄限制
+     * @see auth
+     */
+    override val ageLimit: AgeLimit
+        get() = auth?.user?.age ?: AgeLimit.ALL
+
+    /**
+     * 认证信息
+     */
     override suspend fun info(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
         auth?.takeIf { expires > OffsetDateTime.now() } ?: useHttpClient { client ->
@@ -152,13 +175,17 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
      */
     override suspend fun login(block: suspend (redirect: Url) -> String): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
-        val (verifier, url) = verifier(time = start)
-        val code = block(url)
+        val (verifier, parameters) = verifier(time = start)
+        val code = block(URLBuilder(REDIRECT_LOGIN_URL).apply { this.parameters.appendAll(parameters) }.build())
         useHttpClient { client ->
             client.authorize(code = code, verifier = verifier).save(start = start)
         }
     }
 
+    /**
+     * 刷新状态
+     * @see refreshToken
+     */
     override suspend fun refresh(): AuthResult = mutex.withLock {
         val start = OffsetDateTime.now()
         useHttpClient { client ->
@@ -168,7 +195,7 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open suspend fun AuthResult.save(start: OffsetDateTime): AuthResult = also { result ->
         expires = start.withNano(0).plusSeconds(result.expiresIn)
-        auth = result
+        auth = result.copy(deviceToken = storage.get(Url(REDIRECT_LOGIN_URL))["device_token"]?.value)
         config {
             refreshToken = result.refreshToken
         }
