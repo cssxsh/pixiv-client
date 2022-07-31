@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.2.3"
+version = "1.2.4"
 
 mavenCentralPublish {
     useCentralS01()
@@ -30,10 +30,10 @@ dependencies {
     api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
     api("com.squareup:gifencoder:0.10.1")
     compileOnly("org.openpnp:opencv:4.5.1-2")
-    compileOnly("org.seleniumhq.selenium:selenium-java:4.2.2")
+    compileOnly("org.seleniumhq.selenium:selenium-java:4.3.0")
 
     testImplementation(kotlin("test", "1.7.0"))
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.2.2")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.3.0")
 }
 
 kotlin {

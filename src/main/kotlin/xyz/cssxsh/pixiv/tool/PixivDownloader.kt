@@ -48,6 +48,7 @@ public open class PixivDownloader(
             header(HttpHeaders.Connection, "keep-alive")
             header(HttpHeaders.Pragma, "no-cache")
         }
+        expectSuccess = true
         engine {
             config {
                 connectionPool(ConnectionPool(5, 10, TimeUnit.MINUTES))
