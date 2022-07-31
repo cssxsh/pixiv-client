@@ -26,9 +26,7 @@ public open class PixivDownloader(
 
     protected open val timeout: Long = 10 * 1000L
 
-    protected open val ignore: suspend (Throwable) -> Boolean = {
-        it is IOException || it is HttpRequestTimeoutException
-    }
+    protected open val ignore: suspend (Throwable) -> Boolean = { it is IOException }
 
     protected open val channel: Channel<Int> = Channel(async)
 
