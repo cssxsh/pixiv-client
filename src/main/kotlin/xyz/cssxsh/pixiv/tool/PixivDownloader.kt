@@ -31,11 +31,7 @@ public open class PixivDownloader(
     protected open val channel: Channel<Int> = Channel(async)
 
     protected open fun client(): HttpClient = HttpClient(OkHttp) {
-        ContentEncoding {
-            gzip()
-            deflate()
-            identity()
-        }
+        ContentEncoding()
         install(HttpTimeout) {
             socketTimeoutMillis = timeout
             connectTimeoutMillis = timeout
