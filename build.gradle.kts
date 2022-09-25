@@ -5,14 +5,14 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.2.5"
+version = "1.2.6"
 
 mavenCentralPublish {
     useCentralS01()
     singleDevGithubProject("cssxsh", "pixiv-client")
     licenseFromGitHubProject("AGPL-3.0")
     workingDir = System.getenv("PUBLICATION_TEMP")?.let { file(it).resolve(projectName) }
-        ?: project.buildDir.resolve("publishing-tmp")
+        ?: buildDir.resolve("publishing-tmp")
 }
 
 repositories {
@@ -22,20 +22,20 @@ repositories {
 
 dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-    api("io.ktor:ktor-client-auth:2.0.3")
-    api("io.ktor:ktor-client-encoding:2.0.3")
-    api("io.ktor:ktor-client-okhttp:2.0.3")
-    api("io.ktor:ktor-client-content-negotiation:2.0.3")
-    api("io.ktor:ktor-serialization-kotlinx-json:2.0.3")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
+    api("io.ktor:ktor-client-auth:2.1.1")
+    api("io.ktor:ktor-client-encoding:2.1.1")
+    api("io.ktor:ktor-client-okhttp:2.1.1")
+    api("io.ktor:ktor-client-content-negotiation:2.1.1")
+    api("io.ktor:ktor-serialization-kotlinx-json:2.1.1")
     api("com.squareup.okhttp3:okhttp:4.10.0")
     api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
     api("com.squareup:gifencoder:0.10.1")
-    compileOnly("org.openpnp:opencv:4.5.1-2")
-    compileOnly("org.seleniumhq.selenium:selenium-java:4.3.0")
+    compileOnly("org.openpnp:opencv:4.5.5-1")
+    compileOnly("org.seleniumhq.selenium:selenium-java:4.4.0")
 
-    testImplementation(kotlin("test", "1.7.0"))
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.3.0")
+    testImplementation(kotlin("test"))
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.4.0")
 }
 
 kotlin {
