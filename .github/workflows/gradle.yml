@@ -1,26 +1,25 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
 name: Gradle CI
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [ push, pull_request ]
 
 jobs:
-  build:
-
+  tool:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
         with:
-          java-version: 11
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build Jvm with Gradle
-        run: ./gradlew jar
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: chmod -R 777 *
+        run: chmod -R 777 *
+
+      - name: Build all
+        run: ./gradlew assemble --scan
+
+      - name: PixivDownloaderTest
+        run: ./gradlew test --tests "xyz.cssxsh.pixiv.tool.PixivDownloaderTest" --scan --info

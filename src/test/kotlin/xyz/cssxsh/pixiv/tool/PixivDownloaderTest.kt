@@ -2,24 +2,39 @@ package xyz.cssxsh.pixiv.tool
 
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 import org.junit.jupiter.api.*
 import xyz.cssxsh.pixiv.*
 import kotlin.system.*
 
 internal class PixivDownloaderTest {
 
-    // 0 - 52
-    private val urls = (0..2).map {
-        Url("https://i.pximg.net/img-original/img/2020/09/25/20/03/38/84603624_p$it.jpg")
-    }
+    private val artworks = listOf(
+        // https://www.pixiv.net/artworks/103618154
+        listOf(
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p0.png",
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p1.png",
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p2.png",
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p3.png",
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p4.png",
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p5.png",
+            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p6.png",
+        ),
+        // https://www.pixiv.net/artworks/103681154
+        listOf(
+            "https://i.pximg.net/img-original/img/2022/12/17/20/36/32/103681154_p0.png",
+            "https://i.pximg.net/img-original/img/2022/12/17/20/36/32/103681154_p1.png",
+            "https://i.pximg.net/img-original/img/2022/12/17/20/36/32/103681154_p2.png",
+            "https://i.pximg.net/img-original/img/2022/12/17/20/36/32/103681154_p3.png",
+            "https://i.pximg.net/img-original/img/2022/12/17/20/36/32/103681154_p4.png"
+        )
+    )
 
     private val host = mapOf("i.pximg.net" to (134..147).map { "210.140.92.${it}" })
 
-    private val sizes = (5..10).map { 2 shl it }
+    private val jobs = (3..8).map { 2 shl it }
 
-    private val timeouts = 30 downTo 10 step 5
-
-    private val nums = (2..8).map { 2 shl it }
+    private var temp = Channel<Int>(32)
 
     private val ByteArray.length
         get() = buildString {
@@ -35,57 +50,31 @@ internal class PixivDownloaderTest {
         }
 
 
-
-    private suspend fun download(kilobytes: Int, seconds: Int, async: Int): Int {
-        val downloader = object : PixivDownloader(
-            async = async,
-            blockSize = kilobytes * HTTP_KILO,
-            host = host,
-        ) {
-            override val timeout: Long = seconds * 1000L
-
-            override val ignore: suspend (Throwable) -> Boolean = {
-                //println(it)
-                super.ignore(it)
-            }
-        }
-        return downloader.downloadImageUrls(urls) { url, deferred ->
-            val bytes = deferred.await()
-            println("$url \t| ${bytes.length}")
-            bytes.size
-        }.sum()
+    private val downloader = object : PixivDownloader(blockSize = 512 * HTTP_KILO, host = host) {
+        override val timeout: Long = 10_000L
+        override val channel: Channel<Int> get() = temp
     }
 
-    @Test
-    fun size(): Unit = runBlocking {
-        sizes.forEach { size ->
-            measureTimeMillis {
-                download(kilobytes = size, seconds = 30, async = 32)
-            }.let { time ->
-                println("$size : $time")
-            }
-        }
-    }
-
-    @Test
-    fun timeout(): Unit = runBlocking {
-        timeouts.forEach { timeout ->
-            measureTimeMillis {
-                download(kilobytes = 512, seconds = timeout, async = 4)
-            }.let { time ->
-                println("$timeout : $time")
+    private suspend fun download(target: List<String>): List<Deferred<Unit>> {
+        return downloader.downloadImageUrls(urls = target.map(::Url)) { url, deferred ->
+            supervisorScope {
+                async {
+                    val bytes = deferred.await()
+                    println("$url \t| ${bytes.length}")
+                }
             }
         }
     }
 
     @Test
     fun async(): Unit = runBlocking {
-        nums.forEach { async ->
-            measureTimeMillis {
-                download(kilobytes = 512, seconds = 10, async = async)
-            }.let { time ->
-                println("$async : $time")
+        jobs.forEach { async ->
+            temp = Channel(capacity = async)
+            val millis = measureTimeMillis {
+                artworks.flatMap { artwork -> download(target = artwork) }
+                    .awaitAll()
             }
+            println("async:${async} -> ${java.time.Duration.ofMillis(millis)}")
         }
     }
 }
