@@ -9,32 +9,7 @@ import java.io.*
 import kotlin.system.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class PixivDownloaderTest {
-
-    private var stdout: PrintStream? = null
-
-    @BeforeAll
-    fun init() {
-        val markdown = File(System.getenv("GITHUB_STEP_SUMMARY") ?: "run/summary.md")
-        if (markdown.exists()) {
-            stdout = System.out
-            System.setOut(PrintStream(markdown))
-        }
-    }
-
-    @AfterAll
-    fun redirect() {
-        if (stdout != null) {
-            System.setOut(stdout)
-        }
-    }
-
-    init {
-        val markdown = File(System.getenv("GITHUB_STEP_SUMMARY") ?: "run/summary.md")
-        if (markdown.exists()) {
-            System.setOut(PrintStream(markdown))
-        }
-    }
+internal class PixivDownloaderTest : SummaryTest() {
 
     private val artworks = listOf(
         // https://www.pixiv.net/artworks/103618154
@@ -59,7 +34,7 @@ internal class PixivDownloaderTest {
 
     private val host = mapOf("i.pximg.net" to (134..147).map { "210.140.92.${it}" })
 
-    private val jobs = (3..8).map { 2 shl it }
+    private val jobs = (3..5).map { 2 shl it }
 
     private var temp = Channel<Int>(32)
 

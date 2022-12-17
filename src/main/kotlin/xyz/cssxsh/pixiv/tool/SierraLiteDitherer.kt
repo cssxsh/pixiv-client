@@ -2,7 +2,7 @@ package xyz.cssxsh.pixiv.tool
 
 public class SierraLiteDitherer private constructor() : UniversalDitherer(DISTRIBUTION) {
     public companion object {
-        @JvmField
+        @JvmStatic
         public val DISTRIBUTION: List<ErrorComponent> = listOf(
             ErrorComponent(1, 0, 2 / 4.0),
 
@@ -10,7 +10,7 @@ public class SierraLiteDitherer private constructor() : UniversalDitherer(DISTRI
             ErrorComponent(0, 1, 1 / 4.0),
         )
 
-        @JvmField
+        @JvmStatic
         public val INSTANCE: SierraLiteDitherer = SierraLiteDitherer()
     }
 }

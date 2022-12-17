@@ -2,7 +2,7 @@ package xyz.cssxsh.pixiv.tool
 
 public class JJNDitherer private constructor() : UniversalDitherer(DISTRIBUTION) {
     public companion object {
-        @JvmField
+        @JvmStatic
         public val DISTRIBUTION: List<ErrorComponent> = listOf(
             ErrorComponent(1, 0, 7 / 48.0),
             ErrorComponent(2, 0, 5 / 48.0),
@@ -20,7 +20,7 @@ public class JJNDitherer private constructor() : UniversalDitherer(DISTRIBUTION)
             ErrorComponent(2, 2, 1 / 48.0),
         )
 
-        @JvmField
+        @JvmStatic
         public val INSTANCE: JJNDitherer = JJNDitherer()
     }
 }

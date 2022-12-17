@@ -21,21 +21,25 @@ repositories {
 }
 
 dependencies {
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
-    api("io.ktor:ktor-client-auth:2.1.1")
-    api("io.ktor:ktor-client-encoding:2.1.1")
-    api("io.ktor:ktor-client-okhttp:2.1.1")
-    api("io.ktor:ktor-client-content-negotiation:2.1.1")
-    api("io.ktor:ktor-serialization-kotlinx-json:2.1.1")
-    api("com.squareup.okhttp3:okhttp:4.10.0")
-    api("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
     api("com.squareup:gifencoder:0.10.1")
-    compileOnly("org.openpnp:opencv:4.5.5-1")
-    compileOnly("org.seleniumhq.selenium:selenium-java:4.4.0")
-
+    compileOnly("org.openpnp:opencv:4.6.0-0")
+    compileOnly("org.seleniumhq.selenium:selenium-java:4.7.2")
     testImplementation(kotlin("test"))
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.4.0")
+    testImplementation("org.openpnp:opencv:4.6.0-0")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.7.2")
+    //
+    implementation(platform("io.ktor:ktor-bom:2.2.1"))
+    api("io.ktor:ktor-client-auth")
+    api("io.ktor:ktor-client-encoding")
+    api("io.ktor:ktor-client-okhttp")
+    api("io.ktor:ktor-client-content-negotiation")
+    api("io.ktor:ktor-serialization-kotlinx-json")
+    //
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+    api("com.squareup.okhttp3:okhttp-dnsoverhttps")
+    //
+    implementation(platform("org.slf4j:slf4j-parent:2.0.6"))
+    testImplementation("org.slf4j:slf4j-simple")
 }
 
 kotlin {

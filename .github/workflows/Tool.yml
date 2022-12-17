@@ -1,17 +1,17 @@
-name: Gradle CI
+name: Tool Test
 on: [ push, pull_request ]
 
 jobs:
   tool:
-    name: "Toot Test (${{ matrix.os }})"
+    name: "Tool Test (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - windows-last
-          - ubuntu-last
-          - macos-last
+          - windows-2022
+          - ubuntu-20.04
+          - macos-12
     steps:
 
       - name: Checkout
@@ -31,3 +31,6 @@ jobs:
 
       - name: PixivDownloaderTest
         run: ./gradlew test --tests "xyz.cssxsh.pixiv.tool.PixivDownloaderTest" --scan --info
+
+      - name: PixivUgoiraEncoderTest
+        run: ./gradlew test --tests "xyz.cssxsh.pixiv.tool.PixivUgoiraEncoderTest" --scan --info
