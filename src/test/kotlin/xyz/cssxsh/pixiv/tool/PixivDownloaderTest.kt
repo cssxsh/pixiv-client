@@ -5,9 +5,36 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import org.junit.jupiter.api.*
 import xyz.cssxsh.pixiv.*
+import java.io.*
 import kotlin.system.*
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class PixivDownloaderTest {
+
+    private var stdout: PrintStream? = null
+
+    @BeforeAll
+    fun init() {
+        val markdown = File(System.getenv("GITHUB_STEP_SUMMARY") ?: "run/summary.md")
+        if (markdown.exists()) {
+            stdout = System.out
+            System.setOut(PrintStream(markdown))
+        }
+    }
+
+    @AfterAll
+    fun redirect() {
+        if (stdout != null) {
+            System.setOut(stdout)
+        }
+    }
+
+    init {
+        val markdown = File(System.getenv("GITHUB_STEP_SUMMARY") ?: "run/summary.md")
+        if (markdown.exists()) {
+            System.setOut(PrintStream(markdown))
+        }
+    }
 
     private val artworks = listOf(
         // https://www.pixiv.net/artworks/103618154
@@ -56,11 +83,17 @@ internal class PixivDownloaderTest {
     }
 
     private suspend fun download(target: List<String>): List<Deferred<Unit>> {
+        val regex = """(\d+)_p(\d+)""".toRegex()
         return downloader.downloadImageUrls(urls = target.map(::Url)) { url, deferred ->
             supervisorScope {
                 async {
-                    val bytes = deferred.await()
-                    println("$url \t| ${bytes.length}")
+                    val bytes: ByteArray
+                    val millis = measureTimeMillis {
+                        bytes = deferred.await()
+                    }
+                    val (pid, index) = regex.find(url.encodedPath)!!.destructured
+                    val page = """${pid}#${index.toInt().plus(1)}"""
+                    println("| [$page](https://www.pixiv.net/artworks/${page}) | ${bytes.length} | ${java.time.Duration.ofMillis(millis)} |")
                 }
             }
         }
@@ -68,13 +101,24 @@ internal class PixivDownloaderTest {
 
     @Test
     fun async(): Unit = runBlocking {
-        jobs.forEach { async ->
+        println("# Async Test")
+        val durations = jobs.associateWith { async ->
             temp = Channel(capacity = async)
+            println()
+            println("## Async Number $async")
+            println("| IMAGE | SIZE | DURATION |")
+            println("|:-----:|:----:|:--------:|")
             val millis = measureTimeMillis {
                 artworks.flatMap { artwork -> download(target = artwork) }
                     .awaitAll()
             }
-            println("async:${async} -> ${java.time.Duration.ofMillis(millis)}")
+            java.time.Duration.ofMillis(millis)
+        }
+        println("## Async Duration")
+        println("| ASYNC | DURATION |")
+        println("|:-----:|:------:|")
+        durations.forEach { (async, duration) ->
+            println("| $async | $duration |")
         }
     }
 }

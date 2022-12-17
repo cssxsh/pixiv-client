@@ -3,7 +3,15 @@ on: [ push, pull_request ]
 
 jobs:
   tool:
-    runs-on: ubuntu-latest
+    name: "Toot Test (${{ matrix.os }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-last
+          - ubuntu-last
+          - macos-last
     steps:
 
       - name: Checkout
