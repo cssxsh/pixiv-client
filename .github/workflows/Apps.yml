@@ -3,16 +3,9 @@ on: [ push, pull_request ]
 
 jobs:
   tool:
-    name: "App Api Test (${{ matrix.os }})"
+    name: "App Api Test"
     environment: PIXIV_APP_TOKEN
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - windows-2022
-          - ubuntu-20.04
-          - macos-12
+    runs-on: ubuntu-latest
     steps:
 
       - name: Checkout
