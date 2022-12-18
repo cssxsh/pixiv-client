@@ -1,91 +1,98 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
+import kotlinx.coroutines.*
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.ApiTest
-import xyz.cssxsh.pixiv.RankMode
-import java.time.LocalDate
+import xyz.cssxsh.pixiv.*
+import java.time.*
 
-internal class IllustKtTest : ApiTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class IllustKtTest : AppApiKtTest() {
 
     @Test
-    fun illustBookmark(): Unit = runBlocking {
+    fun bookmark(): Unit = runBlocking {
         val pid = 52594107L
         val tag = "ルオ・テンイ"
         client.illustBookmarkAdd(pid = pid, tags = setOf(tag))
-        client.illustBookmarkDetail(pid = pid).detail.let { detail ->
+        client.illustBookmarkDetail(pid = pid).let { (detail) ->
             assertTrue(detail.tags.any { it.name == tag })
             assertTrue(detail.isBookmarked)
         }
         client.illustBookmarkDelete(pid = pid)
-        client.illustBookmarkDetail(pid = pid).detail.let { detail ->
+        client.illustBookmarkDetail(pid = pid).let { (detail) ->
             assertFalse(detail.isBookmarked)
         }
     }
 
     @Test
-    fun illustComments(): Unit = runBlocking {
-        client.illustComments(pid = 52594107).comments.let {
-            assertTrue(it.isNotEmpty())
+    fun comments(): Unit = runBlocking {
+        client.illustComments(pid = 52594107).let { (comments) ->
+            assertFalse(comments.isEmpty())
         }
     }
 
     @Test
-    fun illustDetail(): Unit = runBlocking {
+    fun detail(): Unit = runBlocking {
         val pid = 83919385L
-        client.illustDetail(pid = pid).illust.let {
-            assertEquals(pid, it.pid)
+        client.illustDetail(pid = pid).let { (illust) ->
+            assertEquals(pid, illust.pid)
         }
     }
 
     @Test
-    fun illustFollow(): Unit = runBlocking {
-        client.illustFollow().illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun follow(): Unit = runBlocking {
+        client.illustFollow().let { (illusts) ->
+            assertFalse(illusts.isEmpty())
+            assertEquals(PAGE_SIZE, illusts.size.toLong())
         }
-        client.illustFollow(offset = 30).illusts.let {
-            assertTrue(it.isNotEmpty())
+        client.illustFollow(offset = PAGE_SIZE).let { (illusts) ->
+            assertFalse(illusts.isEmpty())
         }
-        client.illustFollow(offset = FOLLOW_LIMIT).illusts.let {
-            assertTrue(it.isEmpty())
+        client.illustFollow(offset = FOLLOW_LIMIT).let { (illusts) ->
+            assertTrue(illusts.isEmpty())
         }
     }
 
     @Test
-    fun illustMyPixiv(): Unit = runBlocking {
+    fun friend(): Unit = runBlocking {
         client.illustMyPixiv().illusts
-        client.illustMyPixiv(offset = 30).illusts
+        client.illustMyPixiv(offset = PAGE_SIZE).illusts
     }
 
     @Test
-    fun illustNew(): Unit = runBlocking {
-        client.illustNew().illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun new(): Unit = runBlocking {
+        client.illustNew().let { (illusts) ->
+            assertFalse(illusts.isEmpty())
+            assertEquals(PAGE_SIZE, illusts.size.toLong())
         }
     }
 
     @Test
-    fun illustRanking(): Unit = runBlocking {
-        client.illustRanking().illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun ranking(): Unit = runBlocking {
+        client.illustRanking().let { (illusts) ->
+            assertFalse(illusts.isEmpty())
         }
-        client.illustRanking(mode = RankMode.MONTH, date = LocalDate.of(2020, 8, 20)).illusts.let {
-            assertTrue(it.isNotEmpty())
-        }
-    }
-
-    @Test
-    fun illustRecommended(): Unit = runBlocking {
-        client.illustRecommended().illusts.let {
-            assertTrue(it.isNotEmpty())
+        val date = LocalDate.of(2020, 8, 20)
+        client.illustRanking(mode = RankMode.WEEK, date = date, offset = PAGE_SIZE).let { (illusts) ->
+            assertFalse(illusts.isEmpty())
         }
     }
 
     @Test
-    fun illustRelated(): Unit = runBlocking {
-        client.illustRelated(pid = 52594107).illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun recommended(): Unit = runBlocking {
+        client.illustRecommended().let { (illusts, ranking) ->
+            assertFalse(illusts.isEmpty())
+            if (ranking.isEmpty().not()) {
+                assertEquals(RECOMMENDED_PAGE_SIZE, (illusts.size + ranking.size).toLong())
+            }
+        }
+    }
+
+    @Test
+    fun related(): Unit = runBlocking {
+        client.illustRelated(pid = 52594107).let { (illusts) ->
+            assertFalse(illusts.isEmpty())
+            assertEquals(PAGE_SIZE, illusts.size.toLong())
         }
     }
 }

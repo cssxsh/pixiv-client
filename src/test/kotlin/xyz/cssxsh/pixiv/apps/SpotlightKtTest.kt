@@ -1,17 +1,17 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
-
+import kotlinx.coroutines.*
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.ApiTest
 
-internal class SpotlightKtTest: ApiTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class SpotlightKtTest: AppApiKtTest() {
 
     @Test
-    fun spotlightArticles(): Unit = runBlocking {
-        client.spotlightArticles().articles.let {
-            assertTrue(it.isNotEmpty())
+    fun `spotlight articles`(): Unit = runBlocking {
+        client.spotlightArticles().let { (articles) ->
+            assertFalse(articles.isEmpty())
+            assertEquals(ARTICLE_PAGE_SIZE, articles.size.toLong())
         }
     }
 }

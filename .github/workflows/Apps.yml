@@ -1,0 +1,36 @@
+name: Apps Test
+on: [ push, pull_request ]
+
+jobs:
+  tool:
+    name: "App Api Test (${{ matrix.os }})"
+    environment: PIXIV_APP_TOKEN
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-20.04
+          - macos-12
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: chmod -R 777 *
+        run: chmod -R 777 *
+
+      - name: Build all
+        run: ./gradlew assemble --scan
+
+      - name: AppApiKtTest
+        run: ./gradlew test --tests "xyz.cssxsh.pixiv.apps.*" --scan --info
+        env:
+          PIXIV_TOKEN: ${{ secrets.PIXIV_TOKEN }}

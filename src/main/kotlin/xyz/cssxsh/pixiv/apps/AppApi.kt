@@ -3,6 +3,7 @@ package xyz.cssxsh.pixiv.apps
 
 public const val PAGE_SIZE: Long = 30L
 public const val ARTICLE_PAGE_SIZE: Long = 10L
+public const val RECOMMENDED_PAGE_SIZE: Long = 90L
 public const val ARTICLE_LIMIT: Long = 5000L
 public const val FOLLOW_LIMIT: Long = 6000L
 public const val RECOMMENDED_LIMIT: Long = 5000L

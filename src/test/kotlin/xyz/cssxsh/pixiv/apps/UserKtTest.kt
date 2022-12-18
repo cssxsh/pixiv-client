@@ -1,98 +1,84 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import kotlinx.coroutines.*
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.ApiTest
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class UserKtTest : ApiTest() {
+internal class UserKtTest : AppApiKtTest() {
+
     @Test
-    fun getUserBookmarksIllust(): Unit = runBlocking {
-        client.userBookmarksIllust(12905943L).illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun `bookmarks illust`(): Unit = runBlocking {
+        client.userBookmarksIllust(uid = 12905943L).let { (illusts) ->
+            assertFalse(illusts.isEmpty())
+        }
+    }
+
+    @Disabled
+    fun blacklist(): Unit = runBlocking {
+        client.userBlacklist(uid = 3410615L).let { (users) ->
+            assertFalse(users.isEmpty())
         }
     }
 
     @Test
-    fun getUserBookmarksNovel(): Unit = runBlocking {
-        client.userBookmarksNovel(12905943L).novels.let {
-            assertTrue(it.isNotEmpty())
+    fun `bookmarks tags illust`(): Unit = runBlocking {
+        client.userBookmarksTagsIllust().let { (tags) ->
+            assertFalse(tags.isEmpty())
         }
     }
 
     @Test
-    fun userBlacklist(): Unit = runBlocking {
-        client.userBlacklist().users.let {
-            assertTrue(it.isNotEmpty())
-        }
-    }
-
-    @Test
-    fun userBookmarksTagsIllust(): Unit = runBlocking {
-        client.userBookmarksTagsIllust().tags.let {
-            assertTrue(it.isNotEmpty())
-        }
-    }
-
-    @Test
-    fun userBookmarksTagsNovel(): Unit = runBlocking {
-        client.userBookmarksTagsNovel().tags.let {
-            assertTrue(it.isNotEmpty())
-        }
-    }
-
-
-    @Test
-    fun getUserDetail(): Unit = runBlocking {
+    fun detail(): Unit = runBlocking {
         val uid = 3569577L
-        client.userDetail(uid = uid).user.let {
-            assertEquals(uid, it.id)
+        client.userDetail(uid = 3569577L).let { (_, _, user) ->
+            assertEquals(uid, user.id)
         }
     }
 
     @Test
-    fun getUserRecommended(): Unit = runBlocking {
-        client.userRecommended().previews.let {
-            assertTrue(it.isNotEmpty())
+    fun recommended(): Unit = runBlocking {
+        client.userRecommended().let { (previews) ->
+            assertFalse(previews.isEmpty())
         }
     }
 
-    @Test
-    fun getUserFollowing(): Unit = runBlocking {
-        val uid = 4102577L
+    @Disabled
+    fun following(): Unit = runBlocking {
+        val uid = 11L
+        client.userFollowDelete(uid = uid)
         client.userFollowAdd(uid = uid)
-        client.userFollowing(uid = uid).previews.let {
-            assertEquals(uid, it.first().user.id)
+        client.userFollowing(uid = uid).let { (previews) ->
+            assertEquals(uid, previews.first().user.id)
         }
         client.userFollowDelete(uid = uid)
-        client.userFollowing(uid = uid).previews.let {
-            assertNotEquals(uid, it.first().user.id)
+        client.userFollowing(uid = uid).let { (previews) ->
+            assertNotEquals(uid, previews.first().user.id)
         }
     }
 
-    @Test
-    fun getUserFollower(): Unit = runBlocking {
+
+    @Disabled
+    fun follower(): Unit = runBlocking {
         val uid = 4102577L
-        client.userFollower(uid = uid).previews.let {
-            assertTrue(it.isNotEmpty())
+        client.userFollower(uid = uid).let { (previews) ->
+            assertFalse(previews.isEmpty())
         }
     }
 
-    @Test
-    fun getUserMyPixiv(): Unit = runBlocking {
+
+    @Disabled
+    fun friend(): Unit = runBlocking {
         val uid = 4102577L
-        client.userMyPixiv(uid = uid).previews.let {
-            assertTrue(it.isNotEmpty())
+        client.userMyPixiv(uid = uid).let { (previews) ->
+            assertFalse(previews.isEmpty())
         }
     }
 
     @Test
-    fun getUserIllusts(): Unit = runBlocking {
-        val uid = 3569577L
-        client.userIllusts(uid = uid).illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun illusts(): Unit = runBlocking {
+        client.userIllusts(uid = 11).let { (illusts) ->
+            assertFalse(illusts.isEmpty())
         }
     }
 }

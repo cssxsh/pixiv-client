@@ -8,10 +8,12 @@ import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 
 public suspend fun PixivAppClient.userBlacklist(
+    uid: Long,
     url: String = USER_BLACKLIST,
 ): Blacklist = useHttpClient { client ->
-    client.get(url)
-        .body()
+    client.get(url) {
+        parameter("user_id", uid)
+    }.body()
 }
 
 public suspend fun PixivAppClient.userBookmarksIllust(

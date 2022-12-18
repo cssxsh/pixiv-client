@@ -1,16 +1,19 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
+import kotlinx.coroutines.*
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.ApiTest
 
-internal class TrendingKtTest : ApiTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class TrendingKtTest : AppApiKtTest() {
 
     @Test
-    fun trendingTagsIllust(): Unit = runBlocking {
-        client.trendingTagsIllust().trends.let {
-            assertTrue(it.isNotEmpty())
+    fun `trending tags illust`(): Unit = runBlocking {
+        client.trendingTagsIllust().let { (trends) ->
+            assertFalse(trends.isEmpty())
+            trends.forEach { illust ->
+                assertTrue(illust.tag.isNotEmpty())
+            }
         }
     }
 }

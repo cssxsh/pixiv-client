@@ -3,35 +3,35 @@ package xyz.cssxsh.pixiv.apps
 import kotlinx.coroutines.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.*
 
-internal class SearchKtTest : ApiTest() {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class SearchKtTest : AppApiKtTest() {
 
     @Test
-    fun searchIllust(): Unit = runBlocking {
-        client.searchIllust("nmsl").illusts.let {
-            assertTrue(it.isNotEmpty())
+    fun illust(): Unit = runBlocking {
+        client.searchIllust("nmsl").let { (illusts) ->
+            assertFalse(illusts.isEmpty())
         }
     }
 
     @Test
-    fun searchAutoComplete(): Unit = runBlocking {
-        client.searchAutoComplete("ark").tags.let {
-            assertTrue(it.isNotEmpty())
+    fun `auto complete`(): Unit = runBlocking {
+        client.searchAutoComplete("ark").let { (tags) ->
+            assertFalse(tags.isEmpty())
         }
     }
 
     @Test
-    fun searchBookmarkRangesIllust(): Unit = runBlocking {
-        client.searchBookmarkRangesIllust("巨乳", offset = 0).ranges.let {
-            assertTrue(it.isNotEmpty())
+    fun `bookmark ranges illust`(): Unit = runBlocking {
+        client.searchBookmarkRangesIllust("巨乳", offset = 0).let { (ranges) ->
+            assertFalse(ranges.isEmpty())
         }
     }
 
     @Test
-    fun searchUser(): Unit = runBlocking {
-        client.searchUser("as109").previews.let {
-            assertTrue(it.isNotEmpty())
+    fun user(): Unit = runBlocking {
+        client.searchUser("as109").let { (previews) ->
+            assertFalse(previews.isEmpty())
         }
     }
 }
