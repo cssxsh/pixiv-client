@@ -52,6 +52,7 @@ internal class PixivUgoiraEncoderTest : SummaryTest() {
         val original = Url(ugoira.zipUrls.values.first().replace("600x600", "1920x1080"))
         workDir.resolve(original.encodedPath.substringAfterLast('/')).apply {
             if (exists().not()) {
+                parentFile.mkdirs()
                 runBlocking {
                     writeBytes(downloader.download(original))
                 }
