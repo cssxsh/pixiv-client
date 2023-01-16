@@ -1,8 +1,8 @@
-name: Apps Test
+name: Api Test
 on: [ push, pull_request ]
 
 jobs:
-  tool:
+  app:
     name: "App Api Test"
     environment: PIXIV_APP_TOKEN
     runs-on: ubuntu-latest
