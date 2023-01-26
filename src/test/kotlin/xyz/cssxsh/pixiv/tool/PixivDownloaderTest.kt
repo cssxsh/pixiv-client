@@ -12,15 +12,14 @@ import kotlin.system.*
 internal class PixivDownloaderTest : SummaryTest() {
 
     private val artworks = listOf(
-        // https://www.pixiv.net/artworks/103618154
+        // https://www.pixiv.net/artworks/104820728
         listOf(
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p0.png",
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p1.png",
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p2.png",
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p3.png",
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p4.png",
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p5.png",
-            "https://i.pximg.net/img-original/img/2022/12/15/11/42/31/103618154_p6.png",
+            "https://i.pximg.net/img-original/img/2023/01/26/12/00/37/104820728_p0.png",
+            "https://i.pximg.net/img-original/img/2023/01/26/12/00/37/104820728_p1.png",
+            "https://i.pximg.net/img-original/img/2023/01/26/12/00/37/104820728_p2.png",
+            "https://i.pximg.net/img-original/img/2023/01/26/12/00/37/104820728_p3.png",
+            "https://i.pximg.net/img-original/img/2023/01/26/12/00/37/104820728_p4.png",
+            "https://i.pximg.net/img-original/img/2023/01/26/12/00/37/104820728_p5.png",
         ),
         // https://www.pixiv.net/artworks/103681154
         listOf(
