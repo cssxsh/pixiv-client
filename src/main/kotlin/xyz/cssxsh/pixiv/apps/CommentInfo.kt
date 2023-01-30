@@ -16,4 +16,6 @@ public data class CommentInfo(
     val id: Long,
     @SerialName("user")
     val user: UserInfo,
+    @SerialName("stamp")
+    val stamp: CommentStamp? = null,
 )
