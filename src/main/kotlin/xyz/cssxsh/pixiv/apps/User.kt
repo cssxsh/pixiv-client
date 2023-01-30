@@ -133,7 +133,7 @@ public suspend fun PixivAppClient.userIllusts(
     filter: FilterType? = null,
     offset: Long = 0,
     url: String = USER_ILLUSTS,
-): IllustData = useHttpClient { client ->
+): UserIllustData = useHttpClient { client ->
     client.get(url) {
         parameter("user_id", uid)
         parameter("type", type)

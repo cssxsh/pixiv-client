@@ -77,7 +77,8 @@ internal class UserKtTest : AppApiKtTest() {
 
     @Test
     fun illusts(): Unit = runBlocking {
-        client.userIllusts(uid = 11).let { (illusts) ->
+        client.userIllusts(uid = 11).let { (user, illusts) ->
+            assertEquals(11, user.id)
             assertFalse(illusts.isEmpty())
         }
     }

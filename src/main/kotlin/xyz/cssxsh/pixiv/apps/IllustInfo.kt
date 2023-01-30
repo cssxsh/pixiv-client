@@ -57,6 +57,12 @@ public data class IllustInfo(
     val visible: Boolean,
     @SerialName("x_restrict")
     val age: AgeLimit,
+    @SerialName("illust_ai_type")
+    val ai: Int = 1,
+    @SerialName("illust_book_style")
+    val bookStyle: Int = 0,
+    @SerialName("comment_access_control")
+    val commentAccessControl: Int = 0,
 ) {
     @Serializable
     public data class MetaPageData(

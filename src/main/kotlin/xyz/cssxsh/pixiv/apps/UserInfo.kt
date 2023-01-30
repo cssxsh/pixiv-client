@@ -13,6 +13,8 @@ public data class UserInfo(
     val comment: String? = null,
     @SerialName("is_followed")
     val isFollowed: Boolean? = null,
+    @SerialName("is_access_blocking_user")
+    val isAccessBlockingUser: Boolean? = null,
     @SerialName("name")
     val name: String,
     @SerialName("profile_image_urls")

@@ -20,8 +20,6 @@ public data class AuthResult(
     val tokenType: String,
     @SerialName("user")
     val user: User,
-    @SerialName("requirePolicyAgreement")
-    val require: Boolean = false,
     @SerialName("response")
     internal val response: JsonElement = JsonNull,
 ) {
@@ -44,5 +42,7 @@ public data class AuthResult(
         val profileFileUrls: FileUrls,
         @SerialName("x_restrict")
         val age: AgeLimit,
+        @SerialName("require_policy_agreement")
+        val requirePolicyAgreement: Boolean = false,
     )
 }

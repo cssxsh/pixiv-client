@@ -50,4 +50,6 @@ public data class NovelInfo(
     val visible: Boolean,
     @SerialName("x_restrict")
     val age: AgeLimit,
+    @SerialName("novel_ai_type")
+    val ai: Int = 1,
 )
