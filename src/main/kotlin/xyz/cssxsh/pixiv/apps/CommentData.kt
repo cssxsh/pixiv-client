@@ -8,4 +8,6 @@ public data class CommentData(
     val comments: List<CommentInfo>,
     @SerialName("next_url")
     val nextUrl: String?,
+    @SerialName("comment_access_control")
+    val commentAccessControl: Int = 0,
 )
