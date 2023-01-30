@@ -1,6 +1,7 @@
 package xyz.cssxsh.pixiv.auth
 
 import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 
 @Serializable
@@ -19,10 +20,10 @@ public data class AuthResult(
     val tokenType: String,
     @SerialName("user")
     val user: User,
-//    @SerialName("require_policy_agreement")
-//    val require: Boolean = false,
-//    @SerialName("response")
-//    private val info: AuthInfo,
+    @SerialName("requirePolicyAgreement")
+    val require: Boolean = false,
+    @SerialName("response")
+    internal val response: JsonElement = JsonNull,
 ) {
 
     @Serializable
