@@ -17,7 +17,7 @@ public typealias HeadersMap = Map<String, String>
 public typealias FileUrls = Map<String, String>
 
 public val PixivJson: Json = Json {
-    ignoreUnknownKeys = true
+    ignoreUnknownKeys = System.getProperty("xyz.cssxsh.pixiv.json.ignore", "true").toBoolean()
     allowSpecialFloatingPointValues = true
     serializersModule += SerializersModule {
         contextual(JapanDateTimeSerializer)
