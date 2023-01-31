@@ -2,6 +2,7 @@ package xyz.cssxsh.pixiv.fanbox
 
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.serialization.json.*
 import xyz.cssxsh.pixiv.*
 import xyz.cssxsh.pixiv.web.*
 
@@ -29,11 +30,10 @@ public class FanBoxNotification(override val client: PixivWebClient) : FanBoxApi
 
             method = HttpMethod.Post
 
-            setBody(mapOf(
-                "type" to type.name.lowercase(),
-                "value" to if (value) "1" else "0"
-            ))
-
+            setBody(buildJsonObject {
+                put("type", type.name.lowercase())
+                put("value", if (value) "1" else "0")
+            })
             contentType(ContentType.Application.Json)
         }
     }
