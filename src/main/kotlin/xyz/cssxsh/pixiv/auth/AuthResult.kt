@@ -21,7 +21,7 @@ public data class AuthResult(
     @SerialName("user")
     val user: User,
     @SerialName("response")
-    internal val response: JsonElement = JsonNull,
+    internal val response: AuthResult? = null,
 ) {
 
     @Serializable
