@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "xyz.cssxsh.pixiv"
-version = "1.3.0"
+version = "1.3.1"
 
 mavenCentralPublish {
     useCentralS01()
@@ -28,14 +28,14 @@ dependencies {
     testImplementation("org.openpnp:opencv:4.6.0-0")
     testImplementation("org.seleniumhq.selenium:selenium-java:4.8.0")
     //
-    implementation(platform("io.ktor:ktor-bom:2.1.3"))
+    api(platform("io.ktor:ktor-bom:2.1.3"))
     api("io.ktor:ktor-client-auth")
     api("io.ktor:ktor-client-encoding")
     api("io.ktor:ktor-client-okhttp")
     api("io.ktor:ktor-client-content-negotiation")
     api("io.ktor:ktor-serialization-kotlinx-json")
     //
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+    api(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
     api("com.squareup.okhttp3:okhttp-dnsoverhttps")
     //
     implementation(platform("org.slf4j:slf4j-parent:2.0.6"))
