@@ -13,157 +13,157 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.gifencoder;
-
-import java.util.HashSet;
-import java.util.Set;
+package com.squareup.gifencoder
 
 /**
  * Implements qct-tree quantization.
- * <p>
+ *
+ *
  * The principle of algorithm: http://www.microsoft.com/msj/archive/S3F1.aspx
- * </p>
+ *
  */
-public final class OctTreeQuantizer implements ColorQuantizer {
-    public static final OctTreeQuantizer INSTANCE = new OctTreeQuantizer();
-
-    private static final char[] mask = new char[]{0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
-    private int leafCount;
-    private int inIndex;
-
-    private final Node[] nodeList = new Node[8];
-
-    private OctTreeQuantizer() {
-    }
-
-    @Override
-    public Set<Color> quantize(Multiset<Color> originalColors, int maxColorCount) {
-        Node node = createNode(0);
-        Set<Color> distinctElements = originalColors.getDistinctElements();
-        for (Color color : distinctElements) {
-            addColor(node, color, 0);
+public class OctTreeQuantizer private constructor() : ColorQuantizer {
+    private var leafCount = 0
+    private var inIndex = 0
+    private val nodeList = arrayOfNulls<Node>(8)
+    override fun quantize(originalColors: Multiset<Color>, maxColorCount: Int): Set<Color> {
+        val node = createNode(0)
+        val distinctElements = originalColors.distinctElements
+        for (color in distinctElements) {
+            addColor(node, color, 0)
             while (leafCount > maxColorCount) {
-                reduceTree();
+                reduceTree()
             }
         }
-        HashSet<Color> colors = new HashSet<>();
-        getColorPalette(node, colors);
-
-        leafCount = 0;
-        inIndex = 0;
-        for (int i = 0; i < 8; i++) {
-            nodeList[i] = null;
+        val colors = HashSet<Color>()
+        getColorPalette(node, colors)
+        leafCount = 0
+        inIndex = 0
+        for (i in 0..7) {
+            nodeList[i] = null
         }
-
-        return colors;
+        return colors
     }
 
-    private boolean addColor(Node node, Color color, int inLevel) {
-        int nIndex, shift;
-
+    private fun addColor(node: Node?, color: Color, inLevel: Int): Boolean {
+        var node = node
+        val nIndex: Int
+        val shift: Int
         if (node == null) {
-            node = createNode(inLevel);
+            node = createNode(inLevel)
         }
-
-        int red = (int) (color.getComponent(0) * 255);
-        int green = (int) (color.getComponent(1) * 255);
-        int blue = (int) (color.getComponent(2) * 255);
-
+        val red = (color.getComponent(0) * 255).toInt()
+        val green = (color.getComponent(1) * 255).toInt()
+        val blue = (color.getComponent(2) * 255).toInt()
         if (node.isLeaf) {
-            node.pixelCount++;
-            node.redSum += red;
-            node.greenSum += green;
-            node.blueSum += blue;
+            node.pixelCount++
+            node.redSum += red
+            node.greenSum += green
+            node.blueSum += blue
         } else {
-            shift = 7 - inLevel;
-            nIndex = (((red & mask[inLevel]) >> shift) << 2)
-                    | (((green & mask[inLevel]) >> shift) << 1)
-                    | ((blue & mask[inLevel]) >> shift);
-            Node tmpNode = node.child[nIndex];
+            shift = 7 - inLevel
+            nIndex = (red and mask[inLevel].code shr shift shl 2
+                    or (green and mask[inLevel].code shr shift shl 1)
+                    or (blue and mask[inLevel].code shr shift))
+            var tmpNode = node.child[nIndex]
             if (tmpNode == null) {
-                tmpNode = createNode(inLevel + 1);
+                tmpNode = createNode(inLevel + 1)
             }
-            node.child[nIndex] = tmpNode;
-            return addColor(node.child[nIndex], color, inLevel + 1);
+            node.child[nIndex] = tmpNode
+            return addColor(node.child[nIndex], color, inLevel + 1)
         }
-        return true;
+        return true
     }
 
-    private Node createNode(int level) {
-        Node node = new Node();
-        node.level = level;
-        node.isLeaf = (level == 8);
+    private fun createNode(level: Int): Node {
+        val node = Node()
+        node.level = level
+        node.isLeaf = level == 8
         if (node.isLeaf) {
-            leafCount++;
+            leafCount++
         } else {
-            node.next = nodeList[level];
-            nodeList[level] = node;
+            node.next = nodeList[level]
+            nodeList[level] = node
         }
-        return node;
+        return node
     }
 
-    private void reduceTree() {
-        int i;
-        int redSum = 0, greenSum = 0, blueSum = 0, count = 0;
-
-        for (i = 7; i > 0; i--) {
-            if (nodeList[i] != null) break;
+    private fun reduceTree() {
+        var redSum = 0
+        var greenSum = 0
+        var blueSum = 0
+        var count = 0
+        var i = 7
+        while (i > 0) {
+            if (nodeList[i] != null) break
+            i--
         }
-
-        Node tmpNode = nodeList[i];
-        nodeList[i] = tmpNode.next;
-
-        for (i = 0; i < 8; i++) {
+        val tmpNode = nodeList[i]
+        nodeList[i] = tmpNode!!.next
+        i = 0
+        while (i < 8) {
             if (tmpNode.child[i] != null) {
-                redSum += tmpNode.child[i].redSum;
-                greenSum += tmpNode.child[i].greenSum;
-                blueSum += tmpNode.child[i].blueSum;
-                count += tmpNode.child[i].pixelCount;
-                tmpNode.child[i] = null;
-                leafCount--;
+                redSum += tmpNode.child[i]!!.redSum
+                greenSum += tmpNode.child[i]!!.greenSum
+                blueSum += tmpNode.child[i]!!.blueSum
+                count += tmpNode.child[i]!!.pixelCount
+                tmpNode.child[i] = null
+                leafCount--
             }
+            i++
         }
-        tmpNode.isLeaf = true;
-        tmpNode.redSum = redSum;
-        tmpNode.greenSum = greenSum;
-        tmpNode.blueSum = blueSum;
-        tmpNode.pixelCount = count;
-
-        leafCount++;
+        tmpNode.isLeaf = true
+        tmpNode.redSum = redSum
+        tmpNode.greenSum = greenSum
+        tmpNode.blueSum = blueSum
+        tmpNode.pixelCount = count
+        leafCount++
     }
 
-    private void getColorPalette(Node node, Set<Color> colors) {
-        if (node.isLeaf) {
-            node.colorIndex = inIndex;
-            node.redSum = node.redSum / node.pixelCount;
-            node.greenSum = node.greenSum / node.pixelCount;
-            node.blueSum = node.blueSum / node.pixelCount;
-            node.pixelCount = 1;
-            inIndex++;
-            double red = (double) node.redSum / 255;
-            double green = (double) node.greenSum / 255;
-            double blue = (double) node.blueSum / 255;
-            colors.add(new Color(red, green, blue));
+    private fun getColorPalette(node: Node?, colors: MutableSet<Color>) {
+        if (node!!.isLeaf) {
+            node.colorIndex = inIndex
+            node.redSum /= node.pixelCount
+            node.greenSum /= node.pixelCount
+            node.blueSum /= node.pixelCount
+            node.pixelCount = 1
+            inIndex++
+            val red = node.redSum.toDouble() / 255
+            val green = node.greenSum.toDouble() / 255
+            val blue = node.blueSum.toDouble() / 255
+            colors.add(Color(red, green, blue))
         } else {
-            for (int i = 0; i < 8; i++) {
+            for (i in 0..7) {
                 if (node.child[i] != null) {
-                    getColorPalette(node.child[i], colors);
+                    getColorPalette(node.child[i], colors)
                 }
             }
         }
     }
 
-    private static final class Node {
-        boolean isLeaf;
-        int level;
-        int colorIndex;
+    private class Node {
+        var isLeaf = false
+        var level = 0
+        var colorIndex = 0
+        var redSum = 0
+        var greenSum = 0
+        var blueSum = 0
+        var pixelCount = 0
+        var child = arrayOfNulls<Node>(8)
+        var next: Node? = null
+    }
 
-        int redSum;
-        int greenSum;
-        int blueSum;
-        int pixelCount;
-
-        Node[] child = new Node[8];
-        Node next;
+    public companion object {
+        public val INSTANCE: OctTreeQuantizer = OctTreeQuantizer()
+        private val mask = charArrayOf(
+            0x80.toChar(),
+            0x40.toChar(),
+            0x20.toChar(),
+            0x10.toChar(),
+            0x08.toChar(),
+            0x04.toChar(),
+            0x02.toChar(),
+            0x01.toChar()
+        )
     }
 }
