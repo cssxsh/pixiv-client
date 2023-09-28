@@ -2,14 +2,18 @@ package xyz.cssxsh.pixiv.tool
 
 import com.squareup.gifencoder.*
 import io.ktor.http.*
-import kotlinx.coroutines.*
-import kotlinx.serialization.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.*
-import xyz.cssxsh.pixiv.apps.*
-import java.io.*
-import kotlin.system.*
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import xyz.cssxsh.pixiv.PixivJson
+import xyz.cssxsh.pixiv.SummaryTest
+import xyz.cssxsh.pixiv.apps.IllustInfo
+import xyz.cssxsh.pixiv.apps.UgoiraMetadata
+import xyz.cssxsh.pixiv.gifencoder.OctTreeQuantizer
+import java.io.File
+import kotlin.system.measureTimeMillis
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class PixivUgoiraEncoderTest : SummaryTest() {

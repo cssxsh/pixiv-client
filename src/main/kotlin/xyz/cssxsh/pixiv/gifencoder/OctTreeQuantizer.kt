@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squareup.gifencoder
+package xyz.cssxsh.pixiv.gifencoder
+
+import com.squareup.gifencoder.Color
+import com.squareup.gifencoder.ColorQuantizer
+import com.squareup.gifencoder.Multiset
 
 /**
  * Implements qct-tree quantization.
