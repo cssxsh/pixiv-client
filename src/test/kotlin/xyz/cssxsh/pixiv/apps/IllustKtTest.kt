@@ -1,8 +1,8 @@
 package xyz.cssxsh.pixiv.apps
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.LocalDate
 import xyz.cssxsh.pixiv.RankMode
-import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -73,7 +73,7 @@ internal class IllustKtTest : AppApiKtTest() {
         client.illustRanking().let { (illusts) ->
             assertFalse(illusts.isEmpty())
         }
-        val date = LocalDate.of(2020, 8, 20)
+        val date = LocalDate(2020, 8, 20)
         client.illustRanking(mode = RankMode.WEEK, date = date, offset = PAGE_SIZE).let { (illusts) ->
             assertFalse(illusts.isEmpty())
         }
@@ -96,4 +96,12 @@ internal class IllustKtTest : AppApiKtTest() {
             assertEquals(PAGE_SIZE, illusts.size.toLong())
         }
     }
+
+    @Test
+    fun timeanddate() = runBlocking {
+        val pid = 83919385L
+        val res = client.illustDetail(pid = pid)
+        println(res.illust.createAt)
+    }
+
 }

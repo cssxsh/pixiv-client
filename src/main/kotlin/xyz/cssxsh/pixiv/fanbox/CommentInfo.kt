@@ -1,15 +1,16 @@
 package xyz.cssxsh.pixiv.fanbox
 
-import kotlinx.serialization.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 @Serializable
 public data class CommentInfo(
     @SerialName("body")
     val body: String,
-    @Contextual
+
     @SerialName("createdDatetime")
-    val createdDatetime: OffsetDateTime,
+    val createdDatetime: String,
     @SerialName("id")
     val id: Long,
     @SerialName("isLiked")

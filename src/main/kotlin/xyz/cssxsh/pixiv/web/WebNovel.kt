@@ -1,9 +1,11 @@
 package xyz.cssxsh.pixiv.web
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import xyz.cssxsh.pixiv.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+import xyz.cssxsh.pixiv.AgeLimit
+import xyz.cssxsh.pixiv.PublicityType
+
 
 @Serializable
 public data class WebNovel(
@@ -12,8 +14,8 @@ public data class WebNovel(
     @SerialName("bookmarkData")
     val bookmarkData: JsonElement,// TODO
     @SerialName("createDate")
-    @Contextual
-    val createAt: OffsetDateTime,
+
+    val createAt: String,
     @SerialName("description")
     val description: String,
     @SerialName("id")
@@ -42,8 +44,8 @@ public data class WebNovel(
     @SerialName("titleCaptionTranslation")
     val caption: WebTitleCaption,
     @SerialName("updateDate")
-    @Contextual
-    val updateAt: OffsetDateTime,
+
+    val updateAt: String,
     @SerialName("url")
     val url: String,
     @SerialName("userId")

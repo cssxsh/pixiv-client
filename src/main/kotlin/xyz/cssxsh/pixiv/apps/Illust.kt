@@ -4,10 +4,9 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import kotlinx.serialization.json.*
+import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonElement
 import xyz.cssxsh.pixiv.*
-import java.time.*
-import java.time.format.*
 
 public suspend fun PixivAppClient.illustBookmarkAdd(
     pid: Long,
@@ -103,7 +102,7 @@ public suspend fun PixivAppClient.illustRanking(
     url: String = ILLUST_RANKING,
 ): IllustData = useHttpClient { client ->
     client.get(url) {
-        parameter("date", date?.format(DateTimeFormatter.ISO_DATE))
+        parameter("date", date?.toString())
         parameter("mode", mode)
         parameter("filter", filter)
         parameter("offset", offset)

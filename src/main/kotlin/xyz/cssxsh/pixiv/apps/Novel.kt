@@ -4,10 +4,12 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import kotlinx.serialization.json.*
-import xyz.cssxsh.pixiv.*
-import java.time.*
-import java.time.format.*
+import kotlinx.datetime.LocalDate
+import kotlinx.serialization.json.JsonElement
+import xyz.cssxsh.pixiv.FilterType
+import xyz.cssxsh.pixiv.PixivAppClient
+import xyz.cssxsh.pixiv.PublicityType
+import xyz.cssxsh.pixiv.RankMode
 
 public suspend fun PixivAppClient.novelBookmarkAdd(
     pid: Long,
@@ -124,7 +126,7 @@ public suspend fun PixivAppClient.novelRanking(
     offset: Long = 0,
     url: String = NOVEL_RANKING,
 ): NovelData = novelRanking(
-    date = date.format(DateTimeFormatter.ISO_DATE),
+    date = date.toString(),
     mode = mode,
     filter = filter,
     offset = offset,

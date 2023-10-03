@@ -1,7 +1,8 @@
 package xyz.cssxsh.pixiv.fanbox
 
-import kotlinx.serialization.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 @Serializable
 public data class PostInfo(
@@ -19,9 +20,9 @@ public data class PostInfo(
     val id: Long,
     @SerialName("imageForShare")
     val imageForShare: String? = null,
-    @Contextual
+
     @SerialName("publishedDatetime")
-    val publishedDatetime: OffsetDateTime,
+    val publishedDatetime: String,
     @SerialName("title")
     val title: String,
     @SerialName("user")

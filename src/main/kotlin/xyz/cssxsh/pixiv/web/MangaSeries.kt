@@ -1,7 +1,8 @@
 package xyz.cssxsh.pixiv.web
 
-import kotlinx.serialization.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 @Serializable
 public data class MangaSeries(
@@ -12,8 +13,7 @@ public data class MangaSeries(
     @SerialName("coverImageSl")
     val coverImageSl: Int,
     @SerialName("createDate")
-    @Contextual
-    val createAt: OffsetDateTime,
+    val createAt: String,
     @SerialName("description")
     val description: String,
     @SerialName("firstIllustId")
@@ -31,8 +31,8 @@ public data class MangaSeries(
     @SerialName("total")
     val total: Int,
     @SerialName("updateDate")
-    @Contextual
-    val updateAt: OffsetDateTime,
+
+    val updateAt: String,
     @SerialName("url")
     val url: String,
     @SerialName("userId")

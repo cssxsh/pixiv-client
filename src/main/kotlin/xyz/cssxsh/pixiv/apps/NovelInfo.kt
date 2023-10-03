@@ -1,16 +1,18 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import xyz.cssxsh.pixiv.AgeLimit
+import xyz.cssxsh.pixiv.FileUrls
+import xyz.cssxsh.pixiv.PublicityType
+
 
 @Serializable
 public data class NovelInfo(
     @SerialName("caption")
     val caption: String,
     @SerialName("create_date")
-    @Contextual
-    val createAt: OffsetDateTime,
+    val createAt: String,
     @SerialName("text_length")
     val textLength: Long,
     @SerialName("id")

@@ -1,17 +1,17 @@
 package xyz.cssxsh.pixiv.apps
 
 import io.ktor.http.*
-import kotlinx.serialization.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import xyz.cssxsh.pixiv.*
-import java.time.*
+
 
 @Serializable
 public data class IllustInfo(
     @SerialName("caption")
     val caption: String,
     @SerialName("create_date")
-    @Contextual
-    val createAt: OffsetDateTime,
+    val createAt: String,
     @SerialName("width")
     val width: Int,
     @SerialName("height")

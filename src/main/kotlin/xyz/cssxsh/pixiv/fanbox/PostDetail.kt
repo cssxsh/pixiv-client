@@ -1,7 +1,8 @@
 package xyz.cssxsh.pixiv.fanbox
 
-import kotlinx.serialization.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 @Serializable
 public sealed class PostDetail {
@@ -20,11 +21,11 @@ public sealed class PostDetail {
     public abstract val likeCount: Int
     public abstract val nextPost: Link?
     public abstract val prevPost: Link?
-    public abstract val publishedDatetime: OffsetDateTime
+    public abstract val publishedDatetime: String
     public abstract val restrictedFor: Int?
     public abstract val tags: List<String>
     public abstract val title: String
-    public abstract val updatedDatetime: OffsetDateTime
+    public abstract val updatedDatetime: String
     public abstract val user: CreatorInfo
 
     @Serializable
@@ -60,18 +61,18 @@ public sealed class PostDetail {
         override val nextPost: Link? = null,
         @SerialName("prevPost")
         override val prevPost: Link? = null,
-        @Contextual
+
         @SerialName("publishedDatetime")
-        override val publishedDatetime: OffsetDateTime,
+        override val publishedDatetime: String,
         @SerialName("restrictedFor")
         override val restrictedFor: Int?,
         @SerialName("tags")
         override val tags: List<String>,
         @SerialName("title")
         override val title: String,
-        @Contextual
+
         @SerialName("updatedDatetime")
-        override val updatedDatetime: OffsetDateTime,
+        override val updatedDatetime: String,
         @SerialName("user")
         override val user: CreatorInfo
     ) : PostDetail()
@@ -109,18 +110,18 @@ public sealed class PostDetail {
         override val nextPost: Link? = null,
         @SerialName("prevPost")
         override val prevPost: Link? = null,
-        @Contextual
+
         @SerialName("publishedDatetime")
-        override val publishedDatetime: OffsetDateTime,
+        override val publishedDatetime: String,
         @SerialName("restrictedFor")
         override val restrictedFor: Int?,
         @SerialName("tags")
         override val tags: List<String>,
         @SerialName("title")
         override val title: String,
-        @Contextual
+
         @SerialName("updatedDatetime")
-        override val updatedDatetime: OffsetDateTime,
+        override val updatedDatetime: String,
         @SerialName("user")
         override val user: CreatorInfo
     ) : PostDetail()
@@ -158,18 +159,18 @@ public sealed class PostDetail {
         override val nextPost: Link? = null,
         @SerialName("prevPost")
         override val prevPost: Link? = null,
-        @Contextual
+
         @SerialName("publishedDatetime")
-        override val publishedDatetime: OffsetDateTime,
+        override val publishedDatetime: String,
         @SerialName("restrictedFor")
         override val restrictedFor: Int?,
         @SerialName("tags")
         override val tags: List<String>,
         @SerialName("title")
         override val title: String,
-        @Contextual
+
         @SerialName("updatedDatetime")
-        override val updatedDatetime: OffsetDateTime,
+        override val updatedDatetime: String,
         @SerialName("user")
         override val user: CreatorInfo
     ) : PostDetail()
@@ -207,18 +208,18 @@ public sealed class PostDetail {
         override val nextPost: Link? = null,
         @SerialName("prevPost")
         override val prevPost: Link? = null,
-        @Contextual
+
         @SerialName("publishedDatetime")
-        override val publishedDatetime: OffsetDateTime,
+        override val publishedDatetime: String,
         @SerialName("restrictedFor")
         override val restrictedFor: Int?,
         @SerialName("tags")
         override val tags: List<String>,
         @SerialName("title")
         override val title: String,
-        @Contextual
+
         @SerialName("updatedDatetime")
-        override val updatedDatetime: OffsetDateTime,
+        override val updatedDatetime: String,
         @SerialName("user")
         override val user: CreatorInfo
     ) : PostDetail()
@@ -256,18 +257,18 @@ public sealed class PostDetail {
         override val nextPost: Link? = null,
         @SerialName("prevPost")
         override val prevPost: Link? = null,
-        @Contextual
+
         @SerialName("publishedDatetime")
-        override val publishedDatetime: OffsetDateTime,
+        override val publishedDatetime: String,
         @SerialName("restrictedFor")
         override val restrictedFor: Int?,
         @SerialName("tags")
         override val tags: List<String>,
         @SerialName("title")
         override val title: String,
-        @Contextual
+
         @SerialName("updatedDatetime")
-        override val updatedDatetime: OffsetDateTime,
+        override val updatedDatetime: String,
         @SerialName("user")
         override val user: CreatorInfo
     ) : PostDetail()

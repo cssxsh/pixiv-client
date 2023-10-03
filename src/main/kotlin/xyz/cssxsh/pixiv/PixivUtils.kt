@@ -2,14 +2,18 @@ package xyz.cssxsh.pixiv
 
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.http.*
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.*
-import kotlinx.serialization.json.*
-import kotlinx.serialization.modules.*
-import xyz.cssxsh.pixiv.auth.*
-import xyz.cssxsh.pixiv.exception.*
-import java.net.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import xyz.cssxsh.pixiv.auth.AuthResult
+import xyz.cssxsh.pixiv.exception.ProxyException
+import java.net.InetSocketAddress
+import java.net.Proxy
 import java.util.*
 
 public typealias HeadersMap = Map<String, String>
@@ -19,9 +23,6 @@ public typealias FileUrls = Map<String, String>
 public val PixivJson: Json = Json {
     ignoreUnknownKeys = System.getProperty("xyz.cssxsh.pixiv.json.ignore", "true").toBoolean()
     allowSpecialFloatingPointValues = true
-    serializersModule += SerializersModule {
-        contextual(JapanDateTimeSerializer)
-    }
 }
 
 public const val HTTP_KILO: Int = 1022

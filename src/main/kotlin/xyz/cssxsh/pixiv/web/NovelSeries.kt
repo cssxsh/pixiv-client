@@ -1,8 +1,9 @@
 package xyz.cssxsh.pixiv.web
 
-import kotlinx.serialization.*
-import xyz.cssxsh.pixiv.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import xyz.cssxsh.pixiv.AgeLimit
+
 
 @Serializable
 public data class NovelSeries(
@@ -47,8 +48,8 @@ public data class NovelSeries(
     @SerialName("total")
     val total: Int,
     @SerialName("updateDate")
-    @Contextual
-    val updateAt: OffsetDateTime,
+
+    val updateAt: String,
     @SerialName("updatedTimestamp")
     val updatedTimestamp: Long,
     @SerialName("userId")

@@ -1,7 +1,8 @@
 package xyz.cssxsh.pixiv.fanbox
 
-import kotlinx.serialization.*
-import java.time.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 
 @Serializable
 public data class PaidRecord(
@@ -11,9 +12,9 @@ public data class PaidRecord(
     val id: Long,
     @SerialName("paidAmount")
     val paidAmount: Int,
-    @Contextual
+
     @SerialName("paymentDatetime")
-    val paymentDatetime: OffsetDateTime,
+    val paymentDatetime: String,
     @SerialName("paymentMethod")
     val paymentMethod: String
 )

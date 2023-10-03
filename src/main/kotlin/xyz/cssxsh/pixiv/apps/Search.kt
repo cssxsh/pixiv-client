@@ -2,9 +2,8 @@ package xyz.cssxsh.pixiv.apps
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.datetime.LocalDate
 import xyz.cssxsh.pixiv.*
-import java.time.*
-import java.time.format.*
 
 public suspend fun PixivAppClient.searchAutoCompleteOld(
     word: String,
@@ -40,8 +39,8 @@ public suspend fun PixivAppClient.searchBookmarkRangesIllust(
     client.get(url) {
         parameter("word", word)
         parameter("search_target", target)
-        parameter("start_date", start?.format(DateTimeFormatter.ISO_DATE))
-        parameter("end_date", end?.format(DateTimeFormatter.ISO_DATE))
+        parameter("start_date", start?.toString())
+        parameter("end_date", end?.toString())
         parameter("include_translated_tag_results", translated)
         parameter("merge_plain_keyword_results", merge)
         parameter("offset", offset)
@@ -74,8 +73,8 @@ public suspend fun PixivAppClient.searchIllust(
         parameter("duration", duration)
         parameter("bookmark_num_min", min)
         parameter("bookmark_num_max", max)
-        parameter("start_date", start?.format(DateTimeFormatter.ISO_DATE))
-        parameter("end_date", end?.format(DateTimeFormatter.ISO_DATE))
+        parameter("start_date", start?.toString())
+        parameter("end_date", end?.toString())
         parameter("include_translated_tag_results", translated)
         parameter("merge_plain_keyword_results", merge)
         parameter("offset", offset)
