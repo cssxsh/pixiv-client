@@ -5,9 +5,9 @@ import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.util.*
-import xyz.cssxsh.pixiv.*
-import java.security.*
-import java.time.*
+import xyz.cssxsh.pixiv.ANDROID_CLIENT_ID
+import xyz.cssxsh.pixiv.ANDROID_CLIENT_SECRET
+import java.security.MessageDigest
 import kotlin.random.Random
 
 public const val OAUTH_TOKEN_URL: String = "https://oauth.secure.pixiv.net/auth/token"
@@ -43,8 +43,8 @@ private const val VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqr
 
 private const val VERIFIER_LENGTH = 128
 
-internal fun verifier(time: OffsetDateTime): Pair<String, Parameters> {
-    val random = Random(time.toEpochSecond())
+internal fun verifier(time: Long): Pair<String, Parameters> {
+    val random = Random(time)
     val origin = buildString(VERIFIER_LENGTH) {
         repeat(VERIFIER_LENGTH) {
             append(VERIFIER_CHARS[random.nextInt(VERIFIER_CHARS.length)])

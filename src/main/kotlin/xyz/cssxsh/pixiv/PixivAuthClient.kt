@@ -10,20 +10,25 @@ import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.auth.*
-import io.ktor.utils.io.core.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.*
+import io.ktor.utils.io.core.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Clock
 import xyz.cssxsh.pixiv.auth.*
-import xyz.cssxsh.pixiv.exception.*
-import xyz.cssxsh.pixiv.tool.*
-import java.time.*
+import xyz.cssxsh.pixiv.exception.TransferExceptionHandler
+import xyz.cssxsh.pixiv.tool.RubyDns
+import xyz.cssxsh.pixiv.tool.RubySSLSocketFactory
+import xyz.cssxsh.pixiv.tool.RubyX509TrustManager
 
 public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
     protected open var auth: AuthResult? = null
 
-    protected open var expires: OffsetDateTime = OffsetDateTime.MIN
+    protected open var expiresSeconds: Long = 0L
 
     protected abstract val ignore: suspend (Throwable) -> Boolean
 
@@ -71,8 +76,8 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
 
                 override suspend fun addRequestHeaders(request: HttpRequestBuilder, authHeader: HttpAuthHeader?) {
                     val info = mutex.withLock {
-                        auth?.takeIf { expires > OffsetDateTime.now() } ?: useHttpClient { client ->
-                            val start = OffsetDateTime.now()
+                        auth?.takeIf { expiresSeconds > Clock.System.now().epochSeconds } ?: useHttpClient { client ->
+                            val start = Clock.System.now().epochSeconds
                             client.refresh(refreshToken).save(start = start)
                         }
                     }
@@ -160,8 +165,8 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
      * 认证信息
      */
     override suspend fun info(): AuthResult = mutex.withLock {
-        val start = OffsetDateTime.now()
-        auth?.takeIf { expires > OffsetDateTime.now() } ?: useHttpClient { client ->
+        val start = Clock.System.now().epochSeconds
+        auth?.takeIf { expiresSeconds > Clock.System.now().epochSeconds } ?: useHttpClient { client ->
             client.refresh(token = refreshToken).save(start = start)
         }
     }
@@ -174,7 +179,7 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
      * @see authorize
      */
     override suspend fun login(block: suspend (redirect: Url) -> String): AuthResult = mutex.withLock {
-        val start = OffsetDateTime.now()
+        val start = Clock.System.now().epochSeconds
         val (verifier, parameters) = verifier(time = start)
         val code = block(URLBuilder(REDIRECT_LOGIN_URL).apply { this.parameters.appendAll(parameters) }.build())
         useHttpClient { client ->
@@ -187,14 +192,14 @@ public abstract class PixivAuthClient : PixivAppClient, Closeable {
      * @see refreshToken
      */
     override suspend fun refresh(): AuthResult = mutex.withLock {
-        val start = OffsetDateTime.now()
+        val start = Clock.System.now().epochSeconds
         useHttpClient { client ->
             client.refresh(token = refreshToken).save(start = start)
         }
     }
 
-    protected open suspend fun AuthResult.save(start: OffsetDateTime): AuthResult = also { result ->
-        expires = start.withNano(0).plusSeconds(result.expiresIn)
+    protected open suspend fun AuthResult.save(start: Long): AuthResult = also { result ->
+        expiresSeconds = start + result.expiresIn
         auth = result.copy(deviceToken = storage.get(Url(REDIRECT_LOGIN_URL))["device_token"]?.value)
         config {
             refreshToken = result.refreshToken
