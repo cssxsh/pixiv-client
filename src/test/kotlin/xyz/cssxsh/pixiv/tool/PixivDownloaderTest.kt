@@ -4,11 +4,10 @@ import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import xyz.cssxsh.pixiv.HTTP_KILO
-import xyz.cssxsh.pixiv.SummaryTest
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 
-internal class PixivDownloaderTest : SummaryTest() {
+internal class PixivDownloaderTest {
 
     private val artworks = listOf(
         // https://www.pixiv.net/artworks/104820728

@@ -34,6 +34,8 @@ dependencies {
     api(platform("com.squareup.okhttp3:okhttp-bom:4.11.0"))
     api("com.squareup.okhttp3:okhttp-dnsoverhttps")
     implementation(platform("org.slf4j:slf4j-parent:2.0.7"))
+    implementation("com.squareup.okio:okio:3.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
     testImplementation("org.slf4j:slf4j-simple")
 }
 
@@ -52,12 +54,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
-
-//tasks {
-//    test {
-//        useJUnitPlatform()
-//    }
-//}
 
 val properties = Properties().apply {
     try {

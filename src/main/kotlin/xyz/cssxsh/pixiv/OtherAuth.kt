@@ -93,13 +93,6 @@ private suspend fun PixivAuthClient.redirect(link: Url): String {
         }
     }
 
-    code.contentType()?.let { type ->
-        java.io.File("pixiv.login.error.${type.contentSubtype}")
-            .writeBytes(code.body())
-        java.io.File("pixiv.login.cookies")
-            .writeText(storage.get(authorize).joinToString("\n", transform = ::renderCookieHeader))
-    }
-
     val scheme = requireNotNull(code.location()) { "跳转到 pixiv://... 失败" }
 
     /**

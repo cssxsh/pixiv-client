@@ -5,13 +5,13 @@ import io.ktor.util.date.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import kotlin.test.Test
 
 internal class OtherAuthKtTest {
 
     private val client = SimplePixivClient(config = PixivConfig())
-
-    private val work = java.io.File("./run")
 
     @Serializable
     data class EditThisCookie(
@@ -65,7 +65,7 @@ internal class OtherAuthKtTest {
     fun cookie(): Unit = runBlocking {
         val result = client.cookie {
             PixivJson.decodeFromString<List<EditThisCookie>>(
-                work.resolve("cookie.json").readText()
+                FileSystem.SYSTEM.read(".run/cookie.json".toPath()) { readUtf8() }
             ).map { it.toCookie() }
         }
         println(result)
