@@ -1,7 +1,10 @@
+import java.util.*
+
 plugins {
     kotlin("jvm") version "1.8.22"
     kotlin("plugin.serialization") version "1.8.22"
     id("me.him188.maven-central-publish") version "1.0.0-dev-3"
+    id("com.github.gmazzo.buildconfig") version "3.1.0"
 }
 
 group = "xyz.cssxsh.pixiv"
@@ -62,4 +65,16 @@ tasks {
     test {
         useJUnitPlatform()
     }
+}
+
+val properties = Properties().apply {
+    try {
+        load(rootProject.file("local.properties").reader())
+    } catch (e: Exception) {
+        println("local.properties file not found, you won't be able to run tests")
+    }
+}
+
+buildConfig {
+    buildConfigField("String", "REFRESH_TOKEN", provider { "\"${properties["refresh_token"]}\"" })
 }
