@@ -8,11 +8,8 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import org.openqa.selenium.WebDriverException
-import org.openqa.selenium.logging.*
-import org.openqa.selenium.remote.*
 import xyz.cssxsh.pixiv.auth.*
-import xyz.cssxsh.pixiv.tool.*
+import xyz.cssxsh.pixiv.tool.CaptchaHandler
 
 public const val WEIBO_QRCODE_GENERATE: String = "https://api.weibo.com/oauth2/qrcode_authorize/generate"
 
@@ -293,28 +290,4 @@ public suspend fun PixivAuthClient.password(id: String, pwd: String, handler: Ca
     val link = requireNotNull(message.location()) { "跳转到 $POST_REDIRECT_URL 失败" }
 
     redirect(link = link)
-}
-
-/**
- * 登录，通过 selenium 调用浏览器
- * @param driver 浏览器驱动器
- */
-public suspend fun PixivAuthClient.selenium(driver: RemoteWebDriver, timeout: Long): AuthResult = login { redirect ->
-    try {
-        driver.get(redirect.toString())
-    } catch (_: WebDriverException) {
-        //
-    }
-    withTimeout(timeout) {
-        while (driver.currentUrl.orEmpty().startsWith(POST_REDIRECT_URL).not()) {
-            delay(10_000)
-        }
-    }
-    // XXX: 通过错误日志获取 跳转URL
-    val log = driver.manage().logs().get(LogType.BROWSER)
-        .findLast { log -> "pixiv://account/login" in log.message.orEmpty() }
-        ?: throw NoSuchElementException("No Found pixiv://account/login")
-    val url = Url(log.message.substringAfter("'").substringBefore("'"))
-
-    url.parameters["code"] ?: throw NoSuchElementException("code, ${log.message}")
 }
