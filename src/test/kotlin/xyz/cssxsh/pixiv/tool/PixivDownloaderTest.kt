@@ -2,13 +2,12 @@ package xyz.cssxsh.pixiv.tool
 
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
-import org.junit.jupiter.api.*
-import xyz.cssxsh.pixiv.*
-import java.io.*
-import kotlin.system.*
+import kotlinx.coroutines.channels.Channel
+import xyz.cssxsh.pixiv.HTTP_KILO
+import xyz.cssxsh.pixiv.SummaryTest
+import kotlin.system.measureTimeMillis
+import kotlin.test.Test
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class PixivDownloaderTest : SummaryTest() {
 
     private val artworks = listOf(

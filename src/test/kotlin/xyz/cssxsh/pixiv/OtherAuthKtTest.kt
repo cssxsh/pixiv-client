@@ -2,9 +2,10 @@ package xyz.cssxsh.pixiv
 
 import io.ktor.http.*
 import io.ktor.util.date.*
-import kotlinx.coroutines.*
-import kotlinx.serialization.*
-import org.junit.jupiter.api.*
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlin.test.Test
 
 internal class OtherAuthKtTest {
 

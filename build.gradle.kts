@@ -53,11 +53,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
-tasks {
-    test {
-        useJUnitPlatform()
-    }
-}
+//tasks {
+//    test {
+//        useJUnitPlatform()
+//    }
+//}
 
 val properties = Properties().apply {
     try {

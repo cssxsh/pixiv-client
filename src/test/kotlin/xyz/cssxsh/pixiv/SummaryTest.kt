@@ -1,14 +1,15 @@
 package xyz.cssxsh.pixiv
 
-import org.junit.jupiter.api.*
-import java.io.*
+import java.io.File
+import java.io.PrintStream
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal abstract class SummaryTest {
 
     private var stdout: PrintStream? = null
 
-    @BeforeAll
+    @BeforeTest
     open fun init() {
         val markdown = File(System.getenv("GITHUB_STEP_SUMMARY") ?: "run/summary.md")
         if (markdown.exists()) {
@@ -17,7 +18,7 @@ internal abstract class SummaryTest {
         }
     }
 
-    @AfterAll
+    @AfterTest
     open fun redirect() {
         if (stdout != null) {
             System.setOut(stdout)

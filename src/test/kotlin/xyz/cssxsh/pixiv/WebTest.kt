@@ -8,10 +8,11 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import org.junit.jupiter.api.Test
-import xyz.cssxsh.pixiv.exception.*
-import xyz.cssxsh.pixiv.tool.*
+import xyz.cssxsh.pixiv.exception.TransferExceptionHandler
+import xyz.cssxsh.pixiv.tool.RubySSLSocketFactory
+import xyz.cssxsh.pixiv.tool.RubyX509TrustManager
 import javax.net.ssl.SSLSocket
+import kotlin.test.Test
 
 abstract class WebTest {
 

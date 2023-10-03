@@ -1,10 +1,10 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
+import kotlinx.coroutines.runBlocking
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SpotlightKtTest: AppApiKtTest() {
 
     @Test

@@ -1,8 +1,8 @@
 package xyz.cssxsh.pixiv.web
 
-import kotlinx.coroutines.*
-import org.junit.jupiter.api.*
-import xyz.cssxsh.pixiv.*
+import kotlinx.coroutines.runBlocking
+import xyz.cssxsh.pixiv.WebTest
+import kotlin.test.Test
 
 internal class UserApiKtTest : WebTest() {
 

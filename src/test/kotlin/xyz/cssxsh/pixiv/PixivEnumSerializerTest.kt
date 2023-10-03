@@ -1,8 +1,9 @@
 package xyz.cssxsh.pixiv
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import org.junit.jupiter.api.*
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlin.test.Test
 
 @InternalSerializationApi
 internal class PixivEnumSerializerTest {

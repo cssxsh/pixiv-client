@@ -1,12 +1,13 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
-import xyz.cssxsh.pixiv.*
-import java.time.*
+import kotlinx.coroutines.runBlocking
+import xyz.cssxsh.pixiv.RankMode
+import java.time.LocalDate
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class IllustKtTest : AppApiKtTest() {
 
     @Test

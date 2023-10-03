@@ -1,10 +1,11 @@
 package xyz.cssxsh.pixiv.apps
 
-import kotlinx.coroutines.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
+import kotlinx.coroutines.runBlocking
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class UserKtTest : AppApiKtTest() {
 
     @Test
@@ -14,7 +15,6 @@ internal class UserKtTest : AppApiKtTest() {
         }
     }
 
-    @Disabled
     fun blacklist(): Unit = runBlocking {
         client.userBlacklist(uid = 3410615L).let { (users) ->
             assertFalse(users.isEmpty())
@@ -43,7 +43,6 @@ internal class UserKtTest : AppApiKtTest() {
         }
     }
 
-    @Disabled
     fun following(): Unit = runBlocking {
         val uid = 11L
         client.userFollowDelete(uid = uid)
@@ -57,8 +56,6 @@ internal class UserKtTest : AppApiKtTest() {
         }
     }
 
-
-    @Disabled
     fun follower(): Unit = runBlocking {
         val uid = 4102577L
         client.userFollower(uid = uid).let { (previews) ->
@@ -66,8 +63,6 @@ internal class UserKtTest : AppApiKtTest() {
         }
     }
 
-
-    @Disabled
     fun friend(): Unit = runBlocking {
         val uid = 4102577L
         client.userMyPixiv(uid = uid).let { (previews) ->
